@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "cenxiv"
+version = "0.1.0"
+description = "arXiv in Chinese (CN) and English (En)."
+authors = ["zuoshifan <sfzuo@bao.ac.cn>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+django = "^5.1.4"
+mtranslate = "^1.8"
+requests = "^2.32.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,49 @@
+{% extends 'articles/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="articles">
+    {% if query or category %}
+        <p class="search-results">
+            {% if page_obj %}
+                {% blocktrans with count=page_obj.paginator.count %}
+                    Found {{ count }} results
+                {% endblocktrans %}
+            {% else %}
+                {% trans "No results found" %}
+            {% endif %}
+        </p>
+    {% endif %}
+
+    {% for article in page_obj %}
+    <article class="article">
+        <h2 class="title">{{ article.title_in_language }}</h2>
+        <p class="authors">{{ article.authors }}</p>
+        <p class="abstract">{{ article.abstract_in_language }}</p>
+        <p class="meta">
+            <a href="{{ article.pdf_url }}" target="_blank">PDF</a>
+            | {% trans "Category" %}: {{ article.category }}
+            | {% trans "Published" %}: {{ article.published_date|date:"Y-m-d" }}
+        </p>
+    </article>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">
+            {% trans "Previous" %}
+        </a>
+    {% endif %}
+    
+    <span>
+        {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}
+    </span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">
+            {% trans "Next" %}
+        </a>
+    {% endif %}
+</div>
+{% endblock %} 

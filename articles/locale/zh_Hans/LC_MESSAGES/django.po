@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-28 23:10+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+#: articles/models.py:5
+msgid "arXiv ID"
+msgstr ""
+
+#: articles/models.py:6
+msgid "English Title"
+msgstr ""
+
+#: articles/models.py:7
+msgid "Chinese Title"
+msgstr ""
+
+#: articles/models.py:8
+msgid "English Abstract"
+msgstr ""
+
+#: articles/models.py:9
+msgid "Chinese Abstract"
+msgstr ""
+
+#: articles/models.py:10
+msgid "Authors"
+msgstr ""
+
+#: articles/models.py:11
+msgid "Published Date"
+msgstr ""
+
+#: articles/models.py:12
+msgid "Updated Date"
+msgstr ""
+
+#: articles/models.py:13
+msgid "PDF URL"
+msgstr ""
+
+#: articles/models.py:14 articles/templates/articles/article_list.html:38
+msgid "Category"
+msgstr ""
+
+#: articles/models.py:20
+msgid "Article"
+msgstr ""
+
+#: articles/models.py:21
+msgid "Articles"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:7
+msgid "Search articles..."
+msgstr ""
+
+#: articles/templates/articles/article_list.html:9
+msgid "All Categories"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:14
+msgid "Search"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:22
+#, python-format
+msgid ""
+"\n"
+"                    Found %(count)s results\n"
+"                "
+msgstr ""
+
+#: articles/templates/articles/article_list.html:26
+msgid "No results found"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:39
+msgid "Published"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:48
+msgid "Previous"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:53
+msgid "Page"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:53
+msgid "of"
+msgstr ""
+
+#: articles/templates/articles/article_list.html:58
+msgid "Next"
+msgstr ""
