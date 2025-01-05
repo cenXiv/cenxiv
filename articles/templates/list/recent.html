@@ -1,0 +1,37 @@
+{% extends "list/base.html" %}
+
+{% block list_index %}
+  <h2>Authors and titles for recent submissions</h2>
+  <ul>
+    {% url 'articles:list_articles' context=context subcontext=subcontext as base_url %}
+    {% for pubdate, skipfordate in pubdates %}
+      <li>
+        <a href="{{ base_url }}?skip={{ skipfordate }}&show={{ shown }}">
+          {{ pubdate }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+  <p>See today's <a id="new-{{ context }}" aria-labelledby="new-{{ context }}" href="/list/{{ context }}/new">new</a> changes</p>
+{% endblock %}
+
+{% block items %}
+  {% for sec in sub_sections_for_types %}
+    {%if sec.visible%}
+        <dl id='articles'>
+        {% if sec.heading %}
+            <h3>{{ sec.heading }}</h3>
+        {% endif %}
+
+        {% if sec.items|length == 0 %}
+            <p>No updates for this time period.</p>
+        {% endif %}
+
+        {% for item, dt, dd in sec.items %}
+            {{ dt|safe }}
+            {{ dd|safe }}
+        {% endfor %}
+        </dl>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

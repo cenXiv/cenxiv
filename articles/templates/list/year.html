@@ -1,0 +1,19 @@
+{% extends "list/base.html" %}
+
+{% block list_index %}
+<h2>Authors and titles for {{ pubmonth }} </h2>
+{% endblock %}
+
+{% block items %}
+    <dl id='articles'>
+
+    {% if listings|length == 0 %}
+        <p>No updates for this time period.</p>
+    {% endif %}
+
+    {% for item, dt, dd in listings %}
+        {{ dt|safe }}
+        {{ dd|safe }}
+    {% endfor %}
+    </dl>
+{% endblock %}

@@ -1,121 +1,151 @@
 {% load i18n %}
+{% load static %}
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
+    {% block head %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}cenXiv{% endblock %}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            gap: 1rem;
-        }
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-        .language-switch {
-            display: flex;
-            gap: 1rem;
-        }
-        .search-form {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        .search-form input[type="text"] {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 200px;
-        }
-        .search-form select {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .search-form button {
-            padding: 0.5rem 1rem;
-            background: #4a90e2;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .search-form button:hover {
-            background: #357abd;
-        }
-        .article {
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #eee;
-        }
-        .title {
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-        .authors {
-            color: #666;
-            font-style: italic;
-        }
-        .abstract {
-            margin: 1rem 0;
-        }
-        .meta {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        .meta a {
-            color: #4a90e2;
-            text-decoration: none;
-        }
-        .meta a:hover {
-            text-decoration: underline;
-        }
-        .pagination {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-        .search-results {
-            margin: 1rem 0;
-            color: #666;
-        }
-    </style>
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/arXiv.css' %}?v=20241206" />
+    <link rel="stylesheet" type="text/css" media="print" href="{% static 'css/arXiv-print.css' %}?v=20200611" />
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/browse_search.css' %}" />
+    <script type="text/javascript" src="{% static 'js/accordion.js' %}"></script>
+    {% endblock %}
 </head>
-<body>
-    <div class="header">
-        <h1>cenXiv</h1>
-        <div class="header-right">
+<body {% block body_id %}{% endblock %} class="with-cu-identity">
+  <div class="flex-wrap-footer">
+    <header>
+      <a href="#content" class="is-sr-only">Skip to main content</a>
+      <!-- start desktop header -->
+
+        <div id="header" class="is-hidden-mobile">
+        {% block header %}
+        {# The ignore_me link is not meant to be visible to users; it is meant to catch robots/crawlers not respecting robots.txt. aria-hidden prevents screenreaders from being caught, and tabindex prevents it from being selectable via the tab key. #}
+        <a aria-hidden="true" tabindex="-1" href="/IgnoreMe"></a>
+
+        {% block header_h1 %}
+        <h1><a href="{% url 'articles:home' %}" style="text-decoration: none; color: inherit;">cenXiv</a>
+        </h1>
+        {% endblock header_h1%}
+
+        {% block login_link %}
+        {% endblock %}
+
+        {# Creates an inline search widget with one input box, a dropdown for field selection, a button, and two tiny help/advanced links. Can be wrapped with Bulma's level element to align vertically with other elements in the same horizontal band. Parameter is a Bulma class that sets overall alignment within level wrapper, allowed values are level-left or level-right. #}
+        <div class="search-block level-right">
             <div class="language-switch">
                 <a href="{% url 'set_language' %}?language=zh-hans">中文</a>
                 <a href="{% url 'set_language' %}?language=en">English</a>
             </div>
-            <form class="search-form" method="get" action="{% url 'articles:article_list' %}">
-                <input type="text" name="q" value="{{ query }}" placeholder="{% trans 'Search articles...' %}">
-                <select name="category">
-                    <option value="">{% trans 'All Categories' %}</option>
-                    {% for cat in categories %}
-                        <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit">{% trans 'Search' %}</button>
+
+            <form class="level-item mini-search" method="GET" action="{% url 'articles:article_list' %}">
+            {% csrf_token %}
+            <div class="field has-addons">
+                <div class="control">
+                <input class="input is-small" type="text" name="query" placeholder="Search..." aria-label="Search term or terms" />
+                <p class="help"><a href="{% url 'articles:article_list' %}">Help</a> | <a href="{% url 'articles:article_list' %}">Advanced Search</a></p>
+                </div>
+                <div class="control">
+                <div class="select is-small">
+                    <select name="searchtype" aria-label="Field to search">
+                    <option value="all" selected="selected">All fields</option>
+                    <option value="title">Title</option>
+                    <option value="author">Author</option>
+                    <option value="abstract">Abstract</option>
+                    <option value="comments">Comments</option>
+                    <option value="journal_ref">Journal reference</option>
+                    <option value="acm_class">ACM classification</option>
+                    <option value="msc_class">MSC classification</option>
+                    <option value="report_num">Report number</option>
+                    <option value="paper_id">arXiv identifier</option>
+                    <option value="doi">DOI</option>
+                    <option value="orcid">ORCID</option>
+                    <option value="author_id">arXiv author ID</option>
+                    <option value="help">Help pages</option>
+                    <option value="full_text">Full text</option>
+                    </select>
+                </div>
+                </div>
+                <input type="hidden" name="source" value="header">
+                <button class="button is-small is-cul-darker">Search</button>
+            </div>
             </form>
         </div>
-    </div>
-    
-    {% block content %}{% endblock %}
+
+       {% endblock header %}
+     </div><!-- /end desktop header -->
+
+
+    </header>
+
+    <main>
+      {% block content_stats %}
+      {% endblock content_stats %}
+      <div id="content">
+        {% block content %}
+        {% endblock content %}
+      </div>
+    </main>
+
+    <footer style="clear: both;">
+      <div class="columns is-desktop" role="navigation" aria-label="Secondary" style="margin: -0.75em -0.75em 0.75em -0.75em">
+        <!-- Macro-Column 1 -->
+        <div class="column" style="padding: 0;">
+          <div class="columns">
+            <div class="column">
+              <ul style="list-style: none; line-height: 2;">
+                <li><a href="{% url 'articles:article_list' %}">About</a></li>
+                <li><a href="{% url 'articles:article_list' %}">Help</a></li>
+              </ul>
+            </div>
+            <div class="column">
+              <ul style="list-style: none; line-height: 2;">
+                <li>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon filter-black" role="presentation"><title>contact arXiv</title><desc>Click here to contact arXiv</desc><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg>
+                  <a href="{% url 'articles:article_list' %}"> Contact</a>
+                </li>
+                <li>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon filter-black" role="presentation"><title>subscribe to arXiv mailings</title><desc>Click here to subscribe</desc><path d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"/></svg>
+                  <a href="{% url 'articles:article_list' %}"> Subscribe</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- End Macro-Column 1 -->
+        <!-- Macro-Column 2 -->
+        <div class="column" style="padding: 0;">
+          <div class="columns">
+            <div class="column">
+              <ul style="list-style: none; line-height: 2;">
+                <li><a href="{% url 'articles:article_list' %}">Copyright</a></li>
+                <li><a href="{% url 'articles:article_list' %}">Privacy Policy</a></li>
+              </ul>
+            </div>
+            <div class="column sorry-app-links">
+              <ul style="list-style: none; line-height: 2;">
+                <li><a href="{% url 'articles:article_list' %}">Web Accessibility Assistance</a></li>
+                <li>
+                  <p class="help">
+                    <a class="a11y-main-link" href="https://status.arxiv.org" target="_blank">arXiv Operational Status <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" class="icon filter-dark_grey" role="presentation"><path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"/></svg></a><br>
+                    Get status notifications via
+                    <a class="is-link" href="https://subscribe.sorryapp.com/24846f03/email/new" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="icon filter-black" role="presentation"><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg>email</a>
+                    or <a class="is-link" href="https://subscribe.sorryapp.com/24846f03/slack/new" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon filter-black" role="presentation"><path d="M94.12 315.1c0 25.9-21.16 47.06-47.06 47.06S0 341 0 315.1c0-25.9 21.16-47.06 47.06-47.06h47.06v47.06zm23.72 0c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06v117.84c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06V315.1zm47.06-188.98c-25.9 0-47.06-21.16-47.06-47.06S139 32 164.9 32s47.06 21.16 47.06 47.06v47.06H164.9zm0 23.72c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06H47.06C21.16 243.96 0 222.8 0 196.9s21.16-47.06 47.06-47.06H164.9zm188.98 47.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06h-47.06V196.9zm-23.72 0c0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06V79.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06V196.9zM283.1 385.88c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06v-47.06h47.06zm0-23.72c-25.9 0-47.06-21.16-47.06-47.06 0-25.9 21.16-47.06 47.06-47.06h117.84c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06H283.1z"/></svg>slack</a>
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div> <!-- end MetaColumn 2 -->
+        <!-- End Macro-Column 2 -->
+      </div>
+    </footer>
+
+
+  </div>
 </body>
-</html> 
+</html>

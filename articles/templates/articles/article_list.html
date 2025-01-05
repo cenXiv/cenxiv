@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="articles">
-    {% if query or category %}
+    {% if query or category or date_form.is_bound %}
         <p class="search-results">
             {% if page_obj %}
                 {% blocktrans with count=page_obj.paginator.count %}
@@ -14,6 +14,24 @@
             {% endif %}
         </p>
     {% endif %}
+
+    <div class="filters">
+        <form method="get" class="date-filter-form">
+            {# Preserve existing query parameters #}
+            {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+            {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+            
+            <div class="form-group">
+                {{ date_form.year.label_tag }}
+                {{ date_form.year }}
+            </div>
+            <div class="form-group">
+                {{ date_form.month.label_tag }}
+                {{ date_form.month }}
+            </div>
+            <button type="submit" class="btn">{% trans "Filter by Date" %}</button>
+        </form>
+    </div>
 
     {% for article in page_obj %}
     <article class="article">
@@ -31,7 +49,7 @@
 
 <div class="pagination">
     {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">
+        <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if date_form.is_bound %}&year={{ date_form.cleaned_data.year }}&month={{ date_form.cleaned_data.month }}{% endif %}">
             {% trans "Previous" %}
         </a>
     {% endif %}
@@ -41,7 +59,7 @@
     </span>
     
     {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}">
+        <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if date_form.is_bound %}&year={{ date_form.cleaned_data.year }}&month={{ date_form.cleaned_data.month }}{% endif %}">
             {% trans "Next" %}
         </a>
     {% endif %}

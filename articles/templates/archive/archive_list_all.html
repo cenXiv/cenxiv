@@ -1,0 +1,30 @@
+{% extends 'articles/base.html' %}
+{% load i18n %}
+
+{% block title %}Archives{% endblock %}
+
+{% block content %}
+  <h1>Archives</h1>
+
+  {% if bad_archive is not None and bad_archive != "list" %}
+  <h1>No archive '{{ bad_archive }}' -- available archives are:</h1>
+  {% endif %}
+
+  <p>Choose one of the following archives.</p>
+
+  <ul>
+    {% for archive in archives %}
+    <li><a href="{% url 'articles:archive' archive.id %}">{{ archive.full_name }}</a> ({{ archive.id }})</li>
+    {% endfor %}
+  </ul>
+
+  <p>or from one of the following archives which no longer accept submissions
+    (these have been subsumed into the archives listed above)</p>
+
+  <ul>
+    {% for archive in defunct %}
+    <li><a href="{% url 'articles:archive' archive.canonical_id %}">{{ archive.full_name }}</a> ({{ archive.id }}, subsumed into {{ archive.canonical_id }})</li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}
