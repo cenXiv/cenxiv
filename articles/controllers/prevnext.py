@@ -3,16 +3,15 @@
 from typing import Any, Dict, Tuple
 from http import HTTPStatus as status
 
-from flask import url_for
-from markupsafe import escape
-from werkzeug.exceptions import BadRequest, NotFound
+from django.urls import reverse
+from django.utils.html import escape
+from django.core.exceptions import BadRequest
+from django.http import Http404
 
-from arxiv.base import logging
 from arxiv.taxonomy.definitions import ARCHIVES, CATEGORIES_ACTIVE
-
 from arxiv.identifier import Identifier, IdentifierException
-from browse.services.database import get_sequential_id
 
+import logging
 
 Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
 logger = logging.getLogger(__name__)
@@ -62,15 +61,16 @@ def get_prevnext(id: str, function: str, context: str) -> Response:
     try:
         arxiv_id = Identifier(id)
     except IdentifierException as ex:
-        raise BadRequest(escape(f"Invalid article identifier {id}")) from ex
+        raise BadRequest(escape(f"Invalid article identifier {id}"))
 
-    seq_id = get_sequential_id(paper_id=arxiv_id,
-                               is_next=function == 'next',
-                               context=context)
-    if not seq_id:
-        raise NotFound(
-            escape(f'No {function} article found for '
-                   f'{arxiv_id.id} in {context}'))
+    # seq_id = get_sequential_id(paper_id=arxiv_id,
+    #                            is_next=function == 'next',
+    #                            context=context)
+    # if not seq_id:
+    #     raise Http404(
+    #         escape(f'No {function} article found for '
+    #                f'{arxiv_id.id} in {context}'))
 
-    redirect_url = url_for('browse.abstract', arxiv_id=seq_id, context=context)
+    # redirect_url = reverse('articles:abstract', kwargs={'arxiv_id': arxiv_id.idv, 'context': context})
+    redirect_url = reverse('articles:abstract', kwargs={'arxiv_id': arxiv_id.idv}) + f'?context={context}'
     return {}, status.MOVED_PERMANENTLY, {'Location': redirect_url}

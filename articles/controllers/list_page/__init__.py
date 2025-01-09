@@ -705,6 +705,13 @@ def get_new_listing(archive_or_cat: str,skip: int, show: int) -> ListingNew:
     dts = soup.find_all('dt')[skip:skip+show]
     dds = soup.find_all('dd')[skip:skip+show]
 
+    # for dt in dts:
+    #     for a in dt.find_all('a'):
+    #         if a.get('href', '') != '':
+    #             a['href'] = a['href'].replace('https://arxiv.org', '')
+    #         # if a.get('href', '').startswith('/pdf'):
+    #         #     a['href'] = 'https://arxiv.org' + a['href']
+
     # Create the search client
     client = arxiv_api.Client()
 
@@ -816,6 +823,11 @@ def get_recent_listing(archive_or_cat: str,skip: int, show: int) -> Listing:
     dts = soup.find_all('dt')[skip:skip+show]
     dds = soup.find_all('dd')[skip:skip+show]
 
+    # for dt in dts:
+    #     for a in dt.find_all('a'):
+    #         if a.get('href', '').startswith('/pdf'):
+    #             a['href'] = 'https://arxiv.org' + a['href']
+
     # Create the search client
     client = arxiv_api.Client()
 
@@ -902,6 +914,11 @@ def get_articles_for_month(archive_or_cat: str, time_period: str, year: int, mon
 
     dts = soup.find_all('dt')[skip:skip+show]
     dds = soup.find_all('dd')[skip:skip+show]
+
+    # for dt in dts:
+    #     for a in dt.find_all('a'):
+    #         if a.get('href', '').startswith('/pdf'):
+    #             a['href'] = 'https://arxiv.org' + a['href']
 
     # Create the search client
     client = arxiv_api.Client()

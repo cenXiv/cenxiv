@@ -2,126 +2,265 @@
 Allows users to access something equivalent to the /new page for up to 90 days back
 """
 import re
+import itertools
 from typing import Tuple, Union, Dict, Any, List
 from datetime import date, datetime, timedelta
+import requests
+from bs4 import BeautifulSoup
 
 from http import HTTPStatus
 from flask import request, redirect, url_for
 from werkzeug.exceptions import BadRequest
 
+from django.urls import reverse
+
+import arxiv as arxiv_api  # The PyPI arxiv package
+
 from arxiv.document.metadata import DocMetadata
 from arxiv.integration.fastly.headers import add_surrogate_key
 from arxiv.taxonomy.category import Group, Archive, Category
 from arxiv.taxonomy.definitions import CATEGORIES, ARCHIVES, GROUPS, ARCHIVES_ACTIVE
+from arxiv.document.version import VersionEntry
+from arxiv.document.metadata import DocMetadata, AuthorList as AuList
 
 from browse.controllers.archive_page.by_month_form import MONTHS
-from browse.controllers.list_page import latexml_links_for_articles, dl_for_articles, authors_for_articles, sub_sections_for_types, Response
+from browse.controllers.list_page import latexml_links_for_articles, dl_for_articles, authors_for_articles, Response
 from browse.services.database.catchup import get_catchup_data, CATCHUP_LIMIT, get_next_announce_day
+from browse.services.listing import ListingNew, ListingItem, gen_expires
 
-def get_catchup_page(subject_str:str, date:str)-> Response:
+from .list_page import sub_sections_for_types
+
+def get_catchup_page(request, subject_str:str, date:str)-> Response:
     """get the catchup page for a given set of request parameters
     see process_catchup_params for details on parameters
     """
-    subject, start_day, include_abs, page=_process_catchup_params(subject_str, date)
+    subject, start_day, include_abs, page = _process_catchup_params(request, subject_str, date)
     #check for redirects for noncanon subjects
     if subject.id != subject.canonical_id:
-        new_address=url_for('browse.catchup',
-                    subject=subject.canonical_id,
-                    date=start_day,
-                    page=page,
-                    abs=include_abs)
-        return {}, HTTPStatus.MOVED_PERMANENTLY, {"Location":new_address}
+        new_address = reverse('articles:catchup_form',
+                    kwargs={
+                        'subject': subject.canonical_id,
+                        'date': start_day,
+                        'page': page,
+                        'abs': include_abs
+                    })
+        return {}, HTTPStatus.MOVED_PERMANENTLY, {"Location": new_address}
 
-    headers: Dict[str,str]={}
-    headers=add_surrogate_key(headers,["catchup",f"list-{start_day.year:04d}-{start_day.month:02d}-{subject.id}"])
-    #get data
-    listing=get_catchup_data(subject, start_day, include_abs, page)
-    next_announce_day=get_next_announce_day(start_day)
+    headers: Dict[str,str] = {}
+    headers = add_surrogate_key(headers, ["catchup", f"list-{start_day.year:04d}-{start_day.month:02d}-{subject.id}"])
+    # get data
+    # listing = get_catchup_data(subject, start_day, include_abs, page)
+    # next_announce_day = get_next_announce_day(start_day)
 
     #format data
     response_data: Dict[str, Any] = {}
-    headers.update({'Surrogate-Control': f'max-age={listing.expires}'})
-    count= listing.new_count+listing.cross_count+listing.rep_count
-    response_data['announced'] = listing.announced
-    skip=(page-1)*CATCHUP_LIMIT
-    response_data.update(catchup_index_for_types(listing.new_count, listing.cross_count, listing.rep_count,  subject, start_day, include_abs, page))
-    response_data.update(sub_sections_for_types(listing, skip, CATCHUP_LIMIT))
+    # headers.update({'Surrogate-Control': f'max-age={listing.expires}'})
+    # count = listing.new_count+listing.cross_count+listing.rep_count
+    # response_data['announced'] = listing.announced
+    # skip = (page-1)*CATCHUP_LIMIT
+    # response_data.update(catchup_index_for_types(listing.new_count, listing.cross_count, listing.rep_count,  subject, start_day, include_abs, page))
+    # response_data.update(sub_sections_for_types(listing, skip, CATCHUP_LIMIT))
 
-    idx = 0
-    for item in listing.listings:
-        idx = idx + 1
-        setattr(item, 'list_index', idx + skip)
+    # idx = 0
+    # for item in listing.listings:
+    #     idx = idx + 1
+    #     setattr(item, 'list_index', idx + skip)
 
-    response_data['listings'] = listing.listings
-    response_data['author_links'] = authors_for_articles(listing.listings)
-    response_data['downloads'] = dl_for_articles(listing.listings)
-    response_data['latexml'] = latexml_links_for_articles(listing.listings)
+    # response_data['listings'] = listing.listings
+    # response_data['author_links'] = authors_for_articles(listing.listings)
+    # response_data['downloads'] = dl_for_articles(listing.listings)
+    # response_data['latexml'] = latexml_links_for_articles(listing.listings)
+
+    count = 0
+    next_announce_day = None
+
+    url = request.get_full_path()
+    url = url.replace('/en', '')
+    url = url.replace('/zh-hans', '')
+    arxiv_url = 'https://arxiv.org' + url
+    response = requests.get(arxiv_url)
+    soup = BeautifulSoup(response.content, 'lxml')
+
+    # Define the regex pattern to match the text and capture count and date
+    pattern = r'Total of (\d+) entries for (\w{3}, \s*\d{2} \w{3} \d{4})'
+    # Find the div that matches the regex pattern
+    target_div = soup.find('div', {'id': 'dlpage'}).find('div')
+    if target_div:
+        # Extract the text from the div
+        text = target_div.text.strip()
+
+        # Use regex to extract count and date
+        match = re.search(pattern, text)
+        if match:
+            count = int(match.group(1))  # Extract the count
+        #     date_str = match.group(2)     # Extract the date string
+
+        #     print(f"Count: {count}, Date: {date_str}")
+        # else:
+        #     print("No match found in the div text.")
+
+        # get next_day
+        next_day_alink = target_div.find('a')
+        if next_day_alink:
+            next_announce_day = next_day_alink['href'].split('?')[0].split('/')[-1]
+    # else:
+        # print("Div not found.")
+
+    if count > 0:
+        new_start = int(soup.find('a', text="New submissions")['href'].replace('#item', ''))
+        cross_start = int(soup.find('a', text="Cross-lists")['href'].replace('#item', ''))
+        rep_start = int(soup.find('a', text="Replacements")['href'].replace('#item', ''))
+
+        paper_ids = []
+        atags = soup.find_all('a', {'title': 'Abstract'})
+        for atag in atags:
+            paper_ids.append(atag['id'])
+
+        new_count = cross_start - new_start
+        cross_count = rep_start - cross_start
+        rep_count = len(paper_ids) - new_count - cross_count
+
+        dts = soup.find_all('dt')
+        dds = soup.find_all('dd')
+
+        # Create the search client
+        client = arxiv_api.Client()
+
+        # Create the search query
+        results = []
+        for pids in itertools.batched(paper_ids, 200):
+            search = arxiv_api.Search(id_list=pids)
+            results.extend(list(client.results(search)))
+
+        # organize results into expected listing
+        items = []
+        for i, result in enumerate(results):
+            if i < new_count:
+                listing_type = 'new'
+            elif i < new_count + cross_count:
+                listing_type = 'cross'
+            else:
+                listing_type = 'rep'
+            arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+            primary_cat = CATEGORIES[result.primary_category]
+            secondary_cats = [ CATEGORIES[sc] for sc in result.categories[1:] if sc in CATEGORIES ]
+            modified = max(result.updated, result.published)
+            doc = DocMetadata(
+                arxiv_id=arxiv_id,
+                arxiv_id_v=f'{arxiv_id}v{version}',
+                title=result.title,
+                # authors=result.authors,
+                authors=AuList(', '.join([ author.name for author in result.authors ])),
+                abstract=result.summary,
+                categories=result.categories,
+                primary_category=primary_cat,
+                secondary_categories=secondary_cats,
+                comments=result.comment,
+                journal_ref=result.journal_ref,
+                version=result.entry_id.split('/')[-1].split('v')[-1],
+                version_history=[
+                    VersionEntry(
+                        version=version,
+                        raw="",
+                        submitted_date=None, # type: ignore
+                        size_kilobytes=0,
+                        source_flag=''
+                    )
+                ],
+                raw_safe="",
+                submitter=None, # type: ignore
+                arxiv_identifier=None, # type: ignore
+                primary_archive=primary_cat.get_archive(),
+                primary_group=primary_cat.get_archive().get_group(),
+                modified=modified
+            )
+            item = ListingItem(
+                id=arxiv_id,
+                listingType=listing_type,
+                primary=primary_cat.id,
+                article=doc,
+            )
+            items.append(item)
+
+        listing = ListingNew(listings=items,
+                        new_count=new_count,
+                        cross_count=cross_count,
+                        rep_count=rep_count,
+                        announced=datetime.today(),
+                        expires=gen_expires())
+
+        skip = (page-1)*CATCHUP_LIMIT
+        response_data.update(catchup_index_for_types(listing.new_count, listing.cross_count, listing.rep_count, subject, start_day, include_abs, page))
+        response_data.update(sub_sections_for_types((listing, dts, dds), skip, CATCHUP_LIMIT))
+
 
     response_data.update({
-        'subject':subject,
-        'date': start_day,
-        'next_day':next_announce_day,
-        'page':page,
+        'subject': subject,
+        # 'date': start_day,
+        'date_adbY': start_day.strftime("%a, %d %b %Y"),
+        'date_Ymd': start_day.strftime('%Y-%m-%d'),
+        'next_day': next_announce_day,
+        'page': page,
         'include_abs': include_abs,
         'count': count,
-        'list_type':"new" if include_abs else "catchup", #how the list macro checks to display abstract
+        'list_type': "new" if include_abs else "catchup", # how the list macro checks to display abstract
         'paging': catchup_paging(subject, start_day, include_abs, page, count)
     })
 
-    def author_query(article: DocMetadata, query: str)->str:
-        try:
-            if article.primary_archive:
-                archive_id = article.primary_archive.id
-            elif article.primary_category:
-                archive_id = article.primary_category.in_archive
-            else:
-                archive_id=''
-            return str(url_for('search_archive',
-                           searchtype='author',
-                           archive=archive_id,
-                           query=query))
-        except (AttributeError, KeyError):
-            return str(url_for('search_archive',
-                               searchtype='author',
-                               archive=archive_id,
-                               query=query))
+    # def author_query(article: DocMetadata, query: str)->str:
+    #     try:
+    #         if article.primary_archive:
+    #             archive_id = article.primary_archive.id
+    #         elif article.primary_category:
+    #             archive_id = article.primary_category.in_archive
+    #         else:
+    #             archive_id=''
+    #         return str(url_for('search_archive',
+    #                        searchtype='author',
+    #                        archive=archive_id,
+    #                        query=query))
+    #     except (AttributeError, KeyError):
+    #         return str(url_for('search_archive',
+    #                            searchtype='author',
+    #                            archive=archive_id,
+    #                            query=query))
 
-    response_data['url_for_author_search'] = author_query
+    # response_data['url_for_author_search'] = author_query
 
     return response_data, 200, headers
 
-def get_catchup_form() -> Response:
-    headers: Dict[str,str]={}
-    headers=add_surrogate_key(headers,["catchup"])
+def get_catchup_form(request) -> Response:
+    headers = {}
+    headers = add_surrogate_key(headers, ["catchup"])
 
-    #check for form/parameter requests
-    subject = request.args.get('subject')
-    date = request.args.get('date')
-    include_abs = request.args.get('include_abs')
+    # check for form/parameter requests
+    subject = request.GET.get('subject')
+    date = request.GET.get('date')
+    include_abs = request.GET.get('include_abs')
     if subject and date:
+        new_address = reverse('articles:catchup', kwargs={'subject': subject, 'date': date})
         if include_abs:
-            new_address= url_for('.catchup', subject=subject, date=date, abs=include_abs)
-        else:
-            new_address=url_for('.catchup', subject=subject, date=date)
-        headers.update({'Location':new_address})
-        headers.update({'Surrogate-Control': f'max-age=2600000'}) #one month, url construction should never change
-        headers=add_surrogate_key(headers,["catchup-redirect"])
+            new_address += f'?abs={include_abs}'
+        headers.update({'Location': new_address})
+        headers.update({'Surrogate-Control': f'max-age=2600000'})  # one month, url construction should never change
+        headers = add_surrogate_key(headers, ["catchup-redirect"])
         return {}, 301, headers
 
-    #otherwise create catchup form
-    response_data: Dict[str, Any]= {}
-    response_data['years']= [datetime.now().year, datetime.now().year-1] #only last 90 days allowed anyways
-    response_data['months']= MONTHS[1:]
-    response_data['current_month']=datetime.now().strftime('%m')
-    response_data['days']= [str(day).zfill(2) for day in range(1, 32)]
-    response_data['groups']= GROUPS
+    # otherwise create catchup form
+    response_data = {
+        'years': [datetime.now().year, datetime.now().year - 1],  # only last 90 days allowed anyways
+        'months': MONTHS[1:],
+        'current_month': datetime.now().strftime('%m'),
+        'days': [str(day).zfill(2) for day in range(1, 32)],
+        'groups': GROUPS,
+    }
 
-    headers=add_surrogate_key(headers,["catchup-form"])
-    headers.update({'Surrogate-Control': f'max-age=604800'}) #one week, form never changes except for autoselecting currently month
+    headers = add_surrogate_key(headers, ["catchup-form"])
+    headers.update({'Surrogate-Control': f'max-age=604800'})  # one week, form never changes except for autoselecting currently month
     return response_data, 200, headers
 
 
-def _process_catchup_params(subject_str:str, date_str:str)->Tuple[Union[Group, Archive, Category], date, bool, int]:
+def _process_catchup_params(request, subject_str:str, date_str:str)->Tuple[Union[Group, Archive, Category], date, bool, int]:
     """processes the request parameters to the catchup page
     raises an error or returns usable values
 
@@ -132,16 +271,16 @@ def _process_catchup_params(subject_str:str, date_str:str)->Tuple[Union[Group, A
     page: int (which page of results, default is 1)
     """
 
-    #check for valid arguments
-    ALLOWED_PARAMS={"abs", "page"}
-    unexpected_params = request.args.keys() - ALLOWED_PARAMS
+    # check for valid arguments
+    ALLOWED_PARAMS = {"abs", "page"}
+    unexpected_params = request.GET.keys() - ALLOWED_PARAMS
     if unexpected_params:
         raise BadRequest(f"Unexpected parameters. Only accepted parameters are: 'page', and 'abs'")
 
-    #subject validation
+    # subject validation
     subject: Union[Group, Archive, Category]
     if subject_str == "grp_physics":
-        subject=GROUPS["grp_physics"]
+        subject = GROUPS["grp_physics"]
     elif subject_str in ARCHIVES:
         subject= ARCHIVES[subject_str]
     elif subject_str in CATEGORIES:
@@ -149,67 +288,67 @@ def _process_catchup_params(subject_str:str, date_str:str)->Tuple[Union[Group, A
     else:
         raise BadRequest("Invalid subject. Subject must be an archive, category or 'grp_physics'")
 
-    #date validation
-    if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_str): #enforce two digit days and months
+    # date validation
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_str): # enforce two digit days and months
         raise BadRequest(f"Invalid date format. Use format: YYYY-MM-DD")
     try:
-        start_day= datetime.strptime(date_str, "%Y-%m-%d").date()
+        start_day = datetime.strptime(date_str, "%Y-%m-%d").date()
     except ValueError:
         raise BadRequest(f"Invalid date format. Use format: YYYY-MM-DD")
-    #only allow dates within the last 90 days (91 just in case time zone differences)
-    today=datetime.now().date()
-    earliest_allowed=today - timedelta(days=91)
+    # only allow dates within the last 90 days (91 just in case time zone differences)
+    today = datetime.now().date()
+    earliest_allowed = today - timedelta(days=91)
     if start_day < earliest_allowed:
-        #TODO link to earliest allowed date
+        # TODO link to earliest allowed date
         raise BadRequest(f"Invalid date: {start_day}. Catchup only allowed for past 90 days")
     elif start_day > today:
         raise BadRequest(f"Invalid date: {start_day}. Can't request date later than today")
 
-    #include abstract or not
-    abs_str=request.args.get("abs","False")
+    # include abstract or not
+    abs_str = request.GET.get("abs", "False")
     if abs_str == "True":
-        include_abs=True
+        include_abs = True
     elif abs_str == "False":
-        include_abs=False
+        include_abs = False
     else:
         raise BadRequest(f"Invalid abs value. Use ?abs=True to include abstracts or ?abs=False to not")
 
-    #select page number (each page has 2000 items)
-    page_str = request.args.get("page", "1") #page defaults to 1
+    # select page number (each page has 2000 items)
+    page_str = request.GET.get("page", "1") # page defaults to 1
     if page_str.isdigit():
-        page=int(page_str)
+        page = int(page_str)
     else:
         raise BadRequest(f"Invalid page value. Page value should be a positive integer like ?page=3")
-    if page<1:
+    if page < 1:
         raise BadRequest(f"Invalid page value. Page value should be a positive integer like ?page=3")
 
     return subject, start_day, include_abs, page
 
 def catchup_paging(subject: Union[Group, Archive, Category], day:date, include_abs:bool, page: int, count:int)-> List[Tuple[str,str]]:
     '''creates a dictionary of page links for the case that there is more than one page of data'''
-    if CATCHUP_LIMIT >= count: #only one page
+    if CATCHUP_LIMIT >= count: # only one page
         return []
 
-    total_pages=count//CATCHUP_LIMIT+1
-    url_base=url_for('.catchup', subject=subject.id, date=day.strftime('%Y-%m-%d'), abs=include_abs)
-    page_links=[]
+    total_pages = count//CATCHUP_LIMIT + 1
+    url_base = reverse('articles:catchup', kwargs={'subject': subject.id, 'date': day.strftime('%Y-%m-%d')}) + f'?abs={include_abs}'
+    page_links = []
 
-    if total_pages <10: #realistically there should be at most 2-3 pages per day
-        for i in range(1,total_pages+1):
+    if total_pages < 10: # realistically there should be at most 2-3 pages per day
+        for i in range(1, total_pages+1):
             if i == page:
-                page_links.append((str(i),'no-link'))
+                page_links.append((str(i), 'no-link'))
             else:
-                page_links.append((str(i),url_base+f'&page={i}'))
+                page_links.append((str(i), url_base+f'&page={i}'))
 
-    else: #shouldnt happen but its handled
-        if page !=1:
-            page_links.append(('1',url_base+f'&page=1'))
-        if page >2:
-            page_links.append(('...','no-link'))
-        page_links.append((str(page),'no-link'))
-        if page <total_pages-1:
-            page_links.append(('...','no-link'))
-        if page !=total_pages:
+    else: # shouldnt happen but its handled
+        if page != 1:
+            page_links.append(('1', url_base+f'&page=1'))
+        if page > 2:
+            page_links.append(('...', 'no-link'))
+        page_links.append((str(page), 'no-link'))
+        if page < total_pages-1:
+            page_links.append(('...', 'no-link'))
+        if page != total_pages:
             page_links.append((str(total_pages), url_base+f'&page={total_pages}'))
 
     return page_links

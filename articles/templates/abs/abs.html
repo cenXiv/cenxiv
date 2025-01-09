@@ -1,0 +1,60 @@
+{% extends "articles/base.html" %}
+
+{% load static %}
+
+{% block title %}[{{ requested_id }}] {{ title }}{% endblock %}
+
+{% block head %}
+  {{ block.super }}
+  <meta name="description" content="Abstract page for arXiv paper {{ requested_id }}: {{ title }}">
+  <link rel="stylesheet" media="screen" type="text/css" href="{% static 'css/tooltip.css' %}"/>
+  <link rel="stylesheet" media="screen" type="text/css" href="https://static.arxiv.org/js/bibex-dev/bibex.css?20200709"/>
+  <script src="{% static 'js/mathjaxToggle.min.js' %}" type="text/javascript"></script>
+  <script src="//code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+  <script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js" type="text/javascript"></script>
+  <script src="//cdn.jsdelivr.net/npm/dompurify@2.3.5/dist/purify.min.js"></script>
+  <script src="{% static 'js/toggle-labs.js' %}?20241022" type="text/javascript"></script>
+  <script src="{% static 'js/cite.js' %}" type="text/javascript"></script>
+  {% for meta_tag in meta_tags %}
+    {{ meta_tag|safe }}
+  {% endfor %}
+{% endblock %}
+
+{% block body_id %}{% endblock %}
+
+{% block header_h1 %}
+  <div class="header-breadcrumbs is-hidden-mobile">
+    <a href="{% url 'articles:home' %}"><img src="{% static 'images/arxiv-logo-one-color-white.svg' %}" alt="arxiv logo" style="height:40px;"/></a> <span>&gt;</span> <a href="{% url 'articles:list_articles' context=primary_archive.id subcontext='recent' %}">{{ primary_archive.id }}</a> <span>&gt;</span> arXiv:{{ requested_id }}
+  </div>
+{% endblock header_h1 %}
+
+{% block content %}
+<div id="abs-outer">
+  <div class="leftcolumn">
+    <div class="subheader">
+      <h1>{% if primary_archive.id != primary_category.id %}{{ primary_archive.full_name }} > {% endif %}{{ primary_category.full_name }}</h1>
+    </div>
+
+    <div class="header-breadcrumbs-mobile">
+      <strong>arXiv:{{ requested_id }}</strong> ({{ primary_archive.id }})
+    </div>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/abs.css' %}">
+
+    {{ div_content_inner|safe }}
+    {{ div_submission_history|safe }}
+
+  </div>
+  <!--end leftcolumn-->
+
+  {{ div_extra_services|safe }}
+  {{ div_labstabs|safe }}
+
+  <div class="endorsers">
+    <a href="{% url 'articles:show_endorsers' arxiv_id=requested_id %}" class="endorser-who" rel="nofollow">Which authors of this paper are endorsers?</a> |
+    <a id="mathjax_toggle" href="javascript:setMathjaxCookie()">Disable MathJax</a> (<a href="{% url 'articles:help_mathjax' %}">What is MathJax?</a>)
+    <span class="help" style="font-style: normal; float: right; margin-top: 0; margin-right: 1em;"></span>
+  </div>
+  <script type="text/javascript" language="javascript">mathjaxToggle();</script>
+</div>
+{% endblock content %}

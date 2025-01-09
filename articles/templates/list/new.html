@@ -22,7 +22,7 @@ It needs to do headings for the new/cross/rep sections.
   {% for sec in sub_sections_for_types %}
     {% if sec.visible %}
         <dl id='articles'>
-        {% if heading %}
+        {% if sec.heading %}
             <h3>{{ sec.heading }}</h3>
         {% endif %}
 

@@ -7,6 +7,8 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
+import requests
+from bs4 import BeautifulSoup
 
 from http import HTTPStatus as status
 from dateutil import parser
@@ -14,6 +16,9 @@ from dateutil.tz import tzutc
 from flask import request, url_for, current_app
 from werkzeug.exceptions import InternalServerError
 
+import arxiv as arxiv_api  # The PyPI arxiv package
+
+# From arxiv-base package
 from arxiv.base import logging
 from arxiv.taxonomy.definitions import ARCHIVES, CATEGORIES
 from arxiv.taxonomy.category import Category
@@ -40,9 +45,10 @@ from browse.services.database import (
     get_trackback_ping_latest_date,
     get_latexml_publish_dt,
 )
-from browse.services.documents import get_doc_service
+# from browse.services.documents import get_doc_service
+from browse.services.documents.db_implementation import db_abs
 from browse.services.dissemination import get_article_store
-from browse.controllers import check_supplied_identifier
+# from browse.controllers import check_supplied_identifier
 from browse.formatting.external_refs_cits import (
     DBLP_BASE_URL,
     DBLP_BIBTEX_PATH,
@@ -57,6 +63,9 @@ from browse.formatting.search_authors import queries_for_authors, split_long_aut
 from browse.controllers.response_headers import mime_header_date
 from browse.formatting.metatags import meta_tag_metadata
 
+from . import check_supplied_identifier
+
+
 logger = logging.getLogger(__name__)
 
 Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
@@ -64,7 +73,7 @@ Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
 truncate_author_list_size = 100
 
 
-def get_abs_page(arxiv_id: str) -> Response:
+def get_abs_page(request, arxiv_id: str) -> Response:
     """Get abs page data from the document metadata service.
 
     Parameters
@@ -94,60 +103,98 @@ def get_abs_page(arxiv_id: str) -> Response:
         if not Identifier.is_mostly_safe(arxiv_id):
             raise AbsNotFound(data={"reason": "poorly formatted paper id"})
 
-        arxiv_id = _check_legacy_id_params(arxiv_id)
+        arxiv_id = _check_legacy_id_params(request, arxiv_id)
         arxiv_identifier = Identifier(arxiv_id=arxiv_id)
         response_headers=add_surrogate_key(response_headers,[f"abs-{arxiv_identifier.id}", f"paper-id-{arxiv_identifier.id}"])
         redirect = check_supplied_identifier(arxiv_identifier, "browse.abstract")
         if redirect:
             return redirect
 
-        abs_meta = get_doc_service().get_abs(arxiv_identifier)
-        not_modified = _check_request_headers(abs_meta, response_data, response_headers)
-        if not_modified:
-            return {}, status.NOT_MODIFIED, response_headers
+        # # abs_meta = get_doc_service().get_abs(arxiv_identifier)
+        # abs_meta = db_abs.DbDocMetadataService().get_abs(arxiv_identifier)
+        # not_modified = _check_request_headers(abs_meta, response_data, response_headers)
+        # if not_modified:
+        #     return {}, status.NOT_MODIFIED, response_headers
 
-        response_data["requested_id"] = (
+        request_id = (
             arxiv_identifier.idv
             if arxiv_identifier.has_version
             else arxiv_identifier.id
         )
-        response_data["abs_meta"] = abs_meta
-        response_data["meta_tags"] = meta_tag_metadata(abs_meta)
-        response_data["author_links"] = split_long_author_list(
-            queries_for_authors(abs_meta.authors.raw), truncate_author_list_size
-        )
-        response_data["url_for_author_search"] = lambda author_query: url_for(
-            "search_archive",
-            searchtype="author",
-            archive=abs_meta.primary_archive.id,
-            query=author_query,
-        )
-        response_data['latexml_url'] = get_latexml_url(abs_meta)
+        response_data["requested_id"] = request_id
 
-        # Dissemination formats for download links
-        response_data["formats"] = abs_meta.get_requested_version().formats()
+        # Create the search client
+        client = arxiv_api.Client()
+        # Create the search query
+        search = arxiv_api.Search(id_list=[request_id])
+        result = list(client.results(search))[0]
+        response_data["title"] = result.title
+        primary_category = CATEGORIES[result.primary_category]
+        primary_archive = ARCHIVES[primary_category.in_archive]
+        response_data["primary_archive"] = primary_archive
+        response_data["primary_category"] = primary_category
 
-        if response_data['latexml_url'] is not None:
-            response_data['formats'].insert(1, 'latexml')
+        url = f'https://arxiv.org/abs/{request_id}'
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'lxml')
 
-        response_data["withdrawn_versions"] = []
-        response_data["higher_version_withdrawn"] = False
-        response_data["withdrawn"] = False
-        for ver in abs_meta.version_history:
-            if ver.withdrawn_or_ignore:
-                response_data["withdrawn_versions"].append(ver)
-                if abs_meta.version == ver.version:
-                    response_data["withdrawn"] = True
-                if not response_data["higher_version_withdrawn"] and ver.version > abs_meta.version:
-                    response_data["higher_version_withdrawn"] = True
-                    response_data["higher_version_withdrawn_submitter"] = _get_submitter(abs_meta.arxiv_identifier,
-                                                                                         ver.version)
+        meta_tags = soup.find_all('meta')
 
-        response_data["encrypted"] = abs_meta.get_requested_version().source_flag.source_encrypted
+        div_content_inner = soup.find('div', {'id': 'content-inner'})
+        for a in div_content_inner.find_all('a'):
+            if a.get('href', ''):
+                a['href'] = a['href'].replace('https://arxiv.org', '')
+
+        div_extra_services = soup.find('div', {'class': 'extra-services'})
+        for img in div_extra_services.find_all('img'):
+            if img.get('src', ''):
+                img['src'] = re.sub(r'/static/browse/[\d.]+/images/', '/static/images/', img['src'])
+        div_extra_alink = div_extra_services.find('a', {'id': 'bib-cite-css'})
+        div_extra_alink['href'] = re.sub(r'/static/browse/[\d.]+/css/', '/static/css/', div_extra_alink['href'])
+
+        response_data['meta_tags'] = [ str(mt) for mt in meta_tags ]
+        response_data['div_content_inner'] = str(div_content_inner)
+        response_data['div_submission_history'] = str(soup.find('div', {'class': 'submission-history'}))
+        response_data['div_extra_services'] = str(div_extra_services)
+        response_data['div_labstabs'] = str(soup.find('div', {'id': 'labstabs'}))
+
+        # response_data["abs_meta"] = abs_meta
+        # response_data["meta_tags"] = meta_tag_metadata(abs_meta)
+        # response_data["author_links"] = split_long_author_list(
+        #     queries_for_authors(abs_meta.authors.raw), truncate_author_list_size
+        # )
+        # response_data["url_for_author_search"] = lambda author_query: url_for(
+        #     "search_archive",
+        #     searchtype="author",
+        #     archive=abs_meta.primary_archive.id,
+        #     query=author_query,
+        # )
+        # response_data['latexml_url'] = get_latexml_url(abs_meta)
+
+        # # Dissemination formats for download links
+        # response_data["formats"] = abs_meta.get_requested_version().formats()
+
+        # if response_data['latexml_url'] is not None:
+        #     response_data['formats'].insert(1, 'latexml')
+
+        # response_data["withdrawn_versions"] = []
+        # response_data["higher_version_withdrawn"] = False
+        # response_data["withdrawn"] = False
+        # for ver in abs_meta.version_history:
+        #     if ver.withdrawn_or_ignore:
+        #         response_data["withdrawn_versions"].append(ver)
+        #         if abs_meta.version == ver.version:
+        #             response_data["withdrawn"] = True
+        #         if not response_data["higher_version_withdrawn"] and ver.version > abs_meta.version:
+        #             response_data["higher_version_withdrawn"] = True
+        #             response_data["higher_version_withdrawn_submitter"] = _get_submitter(abs_meta.arxiv_identifier,
+        #                                                                                  ver.version)
+
+        # response_data["encrypted"] = abs_meta.get_requested_version().source_flag.source_encrypted
         response_data["show_refs_cites"] = _show_refs_cites(arxiv_identifier)
         response_data["show_labs"] = _show_labs(arxiv_identifier)
 
-        _non_critical_abs_data(abs_meta, arxiv_identifier, response_data)
+        # _non_critical_abs_data(abs_meta, arxiv_identifier, response_data)
 
     except AbsNotFoundException as ex:
         if (arxiv_identifier.is_old_id
@@ -266,8 +313,7 @@ def _get_req_header(header: str) -> Optional[str]:
     return next((value for key, value in request.headers.items()
                  if key.lower() == header.lower()), None)
 
-
-def _check_legacy_id_params(arxiv_id: str) -> str:
+def _check_legacy_id_params(request, arxiv_id: str) -> str:
     """Check for legacy request parameters related to old arXiv identifiers.
 
     Parameters
@@ -279,15 +325,15 @@ def _check_legacy_id_params(arxiv_id: str) -> str:
     arxiv_id: str
         A possibly modified version of the input arxiv_id string.
     """
-    if request.args and "/" not in arxiv_id:
+    if request.GET and "/" not in arxiv_id:
         # To support old references to /abs/<archive>?papernum=\d{7}
-        if "papernum" in request.args:
-            return f"{arxiv_id}/{request.args['papernum']}"
+        if "papernum" in request.GET:
+            return f"{arxiv_id}/{request.GET['papernum']}"
 
-        for param in request.args:
+        for param in request.GET:
             # singleton case, where the parameter is the value
             # To support old references to /abs/<archive>?\d{7}
-            if not request.args[param] and re.match(r"^\d{7}$", param):
+            if not request.GET[param] and re.match(r"^\d{7}$", param):
                 return f"{arxiv_id}/{param}"
     return arxiv_id
 
