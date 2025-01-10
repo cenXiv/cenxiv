@@ -1,59 +1,42 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
 
+{% block title %}{{ archive.full_name }}{% endblock %}
+
+
+{% block header_h1 %}
+<h1>
+<a href="{% url 'articles:home' %}">cenXiv.org</a> &gt; <a href="{% url 'articles:list_articles' archive.id 'recent' %}">{{ archive.id }}</a> > {{ year }}
+</h1>
+{% endblock %}
+
+
 {% block content %}
-<div class="year-stats-content">
-    <h1>{{ archive_name }} - {% trans "Year" %} {{ year }}</h1>
 
-    {% if stats %}
-        <div class="stats-summary">
-            <h2>{% trans "Summary" %}</h2>
-            <p>{% trans "Total submissions" %}: {{ stats.total_submissions }}</p>
-            <p>{% trans "Total unique submissions" %}: {{ stats.unique_submissions }}</p>
-            <p>{% trans "Total authors" %}: {{ stats.total_authors }}</p>
-        </div>
+<h1>{{ archive.full_name }}</h1>
+<h2>Article statistics for {{ year }}</h2>
+<p>Available montly lists with counts of <b>{{ archive.id }} articles</b> +
+<i>cross-listings to {{ archive.id }}</i> in {{ year }}
+(each '|' represents 20 articles):</p>
 
-        {% if stats.monthly_submissions %}
-            <div class="monthly-stats">
-                <h2>{% trans "Monthly Submissions" %}</h2>
-                <table class="stats-table">
-                    <thead>
-                        <tr>
-                            <th>{% trans "Month" %}</th>
-                            <th>{% trans "Submissions" %}</th>
-                            <th>{% trans "New" %}</th>
-                            <th>{% trans "Revisions" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for month in stats.monthly_submissions %}
-                            <tr>
-                                <td>{{ month.name }}</td>
-                                <td>{{ month.total }}</td>
-                                <td>{{ month.new }}</td>
-                                <td>{{ month.revisions }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-    {% else %}
-        <p>{% trans "No statistics available for this period." %}</p>
-    {% endif %}
+{{ ul|safe }}
 
-    <div class="navigation">
-        {% if prev_year %}
-            <a href="{% url 'articles:year' archive=archive_id year=prev_year %}" class="prev-year">
-                &larr; {{ prev_year }}
-            </a>
+<p>{{ year }} totals: <b>{{ new_count|default:'unknown' }} articles</b> + <i>{{ cross_count|default:'unknown' }} cross-lists</i></p>
+
+<p><b>Other years:</b>
+      <li>Article statistics by year:<br>
+        {% for a in li_as %}
+          {{ a|safe }}
+        {% endfor %}
+
+        {% for url, year in stats_by_year %}
+        {% if url %}
+        <a href="{{ url }}">{{ year }}</a>
+        {% else %}
+        {{ year }}
         {% endif %}
-        
-        {% if next_year %}
-            <a href="{% url 'articles:year' archive=archive_id year=next_year %}" class="next-year">
-                {{ next_year }} &rarr;
-            </a>
-        {% endif %}
-    </div>
-</div>
-{% endblock %} 
+      {% endfor %}
+      </li>
+</p>
+
+{% endblock %}

@@ -68,7 +68,12 @@ from browse.formatting.latexml import get_latexml_url, get_latexml_urls_for_arti
 
 from django.urls import reverse
 from django.http import HttpResponseBadRequest
+from django.utils.translation import get_language
+
+import mtranslate as translator
+
 from .paging import paging
+from ...models import Article, Author, Category, Link
 
 
 logger = logging.getLogger(__name__)
@@ -696,22 +701,6 @@ def get_new_listing(archive_or_cat: str,skip: int, show: int) -> ListingNew:
     for atag in atags:
         paper_ids.append(atag['id'])
 
-    new_count = cross_start - new_start - 1
-    cross_count = rep_start - cross_start
-    rep_count = len(paper_ids) - new_count - cross_count
-
-    paper_ids = paper_ids[skip:skip+show]
-
-    dts = soup.find_all('dt')[skip:skip+show]
-    dds = soup.find_all('dd')[skip:skip+show]
-
-    # for dt in dts:
-    #     for a in dt.find_all('a'):
-    #         if a.get('href', '') != '':
-    #             a['href'] = a['href'].replace('https://arxiv.org', '')
-    #         # if a.get('href', '').startswith('/pdf'):
-    #         #     a['href'] = 'https://arxiv.org' + a['href']
-
     # Create the search client
     client = arxiv_api.Client()
 
@@ -721,32 +710,84 @@ def get_new_listing(archive_or_cat: str,skip: int, show: int) -> ListingNew:
         search = arxiv_api.Search(id_list=pids)
         results.extend(list(client.results(search)))
 
+    for result in results:
+        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        try:
+            article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        except Article.DoesNotExist:
+            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
+            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
+            title_cn = '中文标题'
+            abstract_cn = '中文摘要'
+
+            article = Article(
+                entry_id=arxiv_id,
+                entry_version=version,
+                title_en=result.title,
+                title_cn=title_cn,
+                abstract_en=result.summary,
+                abstract_cn=abstract_cn,
+                published_date=result.published,
+                updated_date=result.updated,
+                comment=result.comment,
+                journal_ref=result.journal_ref,
+                doi=result.doi,
+                primary_category=result.primary_category,
+            )
+            article.save()
+            for author in result.authors:
+                author_ = Author(name=author.name, article=article)
+                author_.save()
+            for category in result.categories:
+                category_ = Category(name=category, article=article)
+                category_.save()
+            for link in result.links:
+                link_ = Link(url=link.href, article=article)
+                link_.save()
+
+    new_count = cross_start - new_start - 1
+    cross_count = rep_start - cross_start
+    rep_count = len(paper_ids) - new_count - cross_count
+
+    paper_ids = paper_ids[skip:skip+show]
+
+    dts = soup.find_all('dt')[skip:skip+show]
+    dds = soup.find_all('dd')[skip:skip+show]
+
     # organize results into expected listing
     items = []
-    for i, result in enumerate(results):
+    for i, paper_id in enumerate(paper_ids):
         if i < new_count:
             listing_type = 'new'
         elif i < new_count + cross_count:
             listing_type = 'cross'
         else:
             listing_type = 'rep'
-        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-        primary_cat = CATEGORIES[result.primary_category]
-        secondary_cats = [ CATEGORIES[sc] for sc in result.categories[1:] if sc in CATEGORIES ]
-        modified = max(result.updated, result.published)
+
+        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+
+        if get_language() == 'zh-hans':
+            dd = dds[i]
+            dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+            if dd.p:
+                dd.p.string = article.abstract_cn
+
+        arxiv_id, version = article.entry_id, article.entry_version
+        primary_cat = CATEGORIES[article.primary_category]
+        secondary_cats = [ CATEGORIES[sc.name] for sc in article.categories.all() if sc.name in CATEGORIES ]
+        modified = max(article.updated_date, article.published_date)
         doc = DocMetadata(
             arxiv_id=arxiv_id,
             arxiv_id_v=f'{arxiv_id}v{version}',
-            title=result.title,
-            # authors=result.authors,
-            authors=AuList(', '.join([ author.name for author in result.authors ])),
-            abstract=result.summary,
-            categories=result.categories,
+            title=article.title_en,
+            authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
+            abstract=article.abstract_en,
+            categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
-            comments=result.comment,
-            journal_ref=result.journal_ref,
-            version=result.entry_id.split('/')[-1].split('v')[-1],
+            comments=article.comment,
+            journal_ref=article.journal_ref,
+            version=version,
             version_history=[
                 VersionEntry(
                     version=version,
@@ -818,15 +859,6 @@ def get_recent_listing(archive_or_cat: str,skip: int, show: int) -> Listing:
     atags = soup.find_all('a', {'title': 'Abstract'})
     for atag in atags:
         paper_ids.append(atag['id'])
-    paper_ids = paper_ids[skip:skip+show]
-
-    dts = soup.find_all('dt')[skip:skip+show]
-    dds = soup.find_all('dd')[skip:skip+show]
-
-    # for dt in dts:
-    #     for a in dt.find_all('a'):
-    #         if a.get('href', '').startswith('/pdf'):
-    #             a['href'] = 'https://arxiv.org' + a['href']
 
     # Create the search client
     client = arxiv_api.Client()
@@ -837,27 +869,74 @@ def get_recent_listing(archive_or_cat: str,skip: int, show: int) -> Listing:
         search = arxiv_api.Search(id_list=pids)
         results.extend(list(client.results(search)))
 
+    for result in results:
+        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        try:
+            article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        except Article.DoesNotExist:
+            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
+            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
+            title_cn = '中文标题'
+            abstract_cn = '中文摘要'
+
+            article = Article(
+                entry_id=arxiv_id,
+                entry_version=version,
+                title_en=result.title,
+                title_cn=title_cn,
+                abstract_en=result.summary,
+                abstract_cn=abstract_cn,
+                published_date=result.published,
+                updated_date=result.updated,
+                comment=result.comment,
+                journal_ref=result.journal_ref,
+                doi=result.doi,
+                primary_category=result.primary_category,
+            )
+            article.save()
+            for author in result.authors:
+                author_ = Author(name=author.name, article=article)
+                author_.save()
+            for category in result.categories:
+                category_ = Category(name=category, article=article)
+                category_.save()
+            for link in result.links:
+                link_ = Link(url=link.href, article=article)
+                link_.save()
+
+    paper_ids = paper_ids[skip:skip+show]
+
+    dts = soup.find_all('dt')[skip:skip+show]
+    dds = soup.find_all('dd')[skip:skip+show]
+
     # organize results into expected listing
     items = []
-    for result in results:
+    for i, paper_id in enumerate(paper_ids):
+        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+
+        if get_language() == 'zh-hans':
+            dd = dds[i]
+            dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+            if dd.p:
+                dd.p.string = article.abstract_cn
+
         listing_type = 'new' # need to get the correct 'new' or 'cross'
-        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-        primary_cat = CATEGORIES[result.primary_category]
-        secondary_cats = [ CATEGORIES[sc] for sc in result.categories[1:] if sc in CATEGORIES ]
-        modified = max(result.updated, result.published)
+        arxiv_id, version = article.entry_id, article.entry_version
+        primary_cat = CATEGORIES[article.primary_category]
+        secondary_cats = [ CATEGORIES[sc.name] for sc in article.categories.all() if sc.name in CATEGORIES ]
+        modified = max(article.updated_date, article.published_date)
         doc = DocMetadata(
             arxiv_id=arxiv_id,
             arxiv_id_v=f'{arxiv_id}v{version}',
-            title=result.title,
-            # authors=result.authors,
-            authors=AuList(', '.join([ author.name for author in result.authors ])),
-            abstract=result.summary,
-            categories=result.categories,
+            title=article.title_en,
+            authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
+            abstract=article.abstract_en,
+            categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
-            comments=result.comment,
-            journal_ref=result.journal_ref,
-            version=result.entry_id.split('/')[-1].split('v')[-1],
+            comments=article.comment,
+            journal_ref=article.journal_ref,
+            version=version,
             version_history=[
                 VersionEntry(
                     version=version,
@@ -910,15 +989,6 @@ def get_articles_for_month(archive_or_cat: str, time_period: str, year: int, mon
     atags = soup.find_all('a', {'title': 'Abstract'})
     for atag in atags:
         paper_ids.append(atag['id'])
-    paper_ids = paper_ids[skip:skip+show]
-
-    dts = soup.find_all('dt')[skip:skip+show]
-    dds = soup.find_all('dd')[skip:skip+show]
-
-    # for dt in dts:
-    #     for a in dt.find_all('a'):
-    #         if a.get('href', '').startswith('/pdf'):
-    #             a['href'] = 'https://arxiv.org' + a['href']
 
     # Create the search client
     client = arxiv_api.Client()
@@ -929,27 +999,74 @@ def get_articles_for_month(archive_or_cat: str, time_period: str, year: int, mon
         search = arxiv_api.Search(id_list=pids)
         results.extend(list(client.results(search)))
 
+    for result in results:
+        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        try:
+            article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        except Article.DoesNotExist:
+            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
+            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
+            title_cn = '中文标题'
+            abstract_cn = '中文摘要'
+
+            article = Article(
+                entry_id=arxiv_id,
+                entry_version=version,
+                title_en=result.title,
+                title_cn=title_cn,
+                abstract_en=result.summary,
+                abstract_cn=abstract_cn,
+                published_date=result.published,
+                updated_date=result.updated,
+                comment=result.comment,
+                journal_ref=result.journal_ref,
+                doi=result.doi,
+                primary_category=result.primary_category,
+            )
+            article.save()
+            for author in result.authors:
+                author_ = Author(name=author.name, article=article)
+                author_.save()
+            for category in result.categories:
+                category_ = Category(name=category, article=article)
+                category_.save()
+            for link in result.links:
+                link_ = Link(url=link.href, article=article)
+                link_.save()
+
+    paper_ids = paper_ids[skip:skip+show]
+
+    dts = soup.find_all('dt')[skip:skip+show]
+    dds = soup.find_all('dd')[skip:skip+show]
+
     # organize results into expected listing
     items = []
-    for result in results:
+    for i, paper_id in enumerate(paper_ids):
+        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+
+        if get_language() == 'zh-hans':
+            dd = dds[i]
+            dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+            if dd.p:
+                dd.p.string = article.abstract_cn
+
         listing_type = 'new' # need to get the correct 'new' or 'cross'
-        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-        primary_cat = CATEGORIES[result.primary_category]
-        secondary_cats = [ CATEGORIES[sc] for sc in result.categories[1:] if sc in CATEGORIES ]
-        modified = max(result.updated, result.published)
+        arxiv_id, version = article.entry_id, article.entry_version
+        primary_cat = CATEGORIES[article.primary_category]
+        secondary_cats = [ CATEGORIES[sc.name] for sc in article.categories.all() if sc.name in CATEGORIES ]
+        modified = max(article.updated_date, article.published_date)
         doc = DocMetadata(
             arxiv_id=arxiv_id,
             arxiv_id_v=f'{arxiv_id}v{version}',
-            title=result.title,
-            # authors=result.authors,
-            authors=AuList(', '.join([ author.name for author in result.authors ])),
-            abstract=result.summary,
-            categories=result.categories,
+            title=article.title_en,
+            authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
+            abstract=article.abstract_en,
+            categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
-            comments=result.comment,
-            journal_ref=result.journal_ref,
-            version=result.entry_id.split('/')[-1].split('v')[-1],
+            comments=article.comment,
+            journal_ref=article.journal_ref,
+            version=version,
             version_history=[
                 VersionEntry(
                     version=version,

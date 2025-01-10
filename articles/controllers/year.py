@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any, Dict, List, Optional, Tuple
 from http import HTTPStatus as status
+import requests
+from bs4 import BeautifulSoup
 
 from arxiv.taxonomy.definitions import ARCHIVES
 from django.urls import reverse
@@ -14,6 +16,7 @@ from arxiv.integration.fastly.headers import add_surrogate_key
 from browse.controllers.list_page import get_listing_service
 from browse.controllers.years_operating import stats_by_year, years_operating
 from browse.services.listing import MonthCount
+
 
 YEAR_CACHE_TIME= 60*60*24*10 #10 days
 
@@ -89,34 +92,49 @@ def year_page(archive_id: str, year: Optional[int]) -> Any:
         if year > end:
             raise BadRequest(f"Invalid year: {year}. {archive.full_name} ended in {end}")
 
-    listing_service = get_listing_service()
-    count_listing = listing_service.monthly_counts(archive.id, year)
-    month_data = [
-        MonthData(
-            month_count=month_count,
-            art=ascii_art_month(archive.id, month_count),
-            yymm=f"{month_count.month:02}",
-            my=date(year=int(month_count.year),
-            month=int(month_count.month), day=1).strftime("%b %Y"),
-            url=reverse('articles:list_articles', kwargs={
-                'context': archive.id,
-                'subcontext': f"{month_count.year:04}-{month_count.month:02}"
-            })
-        )
-        for month_count in count_listing.by_month
-    ]
+    # listing_service = get_listing_service()
+    # count_listing = listing_service.monthly_counts(archive.id, year)
+    # month_data = [
+    #     MonthData(
+    #         month_count=month_count,
+    #         art=ascii_art_month(archive.id, month_count),
+    #         yymm=f"{month_count.month:02}",
+    #         my=date(year=int(month_count.year),
+    #         month=int(month_count.month), day=1).strftime("%b %Y"),
+    #         url=reverse('articles:list_articles', kwargs={
+    #             'context': archive.id,
+    #             'subcontext': f"{month_count.year:04}-{month_count.month:02}"
+    #         })
+    #     )
+    #     for month_count in count_listing.by_month
+    # ]
+
+    url = f'https://arxiv.org/year/{archive_id}/{year}'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'lxml')
+
+    content_div = soup.main.find('div', {'id': 'content'})
+    ul = content_div.ul
+    target_p = ul.next_sibling.next_sibling
+    new_count = target_p.b.string.replace(' articles', '')
+    cross_count = target_p.i.string.replace(' cross-lists', '')
+    li_as = target_p.next_sibling.next_sibling.next_sibling.contents[2:]
 
     response_data: Dict[str, Any] = {
         'archive': archive,
-        'month_data': month_data,
-        'listing': count_listing,
+        # 'month_data': month_data,
+        # 'listing': count_listing,
         'year': str(year),
-        'stats_by_year': stats_by_year( archive, years_operating(archive), year)
+        # 'stats_by_year': stats_by_year(archive, years_operating(archive), year)
+        'ul': str(ul),
+        'new_count': new_count,
+        'cross_count': cross_count,
+        'li_as': [ str(a) for a in li_as ]
     }
-    headers["Surrogate-Control"]=f"max-age={YEAR_CACHE_TIME}"
-    headers=add_surrogate_key(headers,["year", f"year-{archive.id}", f"year-{archive.id}-{year:04d}"])
-    if date.today().year==year:
-        headers=add_surrogate_key(headers,["announce"])
+    headers["Surrogate-Control"] = f"max-age={YEAR_CACHE_TIME}"
+    headers = add_surrogate_key(headers, ["year", f"year-{archive.id}", f"year-{archive.id}-{year:04d}"])
+    if date.today().year == year:
+        headers = add_surrogate_key(headers, ["announce"])
 
     response_status = status.OK
 

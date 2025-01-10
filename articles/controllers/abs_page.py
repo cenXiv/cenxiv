@@ -16,6 +16,9 @@ from dateutil.tz import tzutc
 from flask import request, url_for, current_app
 from werkzeug.exceptions import InternalServerError
 
+import mtranslate as translator
+from django.utils.translation import get_language
+
 import arxiv as arxiv_api  # The PyPI arxiv package
 
 # From arxiv-base package
@@ -64,6 +67,7 @@ from browse.controllers.response_headers import mime_header_date
 from browse.formatting.metatags import meta_tag_metadata
 
 from . import check_supplied_identifier
+from ..models import Article, Author, Category, Link
 
 
 logger = logging.getLogger(__name__)
@@ -128,6 +132,42 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         # Create the search query
         search = arxiv_api.Search(id_list=[request_id])
         result = list(client.results(search))[0]
+
+        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        try:
+            article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        except Article.DoesNotExist:
+            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
+            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
+            title_cn = '中文标题'
+            abstract_cn = '中文摘要'
+
+            article = Article(
+                entry_id=arxiv_id,
+                entry_version=version,
+                title_en=result.title,
+                title_cn=title_cn,
+                abstract_en=result.summary,
+                abstract_cn=abstract_cn,
+                published_date=result.published,
+                updated_date=result.updated,
+                comment=result.comment,
+                journal_ref=result.journal_ref,
+                doi=result.doi,
+                primary_category=result.primary_category,
+            )
+            article.save()
+            for author in result.authors:
+                author_ = Author(name=author.name, article=article)
+                author_.save()
+            for category in result.categories:
+                category_ = Category(name=category, article=article)
+                category_.save()
+            for link in result.links:
+                link_ = Link(url=link.href, article=article)
+                link_.save()
+
+
         response_data["title"] = result.title
         primary_category = CATEGORIES[result.primary_category]
         primary_archive = ARCHIVES[primary_category.in_archive]
@@ -144,6 +184,10 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         for a in div_content_inner.find_all('a'):
             if a.get('href', ''):
                 a['href'] = a['href'].replace('https://arxiv.org', '')
+
+        if get_language() == 'zh-hans':
+            div_content_inner.find('h1', {'class': "title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+            div_content_inner.find('blockquote', {'class': "abstract mathjax"}).span.next_sibling.replace_with(article.abstract_cn)
 
         div_extra_services = soup.find('div', {'class': 'extra-services'})
         for img in div_extra_services.find_all('img'):
