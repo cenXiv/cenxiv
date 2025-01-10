@@ -766,6 +766,17 @@ def get_new_listing(archive_or_cat: str,skip: int, show: int) -> ListingNew:
 
         article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
 
+        dt = dts[i]
+        new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
+        if get_language() == 'zh-hans':
+            new_a.string = '中文pdf'
+        else:
+            new_a.string = 'cn-pdf'
+        abstract_a = dt.find('a', {'title': 'Abstract'})
+        abstract_a.next_sibling.insert_after(new_a)
+        new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
+        new_a.insert_after(', ')
+
         if get_language() == 'zh-hans':
             dd = dds[i]
             dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
@@ -914,6 +925,17 @@ def get_recent_listing(archive_or_cat: str,skip: int, show: int) -> Listing:
     for i, paper_id in enumerate(paper_ids):
         article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
 
+        dt = dts[i]
+        new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
+        if get_language() == 'zh-hans':
+            new_a.string = '中文pdf'
+        else:
+            new_a.string = 'cn-pdf'
+        abstract_a = dt.find('a', {'title': 'Abstract'})
+        abstract_a.next_sibling.insert_after(new_a)
+        new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
+        new_a.insert_after(', ')
+
         if get_language() == 'zh-hans':
             dd = dds[i]
             dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
@@ -1043,6 +1065,17 @@ def get_articles_for_month(archive_or_cat: str, time_period: str, year: int, mon
     items = []
     for i, paper_id in enumerate(paper_ids):
         article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+
+        dt = dts[i]
+        new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
+        if get_language() == 'zh-hans':
+            new_a.string = '中文pdf'
+        else:
+            new_a.string = 'cn-pdf'
+        abstract_a = dt.find('a', {'title': 'Abstract'})
+        abstract_a.next_sibling.insert_after(new_a)
+        new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
+        new_a.insert_after(', ')
 
         if get_language() == 'zh-hans':
             dd = dds[i]

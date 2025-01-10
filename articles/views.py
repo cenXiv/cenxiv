@@ -19,6 +19,7 @@ from django.http import (
 )
 from django.http.response import HttpResponsePermanentRedirect
 from django.views.decorators.http import require_http_methods
+from django.utils.translation import gettext_lazy as _
 
 from arxiv.identifier import (
     Identifier,
@@ -440,6 +441,19 @@ def pdf(request, arxiv_id: str, archive: str = None):
         return HttpResponseBadRequest(str(e))
     except FileNotFoundError:
         return HttpResponseNotFound('PDF not found')
+
+def cn_pdf(request, arxiv_id: str, archive: str = None):
+    """Handle requests for the Chinese PDF version of an article.
+
+    Args:
+        request: The HTTP request.
+        arxiv_id: The arXiv identifier.
+        archive: Optional archive prefix.
+
+    Returns:
+        HttpResponse with a message indicating the availability of the Chinese PDF.
+    """
+    return HttpResponse(_('Chinese PDF is coming soon...'))
 
 def html(request, arxiv_id: str, archive: str = None):
     """Get HTML for article.
