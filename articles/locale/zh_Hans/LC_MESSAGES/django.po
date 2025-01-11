@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-28 23:10+0800\n"
+"POT-Creation-Date: 2025-01-11 12:35+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,94 +17,835 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
 #: articles/models.py:5
-msgid "arXiv ID"
-msgstr ""
+msgid "Source Archive"
+msgstr "文档源"
 
 #: articles/models.py:6
-msgid "English Title"
-msgstr ""
+msgid "Entry ID"
+msgstr "条目编号"
 
 #: articles/models.py:7
-msgid "Chinese Title"
-msgstr ""
+msgid "Entry Version"
+msgstr "条目版本"
 
 #: articles/models.py:8
-msgid "English Abstract"
-msgstr ""
+msgid "English Title"
+msgstr "英文标题"
 
 #: articles/models.py:9
-msgid "Chinese Abstract"
-msgstr ""
+msgid "Chinese Title"
+msgstr "中文标题"
 
 #: articles/models.py:10
-msgid "Authors"
-msgstr ""
+msgid "English Abstract"
+msgstr "英文摘要"
 
 #: articles/models.py:11
-msgid "Published Date"
-msgstr ""
+msgid "Chinese Abstract"
+msgstr "中文摘要"
 
 #: articles/models.py:12
-msgid "Updated Date"
-msgstr ""
+msgid "Article Published Date"
+msgstr "文章发布日期"
 
 #: articles/models.py:13
-msgid "PDF URL"
-msgstr ""
+msgid "Article Updated Date"
+msgstr "文章更新日期"
 
-#: articles/models.py:14 articles/templates/articles/article_list.html:38
-msgid "Category"
-msgstr ""
+#: articles/models.py:14
+msgid "Comment"
+msgstr "评论"
+
+#: articles/models.py:15
+msgid "Journal Ref"
+msgstr "期刊参考"
+
+#: articles/models.py:16
+msgid "DOI"
+msgstr "DOI"
+
+#: articles/models.py:17
+msgid "Primary Category"
+msgstr "主要类别"
+
+#: articles/models.py:18
+msgid "Created at"
+msgstr "创建于"
+
+#: articles/models.py:19
+msgid "Updated at"
+msgstr "更新于"
 
 #: articles/models.py:20
+msgid "Translation Validated"
+msgstr "翻译验证"
+
+#: articles/models.py:24
 msgid "Article"
-msgstr ""
+msgstr "文章"
 
-#: articles/models.py:21
+#: articles/models.py:25
 msgid "Articles"
-msgstr ""
+msgstr "文章"
 
-#: articles/templates/articles/article_list.html:7
-msgid "Search articles..."
-msgstr ""
+#: articles/models.py:38 articles/models.py:50
+msgid "Name"
+msgstr "名称"
 
-#: articles/templates/articles/article_list.html:9
-msgid "All Categories"
-msgstr ""
+#: articles/models.py:42 articles/templates/articles/base.html:70
+msgid "Author"
+msgstr "作者"
 
-#: articles/templates/articles/article_list.html:14
-msgid "Search"
-msgstr ""
+#: articles/models.py:43
+msgid "Authors"
+msgstr "作者"
 
-#: articles/templates/articles/article_list.html:22
-#, python-format
+#: articles/models.py:54
+msgid "Category"
+msgstr "类别"
+
+#: articles/models.py:55
+msgid "Categories"
+msgstr "类别"
+
+#: articles/models.py:62
+msgid "URL"
+msgstr "URL"
+
+#: articles/models.py:66
+msgid "Link"
+msgstr "链接"
+
+#: articles/models.py:67
+msgid "Links"
+msgstr "链接"
+
+#: articles/templates/abs/abs.html:10
+msgid "Abstract page for arXiv paper"
+msgstr "arXiv 论文的摘要页面"
+
+#: articles/templates/abs/abs.html:55
+msgid "Which authors of this paper are endorsers?"
+msgstr "这篇论文的哪些作者是支持者？"
+
+#: articles/templates/abs/abs.html:56
+msgid "Disable MathJax"
+msgstr "禁用 MathJax"
+
+#: articles/templates/abs/abs.html:56
+msgid "What is MathJax?"
+msgstr "什么是 MathJax？"
+
+#: articles/templates/abs/cite.html:6
+msgid "export BibTeX citation"
+msgstr "导出 BibTeX 引用"
+
+#: articles/templates/abs/cite.html:7
+msgid "Loading..."
+msgstr "加载中..."
+
+#: articles/templates/abs/cite.html:13
+msgid "BibTeX formatted citation"
+msgstr "BibTeX 格式的引用"
+
+#: articles/templates/abs/cite.html:17
+msgid "loading the citation"
+msgstr "加载引用"
+
+#: articles/templates/abs/cite.html:17
+msgid "loading..."
+msgstr "加载中..."
+
+#: articles/templates/abs/cite.html:20
+msgid "Data provided by:"
+msgstr "数据由提供："
+
+#: articles/templates/archive/archive_list_all.html:4
+msgid "Archives"
+msgstr "存档"
+
+#: articles/templates/archive/archive_list_all.html:10
+msgid "No archive"
+msgstr "没有存档"
+
+#: articles/templates/archive/archive_list_all.html:10
+msgid "available archives are:"
+msgstr "可用的存档是："
+
+#: articles/templates/archive/archive_list_all.html:13
+msgid "Choose one of the following archives"
+msgstr "选择以下存档之一"
+
+#: articles/templates/archive/archive_list_all.html:21
 msgid ""
-"\n"
-"                    Found %(count)s results\n"
-"                "
-msgstr ""
+"or from one of the following archives which no longer accept submissions"
+msgstr "或者从以下不再接受提交的存档之一"
 
-#: articles/templates/articles/article_list.html:26
-msgid "No results found"
-msgstr ""
+#: articles/templates/archive/archive_list_all.html:22
+msgid "these have been subsumed into the archives listed above"
+msgstr "这些已经被合并到上面列出的存档中"
 
-#: articles/templates/articles/article_list.html:39
-msgid "Published"
-msgstr ""
+#: articles/templates/archive/archive_list_all.html:26
+msgid "subsumed into"
+msgstr "合并到"
 
-#: articles/templates/articles/article_list.html:48
-msgid "Previous"
-msgstr ""
+#: articles/templates/archive/single_archive.html:7
+msgid "since"
+msgstr "自"
 
-#: articles/templates/articles/article_list.html:53
-msgid "Page"
-msgstr ""
+#: articles/templates/archive/single_archive.html:12
+msgid "is part of the"
+msgstr "是...的一部分"
 
-#: articles/templates/articles/article_list.html:53
-msgid "of"
-msgstr ""
+#: articles/templates/archive/single_archive.html:12
+#: articles/templates/archive/single_archive.html:91
+msgid "archive"
+msgstr "存档"
 
-#: articles/templates/articles/article_list.html:58
-msgid "Next"
+#: articles/templates/archive/single_archive.html:16
+msgid "For a"
+msgstr "对于一个"
+
+#: articles/templates/archive/single_archive.html:16
+msgid "specific paper"
+msgstr "特定的论文"
+
+#: articles/templates/archive/single_archive.html:16
+msgid "enter the identifier into the top right search box"
+msgstr "将标识符输入到右上角的搜索框中"
+
+#: articles/templates/archive/single_archive.html:19
+msgid "Browse:"
+msgstr "浏览："
+
+#: articles/templates/archive/single_archive.html:22
+#: articles/templates/archive/single_archive.html:106
+#: articles/templates/list/recent.html:16
+msgid "new"
+msgstr "新的"
+
+#: articles/templates/archive/single_archive.html:23
+msgid "most recent mailing, with abstracts"
+msgstr "最近的邮件，带摘要"
+
+#: articles/templates/archive/single_archive.html:26
+#: articles/templates/archive/single_archive.html:107
+#: articles/templates/articles/home.html:69 articles/templates/list/new.html:17
+msgid "recent"
+msgstr "最近的"
+
+#: articles/templates/archive/single_archive.html:27
+msgid "last 5 mailings"
+msgstr "最近 5 次邮件"
+
+#: articles/templates/archive/single_archive.html:30
+msgid "current month's"
+msgstr "本月的"
+
+#: articles/templates/archive/single_archive.html:31
+msgid "listings"
+msgstr "列表"
+
+#: articles/templates/archive/single_archive.html:33
+msgid "specific year/month:"
+msgstr "特定的年/月："
+
+#: articles/templates/archive/single_archive.html:38
+#: articles/templates/archive/single_archive.html:87
+#: articles/templates/articles/catchup_form.html:110
+msgid "Go"
+msgstr "前往"
+
+#: articles/templates/archive/single_archive.html:44
+msgid "Catch-up:"
+msgstr "追踪："
+
+#: articles/templates/archive/single_archive.html:50
+msgid "Categories:"
+msgstr "类别："
+
+#: articles/templates/archive/single_archive.html:52
+msgid "All"
+msgstr "全部"
+
+#: articles/templates/archive/single_archive.html:62
+msgid "Changes since:"
+msgstr "自...以来的变化："
+
+#: articles/templates/archive/single_archive.html:80
+msgid ", view results"
+msgstr "，查看结果"
+
+#: articles/templates/archive/single_archive.html:82
+msgid "without"
+msgstr "没有"
+
+#: articles/templates/archive/single_archive.html:83
+msgid "with"
+msgstr "有"
+
+#: articles/templates/archive/single_archive.html:85
+msgid "abstracts"
+msgstr "摘要"
+
+#: articles/templates/archive/single_archive.html:91
+#: articles/templates/articles/base.html:87
+#: articles/templates/articles/home.html:30
+msgid "Search"
+msgstr "搜索"
+
+#: articles/templates/archive/single_archive.html:91
+msgid "within the"
+msgstr "在...内"
+
+#: articles/templates/archive/single_archive.html:93
+#: articles/templates/articles/year.html:27
+msgid "Article statistics by year:"
+msgstr "按年的文章统计："
+
+#: articles/templates/archive/single_archive.html:102
+msgid "Categories within"
+msgstr "在...内的类别"
+
+#: articles/templates/archive/single_archive.html:108
+msgid "current month"
+msgstr "本月"
+
+#: articles/templates/articles/base.html:63
+#: articles/templates/articles/base.html:115
+msgid "Help"
+msgstr "帮助"
+
+#: articles/templates/articles/base.html:63
+msgid "Advanced Search"
+msgstr "高级搜索"
+
+#: articles/templates/articles/base.html:68
+msgid "All fields"
+msgstr "所有字段"
+
+#: articles/templates/articles/base.html:69
+msgid "Title"
+msgstr "标题"
+
+#: articles/templates/articles/base.html:71
+msgid "Abstract"
+msgstr "摘要"
+
+#: articles/templates/articles/base.html:72
+msgid "Comments"
+msgstr "评论"
+
+#: articles/templates/articles/base.html:73
+msgid "Journal reference"
+msgstr "期刊参考"
+
+#: articles/templates/articles/base.html:74
+msgid "ACM classification"
+msgstr "ACM 分类"
+
+#: articles/templates/articles/base.html:75
+msgid "MSC classification"
+msgstr "MSC 分类"
+
+#: articles/templates/articles/base.html:76
+msgid "Report number"
+msgstr "报告编号"
+
+#: articles/templates/articles/base.html:77
+msgid "arXiv identifier"
+msgstr "arXiv 编号"
+
+#: articles/templates/articles/base.html:80
+msgid "arXiv author ID"
+msgstr "arXiv 作者 ID"
+
+#: articles/templates/articles/base.html:81
+msgid "Help pages"
+msgstr "帮助页面"
+
+#: articles/templates/articles/base.html:82
+msgid "Full text"
+msgstr "全文"
+
+#: articles/templates/articles/base.html:114
+msgid "About"
+msgstr "关于"
+
+#: articles/templates/articles/base.html:122
+msgid "Contact"
+msgstr "联系"
+
+#: articles/templates/articles/base.html:125
+msgid "subscribe to arXiv mailings"
+msgstr "订阅 arXiv 邮件列表"
+
+#: articles/templates/articles/base.html:125
+msgid "Click here to subscribe"
+msgstr "点击这里订阅"
+
+#: articles/templates/articles/base.html:126
+msgid "Subscribe"
+msgstr "订阅"
+
+#: articles/templates/articles/base.html:138
+msgid "Copyright"
+msgstr "版权"
+
+#: articles/templates/articles/base.html:139
+msgid "Privacy Policy"
+msgstr "隐私政策"
+
+#: articles/templates/articles/base.html:144
+msgid "Web Accessibility Assistance"
+msgstr "网络无障碍帮助"
+
+#: articles/templates/articles/base.html:147
+msgid "arXiv Operational Status"
+msgstr "arXiv 运营状态"
+
+#: articles/templates/articles/base.html:148
+msgid "Get status notifications via"
+msgstr "通过...获取状态通知"
+
+#: articles/templates/articles/base.html:150
+#: articles/templates/articles/format.html:116
+msgid "or"
+msgstr "或者"
+
+#: articles/templates/articles/catchup.html:16
+#: articles/templates/articles/catchup_form.html:5
+#: articles/templates/articles/catchup_form.html:11
+#: articles/templates/articles/home.html:32
+msgid "Catchup"
+msgstr "追踪"
+
+#: articles/templates/articles/catchup.html:23
+msgid "Catchup results for"
+msgstr "追踪结果为"
+
+#: articles/templates/articles/catchup.html:23
+msgid "on"
+msgstr "在"
+
+#: articles/templates/articles/catchup.html:38
+#: articles/templates/articles/catchup.html:118
+msgid "Continue to the next day"
+msgstr "继续到下一天"
+
+#: articles/templates/articles/catchup.html:42
+#: articles/templates/articles/catchup.html:101
+#: articles/templates/list/base.html:31 articles/templates/list/base.html:73
+msgid "Total of"
+msgstr "总共"
+
+#: articles/templates/articles/catchup.html:42
+#: articles/templates/articles/catchup.html:101
+msgid "entries for"
+msgstr "条目为"
+
+#: articles/templates/articles/catchup.html:44
+#: articles/templates/articles/catchup.html:103
+msgid "View page:"
+msgstr "查看页面："
+
+#: articles/templates/articles/catchup.html:69
+#: articles/templates/list/month.html:12 articles/templates/list/new.html:31
+#: articles/templates/list/recent.html:28 articles/templates/list/year.html:12
+msgid "No updates for this time period."
+msgstr "此时间段没有更新。"
+
+#: articles/templates/articles/catchup.html:84
+msgid "No further updates for"
+msgstr "没有更多的更新为"
+
+#: articles/templates/articles/catchup.html:87
+msgid "Go to page 1"
+msgstr "转到第 1 页"
+
+#: articles/templates/articles/catchup.html:91
+msgid "No updates for"
+msgstr "没有更新为"
+
+#: articles/templates/articles/catchup.html:91
+msgid ""
+"There was either no announcement for this day, or no updates within the "
+"requested subject."
+msgstr "这一天要么没有公告，要么没有在请求的主题内的更新。"
+
+#: articles/templates/articles/catchup_form.html:16
+msgid "Catchup on:"
+msgstr "追踪："
+
+#: articles/templates/articles/catchup_form.html:21
+msgid "Subject:"
+msgstr "主题："
+
+#: articles/templates/articles/catchup_form.html:24
+msgid "Group:"
+msgstr "组："
+
+#: articles/templates/articles/catchup_form.html:26
+msgid "Select a group"
+msgstr "选择一个组"
+
+#: articles/templates/articles/catchup_form.html:36
+msgid "Archive:"
+msgstr "存档："
+
+#: articles/templates/articles/catchup_form.html:39
+#: articles/templates/articles/catchup_form.html:46
+msgid "Select an archive"
+msgstr "选择一个存档"
+
+#: articles/templates/articles/catchup_form.html:57
+msgid "Category:"
+msgstr "类别："
+
+#: articles/templates/articles/catchup_form.html:60
+msgid "Select a category"
+msgstr "选择一个类别"
+
+#: articles/templates/articles/catchup_form.html:68
+msgid "(Optional) Select a category"
+msgstr "(可选) 选择一个类别"
+
+#: articles/templates/articles/catchup_form.html:82
+msgid "Changes Since:"
+msgstr "自...以来的变化："
+
+#: articles/templates/articles/catchup_form.html:105
+msgid "Include abstracts: "
+msgstr "包括摘要："
+
+#: articles/templates/articles/format.html:4
+#: articles/templates/articles/format.html:14
+msgid "Format selector for"
+msgstr "格式选择器为"
+
+#: articles/templates/articles/format.html:9
+msgid "format"
+msgstr "格式"
+
+#: articles/templates/articles/format.html:23
+#: articles/templates/articles/format.html:55
+msgid "Now includes fonts, see our"
+msgstr "现在包括字体，查看我们的"
+
+#: articles/templates/articles/format.html:23
+msgid "PDF help"
+msgstr "PDF 帮助"
+
+#: articles/templates/articles/format.html:24
+msgid "Download PDF"
+msgstr "下载 PDF"
+
+#: articles/templates/articles/format.html:31
+msgid "PostScript using Bitmapped Fonts"
+msgstr "使用位图字体的 PostScript"
+
+#: articles/templates/articles/format.html:33
+msgid "Select resolution:"
+msgstr "选择分辨率："
+
+#: articles/templates/articles/format.html:37
+msgid "Use"
+msgstr "使用"
+
+#: articles/templates/articles/format.html:43
+msgid "dpi Bitmapped Fonts:"
+msgstr "dpi 位图字体："
+
+#: articles/templates/articles/format.html:44
+#: articles/templates/articles/format.html:58
+#: articles/templates/articles/format.html:70
+msgid "Download PostScript"
+msgstr "下载 PostScript"
+
+#: articles/templates/articles/format.html:47
+msgid ""
+"Note: a resolution other than the default 600dpi will occasionally require "
+"new fonts to be created. This can take a while"
 msgstr ""
+"注意：除了默认的 600dpi 分辨率，偶尔需要创建新的字体。这可能需要一段时间"
+
+#: articles/templates/articles/format.html:51
+msgid "PostScript using Type I Fonts"
+msgstr "使用 Type I 字体的 PostScript"
+
+#: articles/templates/articles/format.html:55
+msgid "Type I help"
+msgstr "Type I 帮助"
+
+#: articles/templates/articles/format.html:65
+msgid "Author supplied PostScript"
+msgstr "作者提供的 PostScript"
+
+#: articles/templates/articles/format.html:69
+msgid ""
+"Delivered via an additional HTML page if there are multiple files, otherwise "
+"as a"
+msgstr "如果有多个文件，通过附加的 HTML 页面交付，否则作为一个"
+
+#: articles/templates/articles/format.html:69
+msgid "gzipped PostScript"
+msgstr "压缩后的 PostScript"
+
+#: articles/templates/articles/format.html:69
+#: articles/templates/articles/format.html:81
+#: articles/templates/articles/format.html:116
+msgid "file"
+msgstr "文件"
+
+#: articles/templates/articles/format.html:81
+#: articles/templates/articles/format.html:116
+msgid "Delivered as a"
+msgstr "作为一个"
+
+#: articles/templates/articles/format.html:81
+msgid "gzipped DVI"
+msgstr "压缩后的 DVI"
+
+#: articles/templates/articles/format.html:81
+msgid "or as a"
+msgstr "或者作为一个"
+
+#: articles/templates/articles/format.html:81
+#: articles/templates/articles/format.html:116
+msgid "gzipped tar"
+msgstr "压缩后的 tar"
+
+#: articles/templates/articles/format.html:81
+msgid "if there are figures to include"
+msgstr "如果有图形需要包含"
+
+#: articles/templates/articles/format.html:82
+msgid "Download DVI"
+msgstr "下载 DVI"
+
+#: articles/templates/articles/format.html:93
+msgid "Download HTML"
+msgstr "下载 HTML"
+
+#: articles/templates/articles/format.html:104
+msgid "Download DOCX"
+msgstr "下载 DOCX"
+
+#: articles/templates/articles/format.html:105
+msgid "Requires Word 2007 or earlier versions of Word with"
+msgstr "需要 Word 2007 或更早版本的 Word，带有"
+
+#: articles/templates/articles/format.html:106
+msgid ""
+"Microsoft Office Compatibility Pack for Word, Excel, and PowerPoint 2007 "
+"File Formats"
+msgstr ""
+"Microsoft Office 适用性包，用于 Word、Excel 和 PowerPoint 2007 文件格式"
+
+#: articles/templates/articles/format.html:107
+msgid "to view/edit"
+msgstr "以查看/编辑"
+
+#: articles/templates/articles/format.html:116
+msgid "if there are multiple files, otherwise as a"
+msgstr "如果有多个文件，否则作为一个"
+
+#: articles/templates/articles/format.html:116
+msgid "or a"
+msgstr "或者一个"
+
+#: articles/templates/articles/format.html:116
+msgid "gzipped TeX, DVI, PostScript or HTML"
+msgstr "压缩后的 TeX、DVI、PostScript 或 HTML"
+
+#: articles/templates/articles/format.html:116
+msgid "depending on submission format"
+msgstr "根据提交格式"
+
+#: articles/templates/articles/format.html:117
+msgid "Download source"
+msgstr "下载源文件"
+
+#: articles/templates/articles/format.html:124
+msgid "Note:"
+msgstr "注意："
+
+#: articles/templates/articles/format.html:124
+msgid "Many of the formats above are served gzipped"
+msgstr "上述格式中的许多都是以压缩形式提供的"
+
+#: articles/templates/articles/format.html:124
+msgid ""
+"Your browser may silently uncompress after downloading so the files you see "
+"saved may appear uncompressed"
+msgstr ""
+"您的浏览器可能会在下载后默默解压缩，因此您看到的保存文件可能会显示为未压缩的"
+
+#: articles/templates/articles/format.html:126
+msgid "Please report any problems to"
+msgstr "请将任何问题报告给"
+
+#: articles/templates/articles/format.html:126
+msgid "technical support"
+msgstr "技术支持"
+
+#: articles/templates/articles/format.html:126
+msgid "and include the paper identifier"
+msgstr "并包括论文标识符"
+
+#: articles/templates/articles/home.html:4
+msgid "cenXiv.org e-Print archive"
+msgstr "cenXiv.org 电子印刷档案馆"
+
+#: articles/templates/articles/home.html:11
+msgid "Welcome to cenXiv"
+msgstr "欢迎来到 cenXiv"
+
+#: articles/templates/articles/home.html:12
+msgid "A Chinese-English bilingual interface for "
+msgstr "一个中英双语镜像 "
+
+#: articles/templates/articles/home.html:17
+msgid "Subject search and browse:"
+msgstr "主题搜索和浏览："
+
+#: articles/templates/articles/home.html:18
+msgid "Search in"
+msgstr "搜索于"
+
+#: articles/templates/articles/home.html:31
+msgid "Form Interface"
+msgstr "表单界面"
+
+#: articles/templates/articles/home.html:66
+msgid "Computing Research Repository"
+msgstr "计算研究存储库"
+
+#: articles/templates/articles/home.html:70
+msgid "search"
+msgstr "搜索"
+
+#: articles/templates/articles/home.html:72
+#: articles/templates/articles/home.html:74
+#: articles/templates/articles/home.html:77
+msgid "includes:"
+msgstr "包括："
+
+#: articles/templates/articles/home.html:75
+#: articles/templates/articles/home.html:77
+msgid "detailed description"
+msgstr "详细描述"
+
+#: articles/templates/articles/home.html:95
+msgid "General information"
+msgstr "通用信息"
+
+#: articles/templates/articles/home.html:96
+msgid "How to Submit to arXiv"
+msgstr "如何提交到 arXiv"
+
+#: articles/templates/articles/home.html:97
+msgid "Membership &amp; Giving"
+msgstr "会员与捐赠"
+
+#: articles/templates/articles/home.html:98
+msgid "Who We Are"
+msgstr "我们是谁"
+
+#: articles/templates/articles/year.html:17
+msgid "Article statistics for"
+msgstr "文章统计"
+
+#: articles/templates/articles/year.html:18
+msgid "Available monthly lists with counts of"
+msgstr "每月列表的计数"
+
+#: articles/templates/articles/year.html:18
+#: articles/templates/articles/year.html:24 articles/templates/list/new.html:17
+msgid "articles"
+msgstr "文章"
+
+#: articles/templates/articles/year.html:19
+msgid "cross-listings to"
+msgstr "交叉列表到"
+
+#: articles/templates/articles/year.html:19
+msgid "in"
+msgstr "在"
+
+#: articles/templates/articles/year.html:20
+msgid "(each '|' represents 20 articles)"
+msgstr "(每个'|'代表 20 篇文章)"
+
+#: articles/templates/articles/year.html:24
+msgid "totals:"
+msgstr "总计："
+
+#: articles/templates/articles/year.html:24
+msgid "cross-lists"
+msgstr "交叉列表"
+
+#: articles/templates/articles/year.html:26
+msgid "Other years:"
+msgstr "其他年份："
+
+#: articles/templates/list/base.html:31 articles/templates/list/base.html:73
+msgid "entries"
+msgstr "条目"
+
+#: articles/templates/list/base.html:43 articles/templates/list/base.html:85
+msgid "Showing up to"
+msgstr "显示最多"
+
+#: articles/templates/list/base.html:43 articles/templates/list/base.html:85
+msgid "entries per page:"
+msgstr "每页条目："
+
+#: articles/templates/list/base.html:46 articles/templates/list/base.html:48
+#: articles/templates/list/base.html:88 articles/templates/list/base.html:90
+msgid "fewer"
+msgstr "较少"
+
+#: articles/templates/list/base.html:51 articles/templates/list/base.html:53
+#: articles/templates/list/base.html:93 articles/templates/list/base.html:95
+msgid "more"
+msgstr "更多"
+
+#: articles/templates/list/base.html:56 articles/templates/list/base.html:58
+#: articles/templates/list/base.html:98 articles/templates/list/base.html:100
+msgid "all"
+msgstr "所有"
+
+#: articles/templates/list/month.html:5 articles/templates/list/year.html:5
+msgid "Authors and titles for"
+msgstr "作者和标题为"
+
+#: articles/templates/list/new.html:17
+msgid "See"
+msgstr "查看"
+
+#: articles/templates/list/new.html:18
+msgid "Showing new listings for"
+msgstr "显示新的列表为"
+
+#: articles/templates/list/new.html:43
+msgid "No updates today."
+msgstr "今天没有更新。"
+
+#: articles/templates/list/recent.html:5
+msgid "Authors and titles for recent submissions"
+msgstr "最近提交的作者和标题"
+
+#: articles/templates/list/recent.html:16
+msgid "See today's"
+msgstr "查看今天的"
+
+#: articles/templates/list/recent.html:16
+msgid "changes"
+msgstr "变化"
+
+#: articles/views.py:456
+msgid "Chinese PDF is coming soon..."
+msgstr "中文 PDF 即将到来..."

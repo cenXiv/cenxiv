@@ -1,5 +1,6 @@
 {% extends "articles/base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}{{ list_ctx_name }} {{ list_month_name }} {{ list_year }}{% endblock %}
 
@@ -27,7 +28,7 @@
 
   {% block page_divs1 %}
     {% if count > 0 %}
-        <div class='paging'>Total of {{count}} entries
+        <div class='paging'>{% trans "Total of" %} {{count}} {% trans "entries" %}
             {% if pg|length != 0 or not viewing_all %}
             :
             {% for pg in paging %}
@@ -39,22 +40,22 @@
             {% endfor %}
             {% endif %}
         </div>
-        <div class='morefewer'>Showing up to {{shown}} entries per page:
+        <div class='morefewer'>{% trans "Showing up to" %} {{shown}} {% trans "entries per page:" %}
             {% url 'articles:list_articles' context=context subcontext=subcontext as base_url %}
             {% if mf_fewer %}
-                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_fewer }}" rel="nofollow">fewer</a>
+                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_fewer }}" rel="nofollow">{% trans "fewer" %}</a>
             {% else %}
-                <span style="color: #454545">fewer</span>
+                <span style="color: #454545">{% trans "fewer" %}</span>
             {% endif %} |
             {% if mf_more %}
-                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_more }}" rel="nofollow">more</a>
+                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_more }}" rel="nofollow">{% trans "more" %}</a>
             {% else %}
-                <span style="color: #454545">more</span>
+                <span style="color: #454545">{% trans "more" %}</span>
             {% endif %} |
             {% if mf_all %}
-                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_all }}" rel="nofollow">all</a>
+                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_all }}" rel="nofollow">{% trans "all" %}</a>
             {% else %}
-                <span style="color: #454545">all</span>
+                <span style="color: #454545">{% trans "all" %}</span>
             {% endif %}
         </div>
     {% endif %}
@@ -69,7 +70,7 @@
 
   {% block page_divs2 %}
     {% if count > 0 %}
-        <div class='paging'>Total of {{count}} entries
+        <div class='paging'>{% trans "Total of" %} {{count}} {% trans "entries" %}
             {% if pg|length != 0 or not viewing_all %}
             :
             {% for pg in paging %}
@@ -81,22 +82,22 @@
             {% endfor %}
             {% endif %}
         </div>
-        <div class='morefewer'>Showing up to {{shown}} entries per page:
+        <div class='morefewer'>{% trans "Showing up to" %} {{shown}} {% trans "entries per page:" %}
             {% url 'articles:list_articles' context=context subcontext=subcontext as base_url %}
             {% if mf_fewer %}
-                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_fewer }}" rel="nofollow">fewer</a>
+                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_fewer }}" rel="nofollow">{% trans "fewer" %}</a>
             {% else %}
-                <span style="color: #454545">fewer</span>
+                <span style="color: #454545">{% trans "fewer" %}</span>
             {% endif %} |
             {% if mf_more %}
-                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_more }}" rel="nofollow">more</a>
+                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_more }}" rel="nofollow">{% trans "more" %}</a>
             {% else %}
-                <span style="color: #454545">more</span>
+                <span style="color: #454545">{% trans "more" %}</span>
             {% endif %} |
             {% if mf_all %}
-                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_all }}" rel="nofollow">all</a>
+                <a href="{{ base_url }}?skip={{ skipn }}&show={{ mf_all }}" rel="nofollow">{% trans "all" %}</a>
             {% else %}
-                <span style="color: #454545">all</span>
+                <span style="color: #454545">{% trans "all" %}</span>
             {% endif %}
         </div>
     {% endif %}

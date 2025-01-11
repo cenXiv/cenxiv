@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 #: cenxiv/settings.py:134
 msgid "Simplified Chinese"
-msgstr ""
+msgstr "简体中文"
 
 #: cenxiv/settings.py:135
 msgid "English"
-msgstr ""
+msgstr "英文"

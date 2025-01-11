@@ -1,4 +1,5 @@
 {% extends "list/base.html" %}
+{% load i18n %}
 
 {#
 New is quite different than the other list pages.
@@ -13,8 +14,8 @@ It needs to do headings for the new/cross/rep sections.
   {% endfor %}
 </ul>
 
-<p>See <a id="recent-{{ context }}" aria-labelledby="recent-{{ context }}" href="/list/{{ context }}/recent">recent</a> articles</p>
-<h3>Showing new listings for {{announced|date:"l, j F Y"}}</h3>
+<p>{% trans "See" %} <a id="recent-{{ context }}" aria-labelledby="recent-{{ context }}" href="/list/{{ context }}/recent">{% trans "recent" %}</a> {% trans "articles" %}</p>
+<h3>{% trans "Showing new listings for" %} {{announced|date:"l, j F Y"}}</h3>
 {% endblock %}
 
 {% block items %}
@@ -27,7 +28,7 @@ It needs to do headings for the new/cross/rep sections.
         {% endif %}
 
         {% if sec.items|length == 0 %}
-            <p>No updates for this time period.</p>
+            <p>{% trans "No updates for this time period." %}</p>
         {% endif %}
 
         {% for item, dt, dd in sec.items %}
@@ -39,7 +40,7 @@ It needs to do headings for the new/cross/rep sections.
   {% endfor %}
 
   {% if not sub_sections_for_types.0.visible and not sub_sections_for_types.1.visible and not sub_sections_for_types.2.visible %}
-    <p>No updates today.</p>
+    <p>{% trans "No updates today." %}</p>
   {% endif %}
 
 {% endblock %}

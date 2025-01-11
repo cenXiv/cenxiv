@@ -1,7 +1,8 @@
 {% extends "list/base.html" %}
+{% load i18n %}
 
 {% block list_index %}
-  <h2>Authors and titles for recent submissions</h2>
+  <h2>{% trans "Authors and titles for recent submissions" %}</h2>
   <ul>
     {% url 'articles:list_articles' context=context subcontext=subcontext as base_url %}
     {% for pubdate, skipfordate in pubdates %}
@@ -12,7 +13,7 @@
       </li>
     {% endfor %}
   </ul>
-  <p>See today's <a id="new-{{ context }}" aria-labelledby="new-{{ context }}" href="/list/{{ context }}/new">new</a> changes</p>
+  <p>{% trans "See today's" %} <a id="new-{{ context }}" aria-labelledby="new-{{ context }}" href="/list/{{ context }}/new">{% trans "new" %}</a> {% trans "changes" %}</p>
 {% endblock %}
 
 {% block items %}
@@ -24,7 +25,7 @@
         {% endif %}
 
         {% if sec.items|length == 0 %}
-            <p>No updates for this time period.</p>
+            <p>{% trans "No updates for this time period." %}</p>
         {% endif %}
 
         {% for item, dt, dd in sec.items %}

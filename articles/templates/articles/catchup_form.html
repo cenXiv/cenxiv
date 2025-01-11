@@ -1,28 +1,29 @@
 {% extends "articles/base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Catchup{% endblock %}
+{% block title %}{% trans "Catchup" %}{% endblock %}
 
 {% block header_h1 %}
 <div class="header-breadcrumbs">
   <a href="{% url 'articles:home' %}"><img src="{% static 'images/arxiv-logo-one-color-white.svg' %}" alt="arxiv logo" style="height:40px;"/></a>
   <span>&gt;</span>
-  <span>Catchup</span>
+  <span>{% trans "Catchup" %}</span>
 </div>
 {% endblock %}
 
 {% block content %}
-  <h1>Catchup on:</h1>
+  <h1>{% trans "Catchup on:" %}</h1>
 
   <form id="catchup-form" action="{% url 'articles:catchup_form' %}" method="get" onsubmit="combineDate(); selectSubject();">
     {% csrf_token %}
     <div role="group" aria-labelledby="subject_header">
-      <h3 id="subject_header">Subject:</h3>
+      <h3 id="subject_header">{% trans "Subject:" %}</h3>
 
       <div>
-        <label for="group">Group:</label>
+        <label for="group">{% trans "Group:" %}</label>
         <select id="group" onchange="updateArchive()">
-          <option value="" selected disabled>Select a group</option>
+          <option value="" selected disabled>{% trans "Select a group" %}</option>
           {% for group in groups.values %}
             {% if group.is_active and not group.is_test %}
               <option value="{{ group.id }}">{{ group.full_name }}</option>
@@ -32,17 +33,17 @@
       </div>
 
       <div>
-        <label for="archive">Archive:</label>
+        <label for="archive">{% trans "Archive:" %}</label>
 
         <select id="default-archives" class="archive-dropdown" onchange="updateCategories()">
-          <option value="" selected>Select an archive</option>
+          <option value="" selected>{% trans "Select an archive" %}</option>
         </select>
 
         {% for group in groups.values %}
           {% if group.is_active and not group.is_test %}
 
             <select id="{{group.id}}-archives" class="archive-dropdown" style="display: none;" onchange="updateCategories()">
-              <option value="" selected {% if group.id != "grp_physics" %} disabled {% endif %}>Select an archive</option>
+              <option value="" selected {% if group.id != "grp_physics" %} disabled="disabled" {% endif %}>{% trans "Select an archive" %}</option>
               {% for archive in group.get_archives %}
                 <option value="{{ archive.id }}">{{ archive.full_name }}</option>
               {% endfor %}
@@ -53,10 +54,10 @@
       </div>
 
       <div>
-        <label for="category">Category:</label>
+        <label for="category">{% trans "Category:" %}</label>
 
         <select id="default-categories" class="category-dropdown" >
-          <option value="" selected>Select a category</option>
+          <option value="" selected>{% trans "Select a category" %}</option>
         </select>
 
         {% for group in groups.values %}
@@ -64,7 +65,7 @@
             {% for archive in group.get_archives %}
 
               <select id="{{archive.id}}-categories" class="category-dropdown" style="display: none;" >
-                <option value="" selected>(Optional) Select a category</option>
+                <option value="" selected>{% trans "(Optional) Select a category" %}</option>
                 {% for category in archive.get_categories %}
                   <option  value="{{ category.id }}" >{{ category.full_name }}</option>
                 {% endfor %}
@@ -78,7 +79,7 @@
     <input type="hidden" id="subject" name="subject" />
 
     <div role="group" aria-labelledby="date_header">
-      <h3 id="date_header" >Changes Since:</h3>
+      <h3 id="date_header" >{% trans "Changes Since:" %}</h3>
 
       <select id="day">
         {% for day in days %}
@@ -101,12 +102,12 @@
 
     <br>
     <div>
-      <label for="include_abstracts"><strong>Include abstracts: </strong></label>
+      <label for="include_abstracts"><strong>{% trans "Include abstracts: " %}</strong></label>
       <input type="checkbox" name="include_abs" id="include_abstracts" value="True">
     </div>
     <br>
 
-    <input type="submit" value="Go"/>
+    <input type="submit" value="{% trans 'Go' %}"/>
   </form>
 
   <script>

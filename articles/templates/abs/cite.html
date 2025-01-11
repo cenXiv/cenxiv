@@ -1,22 +1,23 @@
 <div class='extra-ref-cite'>
     {% load static %}
+    {% load i18n %}
     <a id='bib-cite-css' hidden='true' href='{% static "css/cite.css" %}'>a</a>
 
-    <span id='bib-cite-trigger' class="bib-cite-button abs-button">export BibTeX citation</span>
-    <span id='bib-cite-loading' hidden='true'>Loading...</span>
+    <span id='bib-cite-trigger' class="bib-cite-button abs-button">{% trans "export BibTeX citation" %}</span>
+    <span id='bib-cite-loading' hidden='true'>{% trans "Loading..." %}</span>
 </div>
 
 <div id='bib-cite-modal' class='bib-modal' hidden='true'>
     <div class='bib-modal-content'>
         <div class='bib-modal-title'>
-            <h2>BibTeX formatted citation</h2>
+            <h2>{% trans "BibTeX formatted citation" %}</h2>
             <span class='bib-modal-close'>&times;</span>
         </div>
         <div>
-            <textarea id='bib-cite-target' class="bib-citation-content" aria-label="loading the citation">loading...</textarea>
+            <textarea id='bib-cite-target' class="bib-citation-content" aria-label="{% trans "loading the citation" %}">{% trans "loading..." %}</textarea>
         </div>
         <div>
-            <span>Data provided by: </span>
+            <span>{% trans "Data provided by:" %} </span>
             <a id='bib-cite-source-api'></a>
         </div>
     </div>

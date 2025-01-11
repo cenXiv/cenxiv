@@ -1,14 +1,15 @@
 {% extends "list/base.html" %}
+{% load i18n %}
 
 {% block list_index %}
-<h2>Authors and titles for {{ pubmonth }} </h2>
+<h2>{% trans "Authors and titles for" %} {{ pubmonth }} </h2>
 {% endblock %}
 
 {% block items %}
     <dl id='articles'>
 
     {% if listings|length == 0 %}
-        <p>No updates for this time period.</p>
+        <p>{% trans "No updates for this time period." %}</p>
     {% endif %}
 
     {% for item, dt, dd in listings %}

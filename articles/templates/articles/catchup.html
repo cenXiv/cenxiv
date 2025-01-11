@@ -1,5 +1,6 @@
 {% extends "articles/base.html" %}
 {% load static %}
+{% load i18n %}
 
 {#Catchup is a varaiation of the new page, but for days in the past and has set pagination#}
 
@@ -12,14 +13,14 @@
 {% block header_h1 %}
 <div class="header-breadcrumbs">
   <a href="{% url 'articles:home' %}"><img src="{% static 'images/arxiv-logo-one-color-white.svg' %}" alt="arxiv logo" style="height:40px;"/></a> <span>&gt;</span>
-  <a href="{% url 'articles:catchup_form' %}">Catchup</a>
+  <a href="{% url 'articles:catchup_form' %}">{% trans "Catchup" %}</a>
 </div>
 {% endblock %}
 
 {% block content %}
 <div id='content-inner'>
 <div id='dlpage'>
-  <h1>Catchup results for {{ subject.full_name }} on {{ date_adbY }}</h1>
+  <h1>{% trans "Catchup results for" %} {{ subject.full_name }} {% trans "on" %} {{ date_adbY }}</h1>
 
   {% block list_index %}
     <ul>
@@ -34,13 +35,13 @@
     <div>
       {% if next_day %}
         {% url 'articles:catchup' subject=subject.id date=next_day as base_url %}
-        <a href="{{ base_url }}?abs={{ include_abs }}&page=1">Continue to the next day</a>
+        <a href="{{ base_url }}?abs={{ include_abs }}&page=1">{% trans "Continue to the next day" %}</a>
         <br><br>
       {% endif %}
 
-      Total of {{ count }} entries for {{ date_adbY }}
+      {% trans "Total of" %} {{ count }} {% trans "entries for" %} {{ date_adbY }}
       {% if paging|length > 0 %}
-      View page:
+      {% trans "View page:" %}
         {% for number, link in paging %}
 
           {% if link == 'no-link' %}
@@ -65,7 +66,7 @@
         {% endif %}
 
         {% if sec.items|length == 0 %}
-            <p>No updates for this time period.</p>
+            <p>{% trans "No updates for this time period." %}</p>
         {% endif %}
 
         {% for item, dt, dd in sec.items %}
@@ -80,14 +81,14 @@
       <br>
       {% if page > 1 %}
         <div>
-          No further updates for {{ date_adbY }}
+          {% trans "No further updates for" %} {{ date_adbY }}
           <br>
             {% url 'articles:catchup' subject=subject.id date=date_Ymd as base_url %}
-            <a href="{{ base_url }}?abs={{ include_abs }}&page=1">Go to page 1</a>
+            <a href="{{ base_url }}?abs={{ include_abs }}&page=1">{% trans "Go to page 1" %}</a>
         </div>
       {% else %}
         <div>
-          <p>No updates for {{ date_adbY }}. There was either no announcement for this day, or no updates within the requested subject.</p>
+          <p>{% trans "No updates for" %} {{ date_adbY }}. {% trans "There was either no announcement for this day, or no updates within the requested subject." %}</p>
         </div>
       {% endif %}
       <br>
@@ -97,9 +98,9 @@
 
   {% block post_items %}
     <div>
-    Total of {{ count }} entries for {{ date_adbY }}
+    {% trans "Total of" %} {{ count }} {% trans "entries for" %} {{ date_adbY }}
     {% if paging|length > 0 %}
-    View page:
+    {% trans "View page:" %}
       {% for number, link in paging %}
 
         {% if link == 'no-link' %}
@@ -114,7 +115,7 @@
       {% if next_day %}
         <br> <br>
         {% url 'articles:catchup' subject=subject.id date=next_day as base_url %}
-        <a href="{{ base_url }}?abs={{ include_abs }}&page=1">Continue to the next day</a>
+        <a href="{{ base_url }}?abs={{ include_abs }}&page=1">{% trans "Continue to the next day" %}</a>
       {% endif %}
     </div>
   {% endblock %}

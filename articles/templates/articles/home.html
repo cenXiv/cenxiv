@@ -1,7 +1,7 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
 
-{% block title %}cenXiv.org e-Print archive{% endblock %}
+{% block title %}{% trans "cenXiv.org e-Print archive" %}{% endblock %}
 
 {% block body_id %}id="front"{% endblock %}
 
@@ -14,8 +14,8 @@
     {#  /multi sends to either search, catchup or form interface based on which button is hit. #}
     <form name="home-adv-search" class="home-search" action="/multi" method="get" role="search">
       {% csrf_token %}
-      <label for="search-category">Subject search and browse:</label><br>
-      <select name="group" title="Search in" id="search-category">
+      <label for="search-category">{% trans "Subject search and browse:" %}</label><br>
+      <select name="group" title="{% trans 'Search in' %}" id="search-category">
       {% for group_key, group_details in groups.items %}
         {% if not group_details.is_test %}
           <option
@@ -27,9 +27,9 @@
         {% endif %}
       {% endfor %}
       </select>
-      <input id="adv-search-btn" type="button" value="Search">
-      <input type="submit" name="/form" value="Form Interface">
-      <input id="catchup-btn" type="submit" name="/catchup" value="Catchup">
+      <input id="adv-search-btn" type="button" value="{% trans 'Search' %}">
+      <input type="submit" name="/form" value="{% trans 'Form Interface' %}">
+      <input id="catchup-btn" type="submit" name="/catchup" value="{% trans 'Catchup' %}">
     </form>
     <script type="text/javascript">
       //catchup no long hosted from multi
@@ -63,18 +63,18 @@
             <ul>
                 {% for archive in group.get_archives|dictsort:"full_name" %}
                     <li>
-                        <a href="{% if archive.id != 'cs' %}{% url 'articles:archive' archive.id %}{% else %}https://info.arxiv.org/help/cs/index.html{% endif %}" id="main-{{ archive.id }}" aria-labelledby="main-{{ archive.id }}">{% if archive.id != 'cs' %}{{ archive.full_name }}{% else %}Computing Research Repository{% endif %}</a>
+                        <a href="{% if archive.id != 'cs' %}{% url 'articles:archive' archive.id %}{% else %}https://info.arxiv.org/help/cs/index.html{% endif %}" id="main-{{ archive.id }}" aria-labelledby="main-{{ archive.id }}">{% if archive.id != 'cs' %}{{ archive.full_name }}{% else %}{% trans "Computing Research Repository" %}{% endif %}</a>
                         (<strong id="{{ archive.id }}">{% if archive.id != 'cs' %}{{ archive.id }}{% else %}CoRR{% endif %}</strong>
-                        <a href="{% url 'articles:list_articles' context=archive.id subcontext='new' %}?skip=0&show=1000" id="new-{{ archive.id }}" aria-labelledby="new-{{ archive.id }} {{ archive.id }}">new</a>,
-                        <a id="recent-{{ archive.id }}" aria-labelledby="recent-{{ archive.id }} {{ archive.id }}" href="/list/{{ archive.id }}/recent">recent</a>,
-                        <a id="search-{{ archive.id }}" aria-labelledby="search-{{ archive.id }} {{ archive.id }}" href="{% url 'articles:search_archive' archive.id %}">search</a>)
+                        <a href="{% url 'articles:list_articles' context=archive.id subcontext='new' %}?skip=0&show=1000" id="new-{{ archive.id }}" aria-labelledby="new-{{ archive.id }} {{ archive.id }}">{% trans "new" %}</a>,
+                        <a id="recent-{{ archive.id }}" aria-labelledby="recent-{{ archive.id }} {{ archive.id }}" href="/list/{{ archive.id }}/recent">{% trans "recent" %}</a>,
+                        <a id="search-{{ archive.id }}" aria-labelledby="search-{{ archive.id }} {{ archive.id }}" href="{% url 'articles:search_archive' archive.id %}">{% trans "search" %}</a>)
                         {% if group.id == 'grp_physics' and archive.id not in categories %}
-                            <br/> includes:
+                            <br/>{% trans "includes:" %}
                         {% elif group.id == 'cs' %}
-                            <br/>includes:
-                            (see <a href="{% url 'articles:archive' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">detailed description</a>):
+                            <br/>{% trans "includes:" %}
+                            (see <a href="{% url 'articles:archive' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">{% trans "detailed description" %}</a>):
                         {% elif group.id != 'grp_physics' %}
-                            <br/>includes: (see <a href="{% url 'articles:help_archive_description' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">detailed description</a>):
+                            <br/>{% trans "includes:" %} (see <a href="{% url 'articles:help_archive_description' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">{% trans "detailed description" %}</a>):
                         {% endif %}
 
                         {% for category in archive.get_categories|dictsort:"full_name" %}
@@ -92,10 +92,10 @@
 <hr />
 <h2>About arXiv</h2>
 <ul>
-  <li><a href="#">General information</a></li>
-  <li><a href="#">How to Submit to arXiv</a></li>
-  <li><a href="#">Membership &amp; Giving</a></li>
-  <li><a href="#">Who We Are</a></li>
+  <li><a href="#">{% trans "General information" %}</a></li>
+  <li><a href="#">{% trans "How to Submit to arXiv" %}</a></li>
+  <li><a href="#">{% trans "Membership &amp; Giving" %}</a></li>
+  <li><a href="#">{% trans "Who We Are" %}</a></li>
 </ul>
 
 

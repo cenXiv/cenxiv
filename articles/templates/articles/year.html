@@ -14,17 +14,17 @@
 {% block content %}
 
 <h1>{{ archive.full_name }}</h1>
-<h2>Article statistics for {{ year }}</h2>
-<p>Available montly lists with counts of <b>{{ archive.id }} articles</b> +
-<i>cross-listings to {{ archive.id }}</i> in {{ year }}
-(each '|' represents 20 articles):</p>
+<h2>{% trans "Article statistics for" %} {{ year }}</h2>
+<p>{% trans "Available monthly lists with counts of" %} <b>{{ archive.id }} {% trans "articles" %}</b> +
+<i>{% trans "cross-listings to" %} {{ archive.id }}</i> {% trans "in" %} {{ year }}
+{% trans "(each '|' represents 20 articles)" %}:</p>
 
 {{ ul|safe }}
 
-<p>{{ year }} totals: <b>{{ new_count|default:'unknown' }} articles</b> + <i>{{ cross_count|default:'unknown' }} cross-lists</i></p>
+<p>{{ year }} {% trans "totals:" %} <b>{{ new_count|default:'unknown' }} {% trans "articles" %}</b> + <i>{{ cross_count|default:'unknown' }} {% trans "cross-lists" %}</i></p>
 
-<p><b>Other years:</b>
-      <li>Article statistics by year:<br>
+<p><b>{% trans "Other years:" %}</b>
+      <li>{% trans "Article statistics by year:" %}<br>
         {% for a in li_as %}
           {{ a|safe }}
         {% endfor %}

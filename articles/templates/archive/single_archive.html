@@ -4,52 +4,52 @@
 {% block title %}{{ archive.full_name }}{% endblock %}
 
 {% block content %}
-  <h1>{{archive.full_name}} <span style="font-size: 70%;">(since {{archive.start_date|date:"F Y"}})</span></h1>
+  <h1>{{archive.full_name}} <span style="font-size: 70%;">({% trans "since" %} {{archive.start_date|date:"F Y"}})</span></h1>
 
   {% if subsumed_id %}
     <p>The <b>{{subsumed_id}}</b> archive has been subsumed into
       <span class="primary-subject">{{subsuming_category.full_name}} ({{subsuming_category.id}}).</span></p>
-    <p>{{subsuming_category.full_name}} ({{subsuming_category.id}}) is part of the {{archive.full_name}} archive.</p>
+    <p>{{subsuming_category.full_name}} ({{subsuming_category.id}}) {% trans "is part of the" %} {{archive.full_name}} {% trans "archive" %}.</p>
   {% endif %}
 
 
-  <p>For a <em>specific paper</em>, enter the identifier into the top right search box.</p>
+  <p>{% trans "For a" %} <em>{% trans "specific paper" %}</em>, {% trans "enter the identifier into the top right search box" %}.</p>
 
   <ul>
-    <li><b>Browse:</b>
+    <li><b>{% trans "Browse:" %}</b>
       <ul>
         <li>
-          <a href="{% url 'articles:list_articles' context=archive.id subcontext='new' %}">new</a>
-          (most recent mailing, with abstracts)
+          <a href="{% url 'articles:list_articles' context=archive.id subcontext='new' %}">{% trans "new" %}</a>
+          ({% trans "most recent mailing, with abstracts" %})
         </li>
         <li>
-          <a href="{% url 'articles:list_articles' context=archive.id subcontext='recent' %}">recent</a>
-          (last 5 mailings)
+          <a href="{% url 'articles:list_articles' context=archive.id subcontext='recent' %}">{% trans "recent" %}</a>
+          ({% trans "last 5 mailings" %})
         </li>
         <li>
-          <a href="{% url 'articles:list_articles' context=archive.id subcontext='current' %}">current month's</a>
-          {{ archive.id }} listings
+          <a href="{% url 'articles:list_articles' context=archive.id subcontext='current' %}">{% trans "current month's" %}</a>
+          {{ archive.id }} {% trans "listings" %}
         </li>
-        <li>specific year/month:
+        <li>{% trans "specific year/month:" %}
           <form action="{% url 'articles:list_default' %}" method="get">
             {% csrf_token %}
             {{ list_form.archive }}
             {{ list_form.year }} {{ list_form.month }}
-            <button type="submit">Go</button>
+            <button type="submit">{% trans "Go" %}</button>
           </form>
         </li>
       </ul>
     </li>
 
-    <li><b>Catch-up:</b>
+    <li><b>{% trans "Catch-up:" %}</b>
       <form id="catchup-form" action="{% url 'articles:catchup_form' %}" method="get" onsubmit="catchupParamSelection('{{ archive.id }}')">
         {% csrf_token %}
         <input id="catchup_archive" type="hidden" value="{{archive.id}}"/>
         <input type="hidden" id="subject" name="subject" />
         {% if archive.get_categories|length > 1 %}
-          <label for="catchup_category">Categories:</label>
+          <label for="catchup_category">{% trans "Categories:" %}</label>
           <select name="catchup_category" id="catchup_category">
-              <option value="" selected>All</option>
+              <option value="" selected>{% trans "All" %}</option>
               {% for category in archive.get_categories %}
                   <option value="{{ category.id }}">
                       {{ category.full_name }}
@@ -59,7 +59,7 @@
           <br>
         {% endif %}
 
-        Changes since:
+        {% trans "Changes since:" %}
         <select id="catchup_day">
           {% for day in days %}
               <option value="{{ day }}">{{ day }}</option>
@@ -77,20 +77,20 @@
         </select>
         <input type="hidden" id="date" name="date" />
 
-        , view results
+        {% trans ", view results" %}
         <select name="include_abs">
-          <option value="False" selected> without </option>
-          <option value="True" > with </option>
+          <option value="False" selected> {% trans "without" %} </option>
+          <option value="True" > {% trans "with" %} </option>
         </select>
-        abstracts
+        {% trans "abstracts" %}
 
-        <input type="submit" value="Go"/>
+        <input type="submit" value="{% trans 'Go' %}"/>
       </form>
     </li>
 
-    <li><b>Search</b> within the <a href="{% url 'articles:search_archive' archive.id %}">{{archive.id}} archive</a></li>
+    <li><b>{% trans "Search" %}</b> {% trans "within the" %} <a href="{% url 'articles:search_archive' archive.id %}">{{archive.id}} {% trans "archive" %} </a></li>
 
-    <li>Article statistics by year:<br>
+    <li>{% trans "Article statistics by year:" %}<br>
       {% for url, year in stats_by_year %}
       <a href="{{url}}">{{year}}</a>
       {% endfor %}
@@ -99,13 +99,13 @@
   </ul>
 
   {% if  category_list|length > 1 %}
-  <h2>Categories within {{archive.full_name}}</h2>
+  <h2>{% trans "Categories within" %} {{archive.full_name}}</h2>
   <ul>
     {% for category in category_list %}
       <li><b>{{category.id}} - {{category.full_name}}</b>
-        (<a href="{% url 'articles:list_articles' context=category.id subcontext='new' %}">new</a>,
-        <a href="{% url 'articles:list_articles' context=category.id subcontext='recent' %}">recent</a>,
-        <a href="{% url 'articles:list_articles' context=category.id subcontext='current' %}">current month</a>)
+        (<a href="{% url 'articles:list_articles' context=category.id subcontext='new' %}">{% trans "new" %}</a>,
+        <a href="{% url 'articles:list_articles' context=category.id subcontext='recent' %}">{% trans "recent" %}</a>,
+        <a href="{% url 'articles:list_articles' context=category.id subcontext='current' %}">{% trans "current month" %}</a>)
         {% if category.description %}
           <div class="description">{{category.description}}</div>
         {% endif %}
