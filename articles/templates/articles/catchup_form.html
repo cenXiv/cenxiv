@@ -1,6 +1,7 @@
 {% extends "articles/base.html" %}
 {% load static %}
 {% load i18n %}
+{% load article_filters %}
 
 {% block title %}{% trans "Catchup" %}{% endblock %}
 
@@ -26,7 +27,7 @@
           <option value="" selected disabled>{% trans "Select a group" %}</option>
           {% for group in groups.values %}
             {% if group.is_active and not group.is_test %}
-              <option value="{{ group.id }}">{{ group.full_name }}</option>
+              <option value="{{ group.id }}">{{ translation_dict|dict_get_key:group.full_name }}</option>
             {% endif %}
           {% endfor %}
         </select>
@@ -45,7 +46,7 @@
             <select id="{{group.id}}-archives" class="archive-dropdown" style="display: none;" onchange="updateCategories()">
               <option value="" selected {% if group.id != "grp_physics" %} disabled="disabled" {% endif %}>{% trans "Select an archive" %}</option>
               {% for archive in group.get_archives %}
-                <option value="{{ archive.id }}">{{ archive.full_name }}</option>
+                <option value="{{ archive.id }}">{{ translation_dict|dict_get_key:archive.full_name }}</option>
               {% endfor %}
             </select>
 
@@ -67,7 +68,7 @@
               <select id="{{archive.id}}-categories" class="category-dropdown" style="display: none;" >
                 <option value="" selected>{% trans "(Optional) Select a category" %}</option>
                 {% for category in archive.get_categories %}
-                  <option  value="{{ category.id }}" >{{ category.full_name }}</option>
+                  <option  value="{{ category.id }}" >{{ translation_dict|dict_get_key:category.full_name }}</option>
                 {% endfor %}
               </select>
 

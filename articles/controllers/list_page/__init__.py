@@ -69,6 +69,7 @@ from browse.formatting.latexml import get_latexml_url, get_latexml_urls_for_arti
 from django.urls import reverse
 from django.http import HttpResponseBadRequest
 from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 
 import mtranslate as translator
 
@@ -501,38 +502,38 @@ def index_for_types(resp: ListingNew,
 
     if new_count > 0:
         if skipn != 0:
-            ift.append(('New submissions',
+            ift.append((_('New submissions'),
                         url_for('.list_articles',
                                 context=context, subcontext=subcontext,
                                 skip=0, show=shown),
                         0))
         else:
-            ift.append(('New submissions', '', 0))
+            ift.append((_('New submissions'), '', 0))
 
     if cross_count > 0:
         cross_index = new_count + 1
         c_skip = math.floor(new_count / shown) * shown
 
         if new_count > shown:
-            ift.append(('Cross-lists',
+            ift.append((_('Cross-lists'),
                         url_for('.list_articles',
                                 context=context, subcontext=subcontext,
                                 skip=c_skip, show=shown),
                         cross_index))
         else:
-            ift.append(('Cross-lists', '', cross_index))
+            ift.append((_('Cross-lists'), '', cross_index))
 
     if rep_count > 0:
         rep_index = new_count+cross_count + 1
         rep_skip = math.floor((new_count + cross_count)/shown) * shown
         if new_count + cross_count > shown:
-            ift.append(('Replacements',
+            ift.append((_('Replacements'),
                         url_for('.list_articles',
                                 context=context, subcontext=subcontext,
                                 skip=rep_skip, show=shown),
                         rep_index))
         else:
-            ift.append(('Replacements', '', rep_index))
+            ift.append((_('Replacements'), '', rep_index))
 
     return {'index_for_types': ift}
 
@@ -619,7 +620,7 @@ def sub_sections_for_types(
         continued=skipn > 0,
         last=skipn >= new_count - shown,
         visible=len(news)>0,
-        heading=f'New submissions '
+        heading=_('New submissions ')
     )
 
     sec_cross=ListingSection(
@@ -629,7 +630,7 @@ def sub_sections_for_types(
         continued=skipn + 1 > cross_start,
         last=skipn >= rep_start - shown,
         visible=len(crosses)>0,
-        heading=f'Cross submissions '
+        heading=_('Cross submissions ')
     )
 
     sec_rep=ListingSection(
@@ -639,7 +640,7 @@ def sub_sections_for_types(
         continued=skipn + 1 > rep_start,
         last=last_shown >= new_count + cross_count + rep_count,
         visible=len(reps)>0,
-        heading=f'Replacement submissions '
+        heading=_('Replacement submissions ')
     )
 
     secs=[sec_new, sec_cross, sec_rep]

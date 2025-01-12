@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load i18n %}
+{% load article_filters %}
 
 {% block title %}[{{ requested_id }}] {{ title }}{% endblock %}
 
@@ -33,7 +34,7 @@
 <div id="abs-outer">
   <div class="leftcolumn">
     <div class="subheader">
-      <h1>{% if primary_archive.id != primary_category.id %}{{ primary_archive.full_name }} > {% endif %}{{ primary_category.full_name }}</h1>
+      <h1>{% if primary_archive.id != primary_category.id %}{{ translation_dict|dict_get_key:primary_archive.full_name }} > {% endif %}{{ translation_dict|dict_get_key:primary_category.full_name }}</h1>
     </div>
 
     <div class="header-breadcrumbs-mobile">

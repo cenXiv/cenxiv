@@ -1,7 +1,8 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
+{% load article_filters %}
 
-{% block title %}{{ archive.full_name }}{% endblock %}
+{% block title %}{{ translation_dict|dict_get_key:archive.full_name }}{% endblock %}
 
 
 {% block header_h1 %}
@@ -13,7 +14,7 @@
 
 {% block content %}
 
-<h1>{{ archive.full_name }}</h1>
+<h1>{{ translation_dict|dict_get_key:archive.full_name }}</h1>
 <h2>{% trans "Article statistics for" %} {{ year }}</h2>
 <p>{% trans "Available monthly lists with counts of" %} <b>{{ archive.id }} {% trans "articles" %}</b> +
 <i>{% trans "cross-listings to" %} {{ archive.id }}</i> {% trans "in" %} {{ year }}

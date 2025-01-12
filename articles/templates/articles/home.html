@@ -1,5 +1,6 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
+{% load article_filters %}
 
 {% block title %}{% trans "cenXiv.org e-Print archive" %}{% endblock %}
 
@@ -22,7 +23,7 @@
               value="{{ group_key }}"
               data-url="{% url 'articles:search_archive' group_key|slice:'4:' %}"
               {% if group_key == 'grp_physics' %}selected="selected"{% endif %}>
-            {{ group_details.full_name }}
+            {{ translation_dict|dict_get_key:group_details.full_name }}
           </option>
         {% endif %}
       {% endfor %}
@@ -59,11 +60,11 @@
 
     {% for group_id, group in groups.items %}
         {% if not group.is_test %}
-            <h2>{{ group.full_name }}</h2>
+            <h2>{{ translation_dict|dict_get_key:group.full_name }}</h2>
             <ul>
                 {% for archive in group.get_archives|dictsort:"full_name" %}
                     <li>
-                        <a href="{% if archive.id != 'cs' %}{% url 'articles:archive' archive.id %}{% else %}https://info.arxiv.org/help/cs/index.html{% endif %}" id="main-{{ archive.id }}" aria-labelledby="main-{{ archive.id }}">{% if archive.id != 'cs' %}{{ archive.full_name }}{% else %}{% trans "Computing Research Repository" %}{% endif %}</a>
+                        <a href="{% if archive.id != 'cs' %}{% url 'articles:archive' archive.id %}{% else %}https://info.arxiv.org/help/cs/index.html{% endif %}" id="main-{{ archive.id }}" aria-labelledby="main-{{ archive.id }}">{% if archive.id != 'cs' %}{{ translation_dict|dict_get_key:archive.full_name }}{% else %}{% trans "Computing Research Repository" %}{% endif %}</a>
                         (<strong id="{{ archive.id }}">{% if archive.id != 'cs' %}{{ archive.id }}{% else %}CoRR{% endif %}</strong>
                         <a href="{% url 'articles:list_articles' context=archive.id subcontext='new' %}?skip=0&show=1000" id="new-{{ archive.id }}" aria-labelledby="new-{{ archive.id }} {{ archive.id }}">{% trans "new" %}</a>,
                         <a id="recent-{{ archive.id }}" aria-labelledby="recent-{{ archive.id }} {{ archive.id }}" href="/list/{{ archive.id }}/recent">{% trans "recent" %}</a>,
@@ -72,14 +73,14 @@
                             <br/>{% trans "includes:" %}
                         {% elif group.id == 'cs' %}
                             <br/>{% trans "includes:" %}
-                            (see <a href="{% url 'articles:archive' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">{% trans "detailed description" %}</a>):
+                            ({% trans "see" %} <a href="{% url 'articles:archive' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">{% trans "detailed description" %}</a>):
                         {% elif group.id != 'grp_physics' %}
-                            <br/>{% trans "includes:" %} (see <a href="{% url 'articles:help_archive_description' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">{% trans "detailed description" %}</a>):
+                            <br/>{% trans "includes:" %} ({% trans "see" %} <a href="{% url 'articles:help_archive_description' archive.id %}" id="details-{{ archive.id }}" aria-labelledby="details-{{ archive.id }} main-{{ archive.id }}">{% trans "detailed description" %}</a>):
                         {% endif %}
 
                         {% for category in archive.get_categories|dictsort:"full_name" %}
                             {% if not forloop.first or not forloop.last or group.id != 'grp_physics' %}
-                            <a href="/list/{{ category.id }}/recent" id="{{ category.id }}" aria-labelledby="main-{{ archive.id }} {{ category.id }}">{{ category.full_name }}</a>{% if not forloop.last %}; {% endif %}
+                            <a href="/list/{{ category.id }}/recent" id="{{ category.id }}" aria-labelledby="main-{{ archive.id }} {{ category.id }}">{{ translation_dict|dict_get_key:category.full_name }}</a>{% if not forloop.last %}; {% endif %}
                             {% endif %}
                         {% endfor %}
                     </li>

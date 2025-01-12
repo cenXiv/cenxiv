@@ -1,10 +1,11 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
+{% load article_filters %}
 
 {% block title %}{% trans "Archives" %}{% endblock %}
 
 {% block content %}
-  <h1>Archives</h1>
+  <h1>{% trans "Archives" %}</h1>
 
   {% if bad_archive is not None and bad_archive != "list" %}
   <h1>{% trans "No archive" %} '{{ bad_archive }}' -- {% trans "available archives are:" %}</h1>
@@ -14,7 +15,7 @@
 
   <ul>
     {% for archive in archives %}
-    <li><a href="{% url 'articles:archive' archive.id %}">{{ archive.full_name }}</a> ({{ archive.id }})</li>
+    <li><a href="{% url 'articles:archive' archive.id %}">{{ translation_dict|dict_get_key:archive.full_name }}</a> ({{ archive.id }})</li>
     {% endfor %}
   </ul>
 
@@ -23,7 +24,7 @@
 
   <ul>
     {% for archive in defunct %}
-    <li><a href="{% url 'articles:archive' archive.canonical_id %}">{{ archive.full_name }}</a> ({{ archive.id }}, {% trans "subsumed into" %} {{ archive.canonical_id }})</li>
+    <li><a href="{% url 'articles:archive' archive.canonical_id %}">{{ translation_dict|dict_get_key:archive.full_name }}</a> ({{ archive.id }}, {% trans "subsumed into" %} {{ archive.canonical_id }})</li>
     {% endfor %}
   </ul>
 

@@ -14,6 +14,7 @@ from werkzeug.exceptions import BadRequest
 
 from django.urls import reverse
 from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
 
 import arxiv as arxiv_api  # The PyPI arxiv package
 
@@ -422,11 +423,11 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
 
     if new_count > 0:
         if page != 1:
-            ift.append(('New submissions',
+            ift.append((_('New submissions'),
                         url_for('.catchup', subject=subject.id, date=day.strftime('%Y-%m-%d'), abs=include_abs, page=1),
                         1))
         else:
-            ift.append(('New submissions', '', 1))
+            ift.append((_('New submissions'), '', 1))
 
     if cross_count > 0:
         cross_start = new_count + 1
@@ -434,9 +435,9 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
         cross_index=cross_start-(cross_start_page-1)*CATCHUP_LIMIT
 
         if page==cross_start_page:
-            ift.append(('Cross-lists', '', cross_index))
+            ift.append((_('Cross-lists'), '', cross_index))
         else:
-            ift.append(('Cross-lists',
+            ift.append((_('Cross-lists'),
                         url_for('.catchup', subject=subject.id, date=day.strftime('%Y-%m-%d'), abs=include_abs, page=cross_start_page),
                         cross_index))
 
@@ -446,9 +447,9 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
         rep_index=rep_start-(rep_start_page-1)*CATCHUP_LIMIT
 
         if page==rep_start_page:
-            ift.append(('Replacements', '', rep_index))
+            ift.append((_('Replacements'), '', rep_index))
         else:
-            ift.append(('Replacements',
+            ift.append((_('Replacements'),
                         url_for('.catchup', subject=subject.id, date=day.strftime('%Y-%m-%d'), abs=include_abs, page=rep_start_page),
                         rep_index))
 

@@ -1,15 +1,16 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
+{% load article_filters %}
 
-{% block title %}{{ archive.full_name }}{% endblock %}
+{% block title %}{{ translation_dict|dict_get_key:archive.full_name }}{% endblock %}
 
 {% block content %}
-  <h1>{{archive.full_name}} <span style="font-size: 70%;">({% trans "since" %} {{archive.start_date|date:"F Y"}})</span></h1>
+  <h1>{{ translation_dict|dict_get_key:archive.full_name }} <span style="font-size: 70%;">({% trans "since" %} {{ archive.start_date|date:"F Y" }})</span></h1>
 
   {% if subsumed_id %}
-    <p>The <b>{{subsumed_id}}</b> archive has been subsumed into
-      <span class="primary-subject">{{subsuming_category.full_name}} ({{subsuming_category.id}}).</span></p>
-    <p>{{subsuming_category.full_name}} ({{subsuming_category.id}}) {% trans "is part of the" %} {{archive.full_name}} {% trans "archive" %}.</p>
+    <p>The <b>{{ subsumed_id }}</b> archive has been subsumed into
+      <span class="primary-subject">{{ translation_dict|dict_get_key:subsuming_category.full_name }} ({{ subsuming_category.id }}).</span></p>
+    <p>{{ translation_dict|dict_get_key:subsuming_category.full_name }} ({{ subsuming_category.id }}) {% trans "is part of the" %} {{ translation_dict|dict_get_key:archive.full_name }} {% trans "archive" %}.</p>
   {% endif %}
 
 
@@ -44,7 +45,7 @@
     <li><b>{% trans "Catch-up:" %}</b>
       <form id="catchup-form" action="{% url 'articles:catchup_form' %}" method="get" onsubmit="catchupParamSelection('{{ archive.id }}')">
         {% csrf_token %}
-        <input id="catchup_archive" type="hidden" value="{{archive.id}}"/>
+        <input id="catchup_archive" type="hidden" value="{{ archive.id }}"/>
         <input type="hidden" id="subject" name="subject" />
         {% if archive.get_categories|length > 1 %}
           <label for="catchup_category">{% trans "Categories:" %}</label>
@@ -52,7 +53,7 @@
               <option value="" selected>{% trans "All" %}</option>
               {% for category in archive.get_categories %}
                   <option value="{{ category.id }}">
-                      {{ category.full_name }}
+                      {{ translation_dict|dict_get_key:category.full_name }}
                   </option>
               {% endfor %}
           </select>
@@ -88,26 +89,26 @@
       </form>
     </li>
 
-    <li><b>{% trans "Search" %}</b> {% trans "within the" %} <a href="{% url 'articles:search_archive' archive.id %}">{{archive.id}} {% trans "archive" %} </a></li>
+    <li><b>{% trans "Search" %}</b> {% trans "within the" %} <a href="{% url 'articles:search_archive' archive.id %}">{{ archive.id }} {% trans "archive" %} </a></li>
 
     <li>{% trans "Article statistics by year:" %}<br>
       {% for url, year in stats_by_year %}
-      <a href="{{url}}">{{year}}</a>
+      <a href="{{ url }}">{{ year }}</a>
       {% endfor %}
     </li>
 
   </ul>
 
   {% if  category_list|length > 1 %}
-  <h2>{% trans "Categories within" %} {{archive.full_name}}</h2>
+  <h2>{% trans "Categories within" %} {{ translation_dict|dict_get_key:archive.full_name }}</h2>
   <ul>
     {% for category in category_list %}
-      <li><b>{{category.id}} - {{category.full_name}}</b>
+      <li><b>{{ category.id }} - {{ translation_dict|dict_get_key:category.full_name }}</b>
         (<a href="{% url 'articles:list_articles' context=category.id subcontext='new' %}">{% trans "new" %}</a>,
         <a href="{% url 'articles:list_articles' context=category.id subcontext='recent' %}">{% trans "recent" %}</a>,
         <a href="{% url 'articles:list_articles' context=category.id subcontext='current' %}">{% trans "current month" %}</a>)
         {% if category.description %}
-          <div class="description">{{category.description}}</div>
+          <div class="description">{{ category.description }}</div>
         {% endif %}
       </li>
     {% endfor %}
