@@ -171,7 +171,7 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
     if subject_or_category in CATEGORIES:
         list_type = 'category'
         cat = CATEGORIES[subject_or_category]
-        category = cat.get_canonical() #make sure we use the canonical version of the category
+        category = cat.get_canonical() # make sure we use the canonical version of the category
         list_ctx_name = category.full_name
         list_ctx_id = category.id
         list_ctx_in_archive = category.in_archive
@@ -183,9 +183,6 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         list_ctx_in_archive = archive.id
     else:
         return HttpResponseBadRequest(f"Invalid archive or category: {subject_or_category}")
-
-    # listing_service = get_listing_service()
-    # listing_service = db_listing({}, None)
 
     if not skip or not skip.isdigit():
         skipn = 0
@@ -208,11 +205,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
     if time_period == 'new':
         list_type = 'new'
         response_headers = add_surrogate_key(response_headers, ["list-new", "announce", f"list-new-{list_ctx_id}"])
-        # new_resp: Union[ListingNew, NotModifiedResponse] =\
-        #     listing_service.list_new_articles(list_ctx_id, skipn,
-        #                                       shown, if_mod_since)
 
-        items, dts, dds = get_new_listing(list_ctx_id, skipn, shown)
+        items, dts, dds = get_new_listing(request, list_ctx_id, skipn, shown)
         if _check_modified(items.listings, if_mod_since):
             new_resp = NotModifiedResponse(True, gen_expires())
         else:
@@ -232,10 +226,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         # A bit different due to returning days not listings
         list_type = 'recent'
         response_headers = add_surrogate_key(response_headers, ["list-recent", "announce", f"list-recent-{list_ctx_id}"])
-        # rec_resp = listing_service.list_pastweek_articles(
-        #     list_ctx_id, skipn, shown, if_mod_since)
 
-        items, dts, dds = get_recent_listing(list_ctx_id, skipn, shown)
+        items, dts, dds = get_recent_listing(request, list_ctx_id, skipn, shown)
         if _check_modified(items.listings, if_mod_since):
             rec_resp = NotModifiedResponse(True, gen_expires())
         else:
@@ -288,15 +280,13 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
                 response_headers = add_surrogate_key(response_headers, ["announce"])
             response_data['list_month'] = str(list_month)
             response_data['list_month_name'] = calendar.month_abbr[list_month]
-            # resp = listing_service.list_articles_by_month(
-            #     list_ctx_id, list_year, list_month, skipn, shown, if_mod_since)
 
             if list_year < 91: # in 2000s
                 list_year += 2000
             elif list_year < 1900: # 90s articles
                 list_year += 1900
 
-            items, dts, dds = get_articles_for_month(list_ctx_id, time_period, list_year, list_month, skipn, shown)
+            items, dts, dds = get_articles_for_month(request, list_ctx_id, time_period, list_year, list_month, skipn, shown)
             if _check_modified(items.listings, if_mod_since):
                 resp = NotModifiedResponse(True, gen_expires())
             else:
@@ -307,15 +297,13 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
             response_headers = add_surrogate_key(response_headers, [f"list-{list_year:04d}-{list_ctx_id}"])
             if list_year == date.today().year:
                 response_headers = add_surrogate_key(response_headers, ["announce"])
-            # resp = listing_service.list_articles_by_year(
-            #     list_ctx_id, list_year, skipn, shown, if_mod_since)
 
             if list_year < 91: # in 2000s
                 list_year += 2000
             elif list_year < 1900: # 90s articles
                 list_year += 1900
 
-            items, dts, dds = get_articles_for_month(list_ctx_id, time_period, list_year, None, skipn, shown)
+            items, dts, dds = get_articles_for_month(request, list_ctx_id, time_period, list_year, None, skipn, shown)
             if _check_modified(items.listings, if_mod_since):
                 resp = NotModifiedResponse(True, gen_expires())
             else:
@@ -568,7 +556,7 @@ def sub_sections_for_recent(
             continued=skipped > 0,
             last=skipped + to_show ==count,
             visible=display,
-            heading="" #filled out later
+            heading="" # filled out later
         )
 
         secs.append(sec)
@@ -681,10 +669,13 @@ def _check_modified(items: List[ListingItem], if_modified_since: Optional[str] =
                 return True
     return False
 
-def get_new_listing(archive_or_cat: str,skip: int, show: int) -> ListingNew:
+def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> ListingNew:
     "Gets the most recent day of listings for an archive or category"
-    url = f'https://arxiv.org/list/{archive_or_cat}/new'
-    response = requests.get(url)
+    url = request.get_full_path()
+    url = url.replace('/en', '')
+    url = url.replace('/zh-hans', '')
+    arxiv_url = 'https://arxiv.org' + url
+    response = requests.get(arxiv_url)
     soup = BeautifulSoup(response.content, 'lxml')
     # Find the specific h3 containing the target text
     target_h3 = soup.find('h3', string=re.compile(r'Showing new listings for'))
@@ -750,10 +741,8 @@ def get_new_listing(archive_or_cat: str,skip: int, show: int) -> ListingNew:
     cross_count = rep_start - cross_start
     rep_count = len(paper_ids) - new_count - cross_count
 
-    paper_ids = paper_ids[skip:skip+show]
-
-    dts = soup.find_all('dt')[skip:skip+show]
-    dds = soup.find_all('dd')[skip:skip+show]
+    dts = soup.find_all('dt')
+    dds = soup.find_all('dd')
 
     # organize results into expected listing
     items = []
@@ -832,9 +821,12 @@ def get_new_listing(archive_or_cat: str,skip: int, show: int) -> ListingNew:
                       announced=announced,
                       expires=gen_expires()), dts, dds
 
-def get_recent_listing(archive_or_cat: str,skip: int, show: int) -> Listing:
-    url = f'https://arxiv.org/list/{archive_or_cat}/recent?skip=0&show=2000'
-    response = requests.get(url)
+def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Listing:
+    url = request.get_full_path()
+    url = url.replace('/en', '')
+    url = url.replace('/zh-hans', '')
+    arxiv_url = 'https://arxiv.org' + url
+    response = requests.get(arxiv_url)
     soup = BeautifulSoup(response.content, 'lxml')
     paging_div = soup.find('div', class_='paging')
     total = 0
@@ -916,10 +908,8 @@ def get_recent_listing(archive_or_cat: str,skip: int, show: int) -> Listing:
                 link_ = Link(url=link.href, article=article)
                 link_.save()
 
-    paper_ids = paper_ids[skip:skip+show]
-
-    dts = soup.find_all('dt')[skip:skip+show]
-    dds = soup.find_all('dd')[skip:skip+show]
+    dts = soup.find_all('dt')
+    dds = soup.find_all('dd')
 
     # organize results into expected listing
     items = []
@@ -991,15 +981,18 @@ def get_recent_listing(archive_or_cat: str,skip: int, show: int) -> Listing:
         expires=gen_expires()
     ), dts, dds
 
-def get_articles_for_month(archive_or_cat: str, time_period: str, year: int, month: Optional[int], skip: int, show: int) -> Listing:
+def get_articles_for_month(request, archive_or_cat: str, time_period: str, year: int, month: Optional[int], skip: int, show: int) -> Listing:
     """archive: archive or category name, year:requested year, month: requested month - no month means retreive listings for the year,
     skip: number of entries to skip, show:number of entries to return
     Retrieve entries from the Metadata table for papers in a given category and month.
     Searches for all possible category names that could apply to a particular archive or category
     also retrieves information on if any of the possible categories is the articles primary
     """
-    url = f'https://arxiv.org/list/{archive_or_cat}/{time_period}?skip=0&show=2000'
-    response = requests.get(url)
+    url = request.get_full_path()
+    url = url.replace('/en', '')
+    url = url.replace('/zh-hans', '')
+    arxiv_url = 'https://arxiv.org' + url
+    response = requests.get(arxiv_url)
     soup = BeautifulSoup(response.content, 'lxml')
     paging_div = soup.find('div', class_='paging')
     total = 0
@@ -1057,10 +1050,8 @@ def get_articles_for_month(archive_or_cat: str, time_period: str, year: int, mon
                 link_ = Link(url=link.href, article=article)
                 link_.save()
 
-    paper_ids = paper_ids[skip:skip+show]
-
-    dts = soup.find_all('dt')[skip:skip+show]
-    dds = soup.find_all('dd')[skip:skip+show]
+    dts = soup.find_all('dt')
+    dds = soup.find_all('dd')
 
     # organize results into expected listing
     items = []
