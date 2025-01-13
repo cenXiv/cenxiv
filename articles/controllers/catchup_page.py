@@ -34,6 +34,8 @@ import mtranslate as translator
 
 from .list_page import sub_sections_for_types
 from ..models import Article, Author, Category, Link
+from ..templatetags import article_filters
+from ..utils import get_translation_dict
 
 
 def get_catchup_page(request, subject_str:str, date:str)-> Response:
@@ -172,7 +174,8 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
         rep_count = len(paper_ids) - new_count - cross_count
 
         dts = soup.find_all('dt')
-        dds = soup.find_all('dd')
+        # dds = soup.find_all('dd')
+        authors_divs = soup.find_all('div', {'class': 'list-authors'})
 
         # organize results into expected listing
         items = []
@@ -186,22 +189,24 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
 
             article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
 
-            dt = dts[i]
-            new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
-            if get_language() == 'zh-hans':
-                new_a.string = '中文pdf'
-            else:
-                new_a.string = 'cn-pdf'
-            abstract_a = dt.find('a', {'title': 'Abstract'})
-            abstract_a.next_sibling.insert_after(new_a)
-            new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
-            new_a.insert_after(', ')
+            # dt = dts[i]
+            # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
+            # if get_language() == 'zh-hans':
+            #     new_a.string = '中文pdf'
+            # else:
+            #     new_a.string = 'cn-pdf'
+            # abstract_a = dt.find('a', {'title': 'Abstract'})
+            # abstract_a.next_sibling.insert_after(new_a)
+            # new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
+            # new_a.insert_after(', ')
 
-            if get_language() == 'zh-hans':
-                dd = dds[i]
-                dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
-                if dd.p:
-                    dd.p.string = article.abstract_cn
+            # if get_language() == 'zh-hans':
+            #     dd = dds[i]
+            #     dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+            #     if dd.p:
+            #         dd.p.string = article.abstract_cn
+
+            language = get_language()
 
             arxiv_id, version = article.entry_id, article.entry_version
             primary_cat = CATEGORIES[article.primary_category]
@@ -211,9 +216,9 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
             doc = DocMetadata(
                 arxiv_id=arxiv_id,
                 arxiv_id_v=f'{arxiv_id}v{version}',
-                title=article.title_en,
+                title=article.title_cn if language == 'zh-hans' else article.title_en,
                 authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
-                abstract=article.abstract_en,
+                abstract=article.abstract_cn if language == 'zh-hans' else article.abstract_en,
                 categories=[ cat.name for cat in article.categories.all() ],
                 primary_category=primary_cat,
                 secondary_categories=secondary_cats,
@@ -236,6 +241,41 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
                 primary_group=primary_cat.get_archive().get_group(),
                 modified=modified
             )
+
+            a_html = dts[i].find('a', string='html')
+            if a_html:
+                doc.latexml_link = a_html['href']
+            a_other = dts[i].find('a', string='other')
+            if a_other:
+                doc.other_link = a_other['href']
+
+            doc.authors_list = str(authors_divs[i])
+            doc.primary_display = doc.primary_category.display()
+            doc.secondaries_display = doc.display_secondaries()
+
+            if language == 'zh-hans':
+                translation_dict = get_translation_dict()
+                # Define the regex pattern
+                pattern = r'^(.*?) \((.*?)\)$'
+
+                # Use re.search to find matches
+                match = re.search(pattern, doc.primary_display)
+                if match:
+                    # Extract the two groups
+                    cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                    category = match.group(2)  # e.g. 'astro-ph.HE'
+                    cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                    doc.primary_display = f'{cat_full_name_cn} ({category})'
+
+                for i, secondary_display in enumerate(doc.secondaries_display):
+                    match = re.search(pattern, secondary_display)
+                    if match:
+                        # Extract the two groups
+                        cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                        category = match.group(2)  # e.g. 'astro-ph.HE'
+                        cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                        doc.secondaries_display[i] = f'{cat_full_name_cn} ({category})'
+
             item = ListingItem(
                 id=arxiv_id,
                 listingType=listing_type,
@@ -253,8 +293,13 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
 
         skip = (page-1)*CATCHUP_LIMIT
         response_data.update(catchup_index_for_types(listing.new_count, listing.cross_count, listing.rep_count, subject, start_day, include_abs, page))
-        response_data.update(sub_sections_for_types((listing, dts, dds), skip, CATCHUP_LIMIT))
+        # response_data.update(sub_sections_for_types((listing, dts, dds), skip, CATCHUP_LIMIT))
+        response_data.update(sub_sections_for_types(listing, skip, CATCHUP_LIMIT))
 
+        idx = 0
+        for item in listing.listings:
+            idx = idx + 1
+            setattr(item, 'list_index', idx + skip)
 
     response_data.update({
         'subject': subject,
@@ -431,10 +476,10 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
 
     if cross_count > 0:
         cross_start = new_count + 1
-        cross_start_page=(cross_start-1)//CATCHUP_LIMIT +1 #item 2000 is on page 1, 2001 is on page 2
-        cross_index=cross_start-(cross_start_page-1)*CATCHUP_LIMIT
+        cross_start_page = (cross_start-1)//CATCHUP_LIMIT +1 # item 2000 is on page 1, 2001 is on page 2
+        cross_index = cross_start-(cross_start_page-1)*CATCHUP_LIMIT
 
-        if page==cross_start_page:
+        if page == cross_start_page:
             ift.append((_('Cross-lists'), '', cross_index))
         else:
             ift.append((_('Cross-lists'),
@@ -443,10 +488,10 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
 
     if rep_count > 0:
         rep_start = new_count + cross_count+ 1
-        rep_start_page=(rep_start-1)//CATCHUP_LIMIT +1 #item 2000 is on page 1, 2001 is on page 2
-        rep_index=rep_start-(rep_start_page-1)*CATCHUP_LIMIT
+        rep_start_page = (rep_start-1)//CATCHUP_LIMIT + 1 # item 2000 is on page 1, 2001 is on page 2
+        rep_index = rep_start - (rep_start_page-1)*CATCHUP_LIMIT
 
-        if page==rep_start_page:
+        if page == rep_start_page:
             ift.append((_('Replacements'), '', rep_index))
         else:
             ift.append((_('Replacements'),

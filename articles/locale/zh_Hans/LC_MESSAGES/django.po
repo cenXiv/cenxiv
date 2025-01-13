@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-12 07:49+0800\n"
+"POT-Creation-Date: 2025-01-13 10:14+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,37 +19,37 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:426
-#: articles/controllers/catchup_page.py:430
-#: articles/controllers/list_page/__init__.py:505
-#: articles/controllers/list_page/__init__.py:511
+#: articles/controllers/catchup_page.py:471
+#: articles/controllers/catchup_page.py:475
+#: articles/controllers/list_page/__init__.py:498
+#: articles/controllers/list_page/__init__.py:504
 msgid "New submissions"
 msgstr "新提交"
 
-#: articles/controllers/catchup_page.py:438
-#: articles/controllers/catchup_page.py:440
-#: articles/controllers/list_page/__init__.py:518
-#: articles/controllers/list_page/__init__.py:524
+#: articles/controllers/catchup_page.py:483
+#: articles/controllers/catchup_page.py:485
+#: articles/controllers/list_page/__init__.py:511
+#: articles/controllers/list_page/__init__.py:517
 msgid "Cross-lists"
 msgstr "交叉列表"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:450
-#: articles/controllers/catchup_page.py:452
-#: articles/controllers/list_page/__init__.py:530
-#: articles/controllers/list_page/__init__.py:536
+#: articles/controllers/catchup_page.py:495
+#: articles/controllers/catchup_page.py:497
+#: articles/controllers/list_page/__init__.py:523
+#: articles/controllers/list_page/__init__.py:529
 msgid "Replacements"
 msgstr "替换"
 
-#: articles/controllers/list_page/__init__.py:623
+#: articles/controllers/list_page/__init__.py:619
 msgid "New submissions "
 msgstr "新提交 "
 
-#: articles/controllers/list_page/__init__.py:633
+#: articles/controllers/list_page/__init__.py:629
 msgid "Cross submissions "
 msgstr "交叉提交 "
 
-#: articles/controllers/list_page/__init__.py:643
+#: articles/controllers/list_page/__init__.py:639
 msgid "Replacement submissions "
 msgstr "替换提交 "
 
@@ -368,6 +368,9 @@ msgid "Title"
 msgstr "标题"
 
 #: articles/templates/articles/base.html:71
+#: articles/templates/articles/catchup.html:77
+#: articles/templates/list/month.html:19 articles/templates/list/new.html:38
+#: articles/templates/list/recent.html:35 articles/templates/list/year.html:19
 msgid "Abstract"
 msgstr "摘要"
 
@@ -468,23 +471,23 @@ msgid "on"
 msgstr "在"
 
 #: articles/templates/articles/catchup.html:39
-#: articles/templates/articles/catchup.html:119
+#: articles/templates/articles/catchup.html:175
 msgid "Continue to the next day"
 msgstr "继续到下一天"
 
 #: articles/templates/articles/catchup.html:43
-#: articles/templates/articles/catchup.html:102
+#: articles/templates/articles/catchup.html:158
 #: articles/templates/list/base.html:32 articles/templates/list/base.html:74
 msgid "Total of"
 msgstr "总共"
 
 #: articles/templates/articles/catchup.html:43
-#: articles/templates/articles/catchup.html:102
+#: articles/templates/articles/catchup.html:158
 msgid "entries for"
 msgstr "条目为"
 
 #: articles/templates/articles/catchup.html:45
-#: articles/templates/articles/catchup.html:104
+#: articles/templates/articles/catchup.html:160
 msgid "View page:"
 msgstr "查看页面："
 
@@ -494,19 +497,93 @@ msgstr "查看页面："
 msgid "No updates for this time period."
 msgstr "此时间段没有更新。"
 
-#: articles/templates/articles/catchup.html:85
+#: articles/templates/articles/catchup.html:81
+#: articles/templates/list/month.html:23 articles/templates/list/new.html:42
+#: articles/templates/list/recent.html:39 articles/templates/list/year.html:23
+msgid "cross-list from"
+msgstr "交叉列表自"
+
+# Start of Selection
+#: articles/templates/articles/catchup.html:84
+#: articles/templates/list/month.html:26 articles/templates/list/new.html:45
+#: articles/templates/list/recent.html:42 articles/templates/list/year.html:26
+msgid "replaced"
+msgstr "替换"
+
+#: articles/templates/articles/catchup.html:87
+#: articles/templates/list/month.html:29 articles/templates/list/new.html:48
+#: articles/templates/list/recent.html:45 articles/templates/list/year.html:29
+msgid "Download Chinese PDF"
+msgstr "下载中文 PDF"
+
+#: articles/templates/articles/catchup.html:87
+#: articles/templates/list/month.html:29 articles/templates/list/new.html:48
+#: articles/templates/list/recent.html:45 articles/templates/list/year.html:29
+msgid "cn-pdf"
+msgstr "中文pdf"
+
+#: articles/templates/articles/catchup.html:88
+#: articles/templates/articles/format.html:24
+#: articles/templates/list/month.html:30 articles/templates/list/new.html:49
+#: articles/templates/list/recent.html:46 articles/templates/list/year.html:30
+msgid "Download PDF"
+msgstr "下载 PDF"
+
+#: articles/templates/articles/catchup.html:90
+#: articles/templates/list/month.html:32 articles/templates/list/new.html:51
+#: articles/templates/list/recent.html:48 articles/templates/list/year.html:32
+msgid "View HTML"
+msgstr "查看 HTML"
+
+#: articles/templates/articles/catchup.html:93
+#: articles/templates/list/month.html:35 articles/templates/list/new.html:54
+#: articles/templates/list/recent.html:51 articles/templates/list/year.html:35
+msgid "Other formats"
+msgstr "其他格式："
+
+#: articles/templates/articles/catchup.html:93
+#: articles/templates/list/month.html:35 articles/templates/list/new.html:54
+#: articles/templates/list/recent.html:51 articles/templates/list/year.html:35
+msgid "other"
+msgstr "其他"
+
+#: articles/templates/articles/catchup.html:97
+#: articles/templates/list/month.html:39 articles/templates/list/new.html:58
+#: articles/templates/list/recent.html:55 articles/templates/list/year.html:39
+msgid "Title:"
+msgstr "标题："
+
+#: articles/templates/articles/catchup.html:103
+#: articles/templates/list/month.html:45 articles/templates/list/new.html:64
+#: articles/templates/list/recent.html:61 articles/templates/list/year.html:45
+msgid "Comments:"
+msgstr "评论："
+
+#: articles/templates/articles/catchup.html:109
+#: articles/templates/list/month.html:51 articles/templates/list/new.html:70
+#: articles/templates/list/recent.html:67 articles/templates/list/year.html:51
+msgid "Journal-ref:"
+msgstr "期刊参考："
+
+#: articles/templates/articles/catchup.html:114
+#: articles/templates/list/month.html:56 articles/templates/list/new.html:75
+#: articles/templates/list/recent.html:72 articles/templates/list/year.html:56
+msgid "Subjects:"
+msgstr "主题："
+
+#: articles/templates/articles/catchup.html:141
 msgid "No further updates for"
 msgstr "没有更多的更新为"
 
-#: articles/templates/articles/catchup.html:88
+#: articles/templates/articles/catchup.html:144
 msgid "Go to page 1"
 msgstr "转到第 1 页"
 
-#: articles/templates/articles/catchup.html:92
+#: articles/templates/articles/catchup.html:148
 msgid "No updates for"
 msgstr "没有更新为"
 
-#: articles/templates/articles/catchup.html:92
+#: articles/templates/articles/catchup.html:148
 msgid ""
 "There was either no announcement for this day, or no updates within the "
 "requested subject."
@@ -574,10 +651,6 @@ msgstr "现在包括字体，查看我们的"
 #: articles/templates/articles/format.html:23
 msgid "PDF help"
 msgstr "PDF 帮助"
-
-#: articles/templates/articles/format.html:24
-msgid "Download PDF"
-msgstr "下载 PDF"
 
 #: articles/templates/articles/format.html:31
 msgid "PostScript using Bitmapped Fonts"
@@ -872,7 +945,7 @@ msgstr "查看"
 msgid "Showing new listings for"
 msgstr "显示新的列表为"
 
-#: articles/templates/list/new.html:43
+#: articles/templates/list/new.html:99
 msgid "No updates today."
 msgstr "今天没有更新。"
 
@@ -888,6 +961,6 @@ msgstr "查看今天的"
 msgid "changes"
 msgstr "变化"
 
-#: articles/views.py:502
+#: articles/views.py:428
 msgid "Chinese PDF is coming soon..."
 msgstr "中文 PDF 即将到来..."

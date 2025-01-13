@@ -75,6 +75,8 @@ import mtranslate as translator
 
 from .paging import paging
 from ...models import Article, Author, Category, Link
+from ...templatetags import article_filters
+from ...utils import get_translation_dict
 
 
 logger = logging.getLogger(__name__)
@@ -102,13 +104,13 @@ type_to_template = {
 }
 
 class ListingSection:
-    heading:str
+    heading: str
     day: str
     items: List[ListingItem]
     total: int
     continued: bool
     last: bool
-    visible:bool
+    visible: bool
 
     def __init__(self, day: str, items: List[ListingItem], total: int,
                 continued: bool, last: bool, visible: bool, heading: str):
@@ -150,7 +152,6 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         month = request.GET.get('month', None)
         if month and month != 'all':
             time_period = time_period + "-" + request.GET.get('month')
-
 
 
     if (
@@ -206,7 +207,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         list_type = 'new'
         response_headers = add_surrogate_key(response_headers, ["list-new", "announce", f"list-new-{list_ctx_id}"])
 
-        items, dts, dds = get_new_listing(request, list_ctx_id, skipn, shown)
+        # items, dts, dds = get_new_listing(request, list_ctx_id, skipn, shown)
+        items = get_new_listing(request, list_ctx_id, skipn, shown)
         if _check_modified(items.listings, if_mod_since):
             new_resp = NotModifiedResponse(True, gen_expires())
         else:
@@ -218,16 +220,17 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         listings = new_resp.listings
         count = new_resp.new_count + new_resp.rep_count + new_resp.cross_count
         response_data['announced'] = new_resp.announced
-        response_data.update(
-            index_for_types(new_resp, list_ctx_id, time_period, skipn, shown))
-        response_data.update(sub_sections_for_types((new_resp, dts, dds), skipn, shown))
+        response_data.update(index_for_types(new_resp, list_ctx_id, time_period, skipn, shown))
+        # response_data.update(sub_sections_for_types((new_resp, dts, dds), skipn, shown))
+        response_data.update(sub_sections_for_types(new_resp, skipn, shown))
 
     elif time_period in ['pastweek', 'recent']:
         # A bit different due to returning days not listings
         list_type = 'recent'
         response_headers = add_surrogate_key(response_headers, ["list-recent", "announce", f"list-recent-{list_ctx_id}"])
 
-        items, dts, dds = get_recent_listing(request, list_ctx_id, skipn, shown)
+        # items, dts, dds = get_recent_listing(request, list_ctx_id, skipn, shown)
+        items = get_recent_listing(request, list_ctx_id, skipn, shown)
         if _check_modified(items.listings, if_mod_since):
             rec_resp = NotModifiedResponse(True, gen_expires())
         else:
@@ -245,7 +248,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
             start += number
             pubdates.append((day.strftime('%a, %-d %b %Y'), start-number))
         response_data['pubdates'] = pubdates
-        response_data.update(sub_sections_for_recent((rec_resp, dts, dds), skipn, shown))
+        # response_data.update(sub_sections_for_recent((rec_resp, dts, dds), skipn, shown))
+        response_data.update(sub_sections_for_recent(rec_resp, skipn, shown))
 
     else:  # current or YYMM or YYYYMM or YY
 
@@ -269,7 +273,7 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
             response_headers["Location"] = new_address
             return {}, status.MOVED_PERMANENTLY, response_headers
 
-        response_data['list_time'] = time_period #doesnt appear to be used
+        response_data['list_time'] = time_period # doesnt appear to be used
         response_data['list_year'] = str(list_year)
         if list_month or list_month == 0:
             if list_month < 1 or list_month > 12:
@@ -286,7 +290,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
             elif list_year < 1900: # 90s articles
                 list_year += 1900
 
-            items, dts, dds = get_articles_for_month(request, list_ctx_id, time_period, list_year, list_month, skipn, shown)
+            # items, dts, dds = get_articles_for_month(request, list_ctx_id, time_period, list_year, list_month, skipn, shown)
+            items = get_articles_for_month(request, list_ctx_id, time_period, list_year, list_month, skipn, shown)
             if _check_modified(items.listings, if_mod_since):
                 resp = NotModifiedResponse(True, gen_expires())
             else:
@@ -303,7 +308,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
             elif list_year < 1900: # 90s articles
                 list_year += 1900
 
-            items, dts, dds = get_articles_for_month(request, list_ctx_id, time_period, list_year, None, skipn, shown)
+            # items, dts, dds = get_articles_for_month(request, list_ctx_id, time_period, list_year, None, skipn, shown)
+            items = get_articles_for_month(request, list_ctx_id, time_period, list_year, None, skipn, shown)
             if _check_modified(items.listings, if_mod_since):
                 resp = NotModifiedResponse(True, gen_expires())
             else:
@@ -338,8 +344,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         if not hasattr(item, 'article') or item.article is None:
             setattr(item, 'article', get_doc_service().get_abs(item.id))
 
-    # response_data['listings'] = listings
-    response_data['listings'] = [ (lst, str(dt), str(dd)) for (lst, dt, dd) in zip(listings, dts, dds) ]
+    response_data['listings'] = listings
+    # response_data['listings'] = [ (lst, str(dt), str(dd)) for (lst, dt, dd) in zip(listings, dts, dds) ]
     response_data['author_links'] = authors_for_articles(listings)
     # response_data['downloads'] = dl_for_articles(listings)
     # response_data['latexml'] = latexml_links_for_articles(listings)
@@ -355,8 +361,7 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         'list_ctx_name': list_ctx_name,
         'list_ctx_id': list_ctx_id,
         'list_ctx_in_archive': list_ctx_in_archive,
-        'paging': paging(count, skipn, shown,
-                         list_ctx_id, time_period),
+        'paging': paging(count, skipn, shown, list_ctx_id, time_period),
         'viewing_all': shown >= count,
         'template': type_to_template[list_type]
     })
@@ -529,7 +534,7 @@ def sub_sections_for_recent(
         resp: Listing,
         skip: int, show: int) -> Dict[str, Any]:
     """Creates data used in section headings on /list/ARCHIVE/recent."""
-    resp, dts, dds = resp
+    # resp, dts, dds = resp
     secs: List[ListingSection] = []
     articles_passed = 0
     shown = 0
@@ -548,7 +553,8 @@ def sub_sections_for_recent(
         else:
             display = True
 
-        listings = [ (resp.listings[i], str(dts[i]), str(dds[i])) for i in range(shown, shown+to_show) ]
+        # listings = [ (resp.listings[i], str(dts[i]), str(dds[i])) for i in range(shown, shown+to_show) ]
+        listings = resp.listings[shown:shown+to_show]
         sec = ListingSection(
             day=day.strftime('%a, %-d %b %Y'),
             items=listings,
@@ -563,37 +569,39 @@ def sub_sections_for_recent(
         articles_passed += count
         shown += to_show
 
+    language = get_language()
     for sec in secs:
-        showing = 'showing '
+        showing = '展示 ' if language == 'zh-hans' else 'showing '
         if sec.continued:
-            showing = 'continued, ' + showing
+            showing = ('继续， ' if language == 'zh-hans' else 'continued, ') + showing
             if sec.last:
-                showing = showing + 'last '
+                showing = showing + ('最后 ' if language == 'zh-hans' else 'last ')
         if not sec.last and not sec.continued:
-            showing = showing + 'first '
+            showing = showing + ('首先 ' if language == 'zh-hans' else 'first ')
 
         heading = sec.day
         if sec.total > 0:
-            heading += f' ({showing}{len(sec.items)} of {sec.total} entries )'
+            if language == 'zh-hans':
+                heading += f' ({showing}{len(sec.items)} 之 {sec.total} 条目 )'
+            else:
+                heading += f' ({showing}{len(sec.items)} of {sec.total} entries )'
         sec.heading = heading
 
     return {'sub_sections_for_types': secs}
 
-def sub_sections_for_types(
-        resp: ListingNew,
-        skipn: int, shown: int) -> Dict[str, Any]:
+def sub_sections_for_types(resp: ListingNew, skipn: int, shown: int) -> Dict[str, Any]:
     """Creates data used in section headings on /list/ARCHIVE/new."""
-    resp, dts, dds = resp
+    # resp, dts, dds = resp
     new_count = resp.new_count
     cross_count = resp.cross_count
     rep_count = resp.rep_count
 
-    # news = [item for item in resp.listings if item.listingType == 'new']
-    # crosses = [item for item in resp.listings if item.listingType == 'cross']
-    # reps = [item for item in resp.listings if item.listingType == 'rep']
-    news = [(item, str(dt), str(dd)) for (item, dt, dd) in zip(resp.listings, dts, dds) if item.listingType == 'new']
-    crosses = [(item, str(dt), str(dd)) for (item, dt, dd) in zip(resp.listings, dts, dds) if item.listingType == 'cross']
-    reps = [(item, str(dt), str(dd)) for (item, dt, dd) in zip(resp.listings, dts, dds) if item.listingType == 'rep']
+    news = [item for item in resp.listings if item.listingType == 'new']
+    crosses = [item for item in resp.listings if item.listingType == 'cross']
+    reps = [item for item in resp.listings if item.listingType == 'rep']
+    # news = [(item, str(dt), str(dd)) for (item, dt, dd) in zip(resp.listings, dts, dds) if item.listingType == 'new']
+    # crosses = [(item, str(dt), str(dd)) for (item, dt, dd) in zip(resp.listings, dts, dds) if item.listingType == 'cross']
+    # reps = [(item, str(dt), str(dd)) for (item, dt, dd) in zip(resp.listings, dts, dds) if item.listingType == 'rep']
 
     cross_start = new_count+1
     rep_start = new_count + cross_count + 1
@@ -601,7 +609,7 @@ def sub_sections_for_types(
 
     date = resp.announced.strftime('%A, %-d %B %Y')
 
-    sec_new=ListingSection(
+    sec_new = ListingSection(
         day=date,
         items=news,
         total=new_count,
@@ -611,7 +619,7 @@ def sub_sections_for_types(
         heading=_('New submissions ')
     )
 
-    sec_cross=ListingSection(
+    sec_cross = ListingSection(
         day=resp.announced.strftime('%A, %-d %B %Y'),
         items=crosses,
         total=cross_count,
@@ -621,7 +629,7 @@ def sub_sections_for_types(
         heading=_('Cross submissions ')
     )
 
-    sec_rep=ListingSection(
+    sec_rep = ListingSection(
         day=resp.announced.strftime('%A, %-d %B %Y'),
         items=reps,
         total=rep_count,
@@ -631,17 +639,22 @@ def sub_sections_for_types(
         heading=_('Replacement submissions ')
     )
 
-    secs=[sec_new, sec_cross, sec_rep]
+    secs = [sec_new, sec_cross, sec_rep]
 
+    language = get_language()
     for sec in secs:
-        showing = 'showing '
+        showing = '展示 ' if language == 'zh-hans' else 'showing '
         if sec.continued:
-            showing = 'continued, ' + showing
+            showing = ('继续， ' if language == 'zh-hans' else 'continued, ') + showing
             if sec.last:
-                showing = showing + 'last '
+                showing = showing + ('最后 ' if language == 'zh-hans' else 'last ')
         if not sec.last and not sec.continued:
-            showing = showing + 'first '
-        sec.heading += f'({showing}{len(sec.items)} of {sec.total} entries)'
+            showing = showing + ('首先 ' if language == 'zh-hans' else 'first ')
+
+        if language == 'zh-hans':
+            sec.heading += f' ({showing}{len(sec.items)} 之 {sec.total} 条目 )'
+        else:
+            sec.heading += f' ({showing}{len(sec.items)} of {sec.total} entries )'
 
     return {'sub_sections_for_types': secs}
 
@@ -657,8 +670,6 @@ def _expires_headers(listing_resp:
         return {'Surrogate-Control': f'max-age={listing_resp.expires}'}
     else:
         return {}
-
-
 
 
 def _check_modified(items: List[ListingItem], if_modified_since: Optional[str] = None)->bool:
@@ -742,7 +753,8 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
     rep_count = len(paper_ids) - new_count - cross_count
 
     dts = soup.find_all('dt')
-    dds = soup.find_all('dd')
+    # dds = soup.find_all('dd')
+    authors_divs = soup.find_all('div', {'class': 'list-authors'})
 
     # organize results into expected listing
     items = []
@@ -756,22 +768,24 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
 
         article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
 
-        dt = dts[i]
-        new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
-        if get_language() == 'zh-hans':
-            new_a.string = '中文pdf'
-        else:
-            new_a.string = 'cn-pdf'
-        abstract_a = dt.find('a', {'title': 'Abstract'})
-        abstract_a.next_sibling.insert_after(new_a)
-        new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
-        new_a.insert_after(', ')
+        language = get_language()
 
-        if get_language() == 'zh-hans':
-            dd = dds[i]
-            dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
-            if dd.p:
-                dd.p.string = article.abstract_cn
+        # dt = dts[i]
+        # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
+        # if get_language() == 'zh-hans':
+        #     new_a.string = '中文pdf'
+        # else:
+        #     new_a.string = 'cn-pdf'
+        # abstract_a = dt.find('a', {'title': 'Abstract'})
+        # abstract_a.next_sibling.insert_after(new_a)
+        # new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
+        # new_a.insert_after(', ')
+
+        # if get_language() == 'zh-hans':
+        #     dd = dds[i]
+        #     dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+        #     if dd.p:
+        #         dd.p.string = article.abstract_cn
 
         arxiv_id, version = article.entry_id, article.entry_version
         primary_cat = CATEGORIES[article.primary_category]
@@ -780,9 +794,9 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         doc = DocMetadata(
             arxiv_id=arxiv_id,
             arxiv_id_v=f'{arxiv_id}v{version}',
-            title=article.title_en,
+            title=article.title_cn if language == 'zh-hans' else article.title_en,
             authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
-            abstract=article.abstract_en,
+            abstract=article.abstract_cn if language == 'zh-hans' else article.abstract_en,
             categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
@@ -805,6 +819,41 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
             primary_group=primary_cat.get_archive().get_group(),
             modified=modified
         )
+
+        a_html = dts[i].find('a', string='html')
+        if a_html:
+            doc.latexml_link = a_html['href']
+        a_other = dts[i].find('a', string='other')
+        if a_other:
+            doc.other_link = a_other['href']
+
+        doc.authors_list = str(authors_divs[i])
+        doc.primary_display = doc.primary_category.display()
+        doc.secondaries_display = doc.display_secondaries()
+
+        if language == 'zh-hans':
+            translation_dict = get_translation_dict()
+            # Define the regex pattern
+            pattern = r'^(.*?) \((.*?)\)$'
+
+            # Use re.search to find matches
+            match = re.search(pattern, doc.primary_display)
+            if match:
+                # Extract the two groups
+                cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                category = match.group(2)  # e.g. 'astro-ph.HE'
+                cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                doc.primary_display = f'{cat_full_name_cn} ({category})'
+
+            for i, secondary_display in enumerate(doc.secondaries_display):
+                match = re.search(pattern, secondary_display)
+                if match:
+                    # Extract the two groups
+                    cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                    category = match.group(2)  # e.g. 'astro-ph.HE'
+                    cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                    doc.secondaries_display[i] = f'{cat_full_name_cn} ({category})'
+
         item = ListingItem(
             id=arxiv_id,
             listingType=listing_type,
@@ -819,7 +868,7 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
                       cross_count=cross_count,
                       rep_count=rep_count,
                       announced=announced,
-                      expires=gen_expires()), dts, dds
+                      expires=gen_expires())#, dts, dds
 
 def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Listing:
     url = request.get_full_path()
@@ -909,29 +958,32 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
                 link_.save()
 
     dts = soup.find_all('dt')
-    dds = soup.find_all('dd')
+    # dds = soup.find_all('dd')
+    authors_divs = soup.find_all('div', {'class': 'list-authors'})
 
     # organize results into expected listing
     items = []
     for i, paper_id in enumerate(paper_ids):
         article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
 
-        dt = dts[i]
-        new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
-        if get_language() == 'zh-hans':
-            new_a.string = '中文pdf'
-        else:
-            new_a.string = 'cn-pdf'
-        abstract_a = dt.find('a', {'title': 'Abstract'})
-        abstract_a.next_sibling.insert_after(new_a)
-        new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
-        new_a.insert_after(', ')
+        # dt = dts[i]
+        # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
+        # if get_language() == 'zh-hans':
+        #     new_a.string = '中文pdf'
+        # else:
+        #     new_a.string = 'cn-pdf'
+        # abstract_a = dt.find('a', {'title': 'Abstract'})
+        # abstract_a.next_sibling.insert_after(new_a)
+        # new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
+        # new_a.insert_after(', ')
 
-        if get_language() == 'zh-hans':
-            dd = dds[i]
-            dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
-            if dd.p:
-                dd.p.string = article.abstract_cn
+        # if get_language() == 'zh-hans':
+        #     dd = dds[i]
+        #     dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+        #     if dd.p:
+        #         dd.p.string = article.abstract_cn
+
+        language = get_language()
 
         listing_type = 'new' # need to get the correct 'new' or 'cross'
         arxiv_id, version = article.entry_id, article.entry_version
@@ -941,9 +993,9 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         doc = DocMetadata(
             arxiv_id=arxiv_id,
             arxiv_id_v=f'{arxiv_id}v{version}',
-            title=article.title_en,
+            title=article.title_cn if language == 'zh-hans' else article.title_en,
             authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
-            abstract=article.abstract_en,
+            abstract=article.abstract_cn if language == 'zh-hans' else article.abstract_en,
             categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
@@ -966,6 +1018,44 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
             primary_group=primary_cat.get_archive().get_group(),
             modified=modified
         )
+
+        if doc.primary_category.in_archive  != archive_or_cat:
+            listing_type = 'cross'
+
+        a_html = dts[i].find('a', string='html')
+        if a_html:
+            doc.latexml_link = a_html['href']
+        a_other = dts[i].find('a', string='other')
+        if a_other:
+            doc.other_link = a_other['href']
+
+        doc.authors_list = str(authors_divs[i])
+        doc.primary_display = doc.primary_category.display()
+        doc.secondaries_display = doc.display_secondaries()
+
+        if language == 'zh-hans':
+            translation_dict = get_translation_dict()
+            # Define the regex pattern
+            pattern = r'^(.*?) \((.*?)\)$'
+
+            # Use re.search to find matches
+            match = re.search(pattern, doc.primary_display)
+            if match:
+                # Extract the two groups
+                cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                category = match.group(2)  # e.g. 'astro-ph.HE'
+                cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                doc.primary_display = f'{cat_full_name_cn} ({category})'
+
+            for i, secondary_display in enumerate(doc.secondaries_display):
+                match = re.search(pattern, secondary_display)
+                if match:
+                    # Extract the two groups
+                    cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                    category = match.group(2)  # e.g. 'astro-ph.HE'
+                    cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                    doc.secondaries_display[i] = f'{cat_full_name_cn} ({category})'
+
         item = ListingItem(
             id=arxiv_id,
             listingType=listing_type,
@@ -979,7 +1069,7 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         pubdates=daily_counts,
         count=total,
         expires=gen_expires()
-    ), dts, dds
+    )#, dts, dds
 
 def get_articles_for_month(request, archive_or_cat: str, time_period: str, year: int, month: Optional[int], skip: int, show: int) -> Listing:
     """archive: archive or category name, year:requested year, month: requested month - no month means retreive listings for the year,
@@ -1051,29 +1141,32 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
                 link_.save()
 
     dts = soup.find_all('dt')
-    dds = soup.find_all('dd')
+    # dds = soup.find_all('dd')
+    authors_divs = soup.find_all('div', {'class': 'list-authors'})
 
     # organize results into expected listing
     items = []
     for i, paper_id in enumerate(paper_ids):
         article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
 
-        dt = dts[i]
-        new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
-        if get_language() == 'zh-hans':
-            new_a.string = '中文pdf'
-        else:
-            new_a.string = 'cn-pdf'
-        abstract_a = dt.find('a', {'title': 'Abstract'})
-        abstract_a.next_sibling.insert_after(new_a)
-        new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
-        new_a.insert_after(', ')
+        # dt = dts[i]
+        # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
+        # if get_language() == 'zh-hans':
+        #     new_a.string = '中文pdf'
+        # else:
+        #     new_a.string = 'cn-pdf'
+        # abstract_a = dt.find('a', {'title': 'Abstract'})
+        # abstract_a.next_sibling.insert_after(new_a)
+        # new_a = dt.find('a', {'id': f"cn-pdf-{paper_id}"})
+        # new_a.insert_after(', ')
 
-        if get_language() == 'zh-hans':
-            dd = dds[i]
-            dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
-            if dd.p:
-                dd.p.string = article.abstract_cn
+        # if get_language() == 'zh-hans':
+        #     dd = dds[i]
+        #     dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+        #     if dd.p:
+        #         dd.p.string = article.abstract_cn
+
+        language = get_language()
 
         listing_type = 'new' # need to get the correct 'new' or 'cross'
         arxiv_id, version = article.entry_id, article.entry_version
@@ -1083,9 +1176,9 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         doc = DocMetadata(
             arxiv_id=arxiv_id,
             arxiv_id_v=f'{arxiv_id}v{version}',
-            title=article.title_en,
+            title=article.title_cn if language == 'zh-hans' else article.title_en,
             authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
-            abstract=article.abstract_en,
+            abstract=article.abstract_cn if language == 'zh-hans' else article.abstract_en,
             categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
@@ -1108,6 +1201,44 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
             primary_group=primary_cat.get_archive().get_group(),
             modified=modified
         )
+
+        if doc.primary_category.in_archive  != archive_or_cat:
+            listing_type = 'cross'
+
+        a_html = dts[i].find('a', string='html')
+        if a_html:
+            doc.latexml_link = a_html['href']
+        a_other = dts[i].find('a', string='other')
+        if a_other:
+            doc.other_link = a_other['href']
+
+        doc.authors_list = str(authors_divs[i])
+        doc.primary_display = doc.primary_category.display()
+        doc.secondaries_display = doc.display_secondaries()
+
+        if language == 'zh-hans':
+            translation_dict = get_translation_dict()
+            # Define the regex pattern
+            pattern = r'^(.*?) \((.*?)\)$'
+
+            # Use re.search to find matches
+            match = re.search(pattern, doc.primary_display)
+            if match:
+                # Extract the two groups
+                cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                category = match.group(2)  # e.g. 'astro-ph.HE'
+                cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                doc.primary_display = f'{cat_full_name_cn} ({category})'
+
+            for i, secondary_display in enumerate(doc.secondaries_display):
+                match = re.search(pattern, secondary_display)
+                if match:
+                    # Extract the two groups
+                    cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                    category = match.group(2)  # e.g. 'astro-ph.HE'
+                    cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                    doc.secondaries_display[i] = f'{cat_full_name_cn} ({category})'
+
         item = ListingItem(
             id=arxiv_id,
             listingType=listing_type,
@@ -1128,4 +1259,4 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         pubdates=[(datetime(year, month, 1), 1)],  # only used for display month
         count=total,
         expires=gen_expires(),
-    ), dts, dds
+    )#, dts, dds
