@@ -25,7 +25,7 @@ from arxiv.taxonomy.definitions import CATEGORIES, ARCHIVES, GROUPS, ARCHIVES_AC
 from arxiv.document.version import VersionEntry
 from arxiv.document.metadata import DocMetadata, AuthorList as AuList
 
-from browse.controllers.archive_page.by_month_form import MONTHS
+# from browse.controllers.archive_page.by_month_form import MONTHS
 from browse.controllers.list_page import latexml_links_for_articles, dl_for_articles, authors_for_articles, Response
 from browse.services.database.catchup import get_catchup_data, CATCHUP_LIMIT, get_next_announce_day
 from browse.services.listing import ListingNew, ListingItem, gen_expires
@@ -36,6 +36,7 @@ from .list_page import sub_sections_for_types
 from ..models import Article, Author, Category, Link
 from ..templatetags import article_filters
 from ..utils import get_translation_dict
+from .archive_page.by_month_form import MONTHS
 
 
 def get_catchup_page(request, subject_str:str, date:str)-> Response:

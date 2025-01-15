@@ -2,22 +2,23 @@
 from typing import List
 
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from arxiv.taxonomy.definitions import Archive
 
 MONTHS = [
-    ('all', 'all months'),
-    ('01', '01 (Jan)'),
-    ('02', '02 (Feb)'),
-    ('03', '03 (Mar)'),
-    ('04', '04 (Apr)'),
-    ('05', '05 (May)'),
-    ('06', '06 (Jun)'),
-    ('07', '07 (Jul)'),
-    ('08', '08 (Aug)'),
-    ('09', '09 (Sep)'),
-    ('10', '10 (Oct)'),
-    ('11', '11 (Nov)'),
-    ('12', '12 (Dec)'),
+    ('all', _('all months')),
+    ('01', _('01 (Jan)')),
+    ('02', _('02 (Feb)')),
+    ('03', _('03 (Mar)')),
+    ('04', _('04 (Apr)')),
+    ('05', _('05 (May)')),
+    ('06', _('06 (Jun)')),
+    ('07', _('07 (Jul)')),
+    ('08', _('08 (Aug)')),
+    ('09', _('09 (Sep)')),
+    ('10', _('10 (Oct)')),
+    ('11', _('11 (Nov)')),
+    ('12', _('12 (Dec)')),
 ]
 
 

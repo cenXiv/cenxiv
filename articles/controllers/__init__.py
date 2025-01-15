@@ -11,6 +11,8 @@ from flask import url_for, current_app
 
 from arxiv.identifier import Identifier
 
+from django.urls import reverse
+
 
 Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
 
@@ -33,7 +35,8 @@ def check_supplied_identifier(id: Identifier, route: str) -> Optional[Response]:
         return None
 
     arxiv_id = id.idv if id.has_version else id.id
-    redirect_url: str = url_for(route, arxiv_id=arxiv_id)
+    # redirect_url: str = url_for(route, arxiv_id=arxiv_id)
+    redirect_url: str = reverse(route, kwargs={'arxiv_id': arxiv_id})
     return {}, status.MOVED_PERMANENTLY, {'Location': redirect_url}
 
 

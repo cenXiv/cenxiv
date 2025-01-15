@@ -19,6 +19,8 @@ from browse.controllers import biz_tz
 from browse.controllers.years_operating import years_operating
 from browse.controllers.response_headers import abs_expires_header
 
+from django.utils.translation import gettext_lazy as _
+
 from ..years_operating import stats_by_year
 from .by_month_form import ByMonthForm
 
@@ -105,16 +107,16 @@ def _write_expires_header(response_headers: Dict[str, Any]) -> None:
 DAYS = ["{:0>2d}".format(i) for i in range(1, 32)]
 
 MONTHS = [
-    ("01", "01 (Jan)"),
-    ("02", "02 (Feb)"),
-    ("03", "03 (Mar)"),
-    ("04", "04 (Apr)"),
-    ("05", "05 (May)"),
-    ("06", "06 (Jun)"),
-    ("07", "07 (Jul)"),
-    ("08", "08 (Aug)"),
-    ("09", "09 (Sep)"),
-    ("10", "10 (Oct)"),
-    ("11", "11 (Nov)"),
-    ("12", "12 (Dec)"),
+    ("01", _("01 (Jan)")),
+    ("02", _("02 (Feb)")),
+    ("03", _("03 (Mar)")),
+    ("04", _("04 (Apr)")),
+    ("05", _("05 (May)")),
+    ("06", _("06 (Jun)")),
+    ("07", _("07 (Jul)")),
+    ("08", _("08 (Aug)")),
+    ("09", _("09 (Sep)")),
+    ("10", _("10 (Oct)")),
+    ("11", _("11 (Nov)")),
+    ("12", _("12 (Dec)")),
 ]

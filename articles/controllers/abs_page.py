@@ -30,7 +30,7 @@ from arxiv.identifier import (
     IdentifierException,
     IdentifierIsArchiveException,
 )
-from arxiv.document.metadata import DocMetadata
+from arxiv.document.metadata import DocMetadata, Submitter, AuthorList as AuList
 from arxiv.document.exceptions import (
     AbsDeletedException,
     AbsException,
@@ -38,6 +38,7 @@ from arxiv.document.exceptions import (
     AbsVersionNotFoundException,
 )
 from arxiv.integration.fastly.headers import add_surrogate_key
+from arxiv.document.version import SourceFlag, VersionEntry
 
 from browse.exceptions import AbsNotFound
 from browse.services.database import (
@@ -68,6 +69,8 @@ from browse.formatting.metatags import meta_tag_metadata
 
 from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
+from ..templatetags import article_filters
+from ..utils import get_translation_dict
 
 
 logger = logging.getLogger(__name__)
@@ -109,8 +112,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
 
         arxiv_id = _check_legacy_id_params(request, arxiv_id)
         arxiv_identifier = Identifier(arxiv_id=arxiv_id)
-        response_headers=add_surrogate_key(response_headers,[f"abs-{arxiv_identifier.id}", f"paper-id-{arxiv_identifier.id}"])
-        redirect = check_supplied_identifier(arxiv_identifier, "browse.abstract")
+        response_headers = add_surrogate_key(response_headers, [f"abs-{arxiv_identifier.id}", f"paper-id-{arxiv_identifier.id}"])
+        redirect = check_supplied_identifier(arxiv_identifier, "article:abstract")
         if redirect:
             return redirect
 
@@ -129,13 +132,20 @@ def get_abs_page(request, arxiv_id: str) -> Response:
 
         # Create the search client
         client = arxiv_api.Client()
+
         # Create the search query
-        search = arxiv_api.Search(id_list=[request_id])
+        # first search for the latest version
+        search = arxiv_api.Search(id_list=[arxiv_identifier.id])
         result = list(client.results(search))[0]
 
-        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        arxiv_id, latest_version = result.entry_id.split('/')[-1].split('v')
+        latest_version = int(latest_version)
+        if 'v' in request_id:
+            request_version = int(request_id.split('v')[-1])
+        else:
+            request_version = latest_version
         try:
-            article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+            article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=latest_version)
         except Article.DoesNotExist:
             # title_cn = translator.translate(result.title, 'zh-CN', 'en')
             # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
@@ -144,7 +154,7 @@ def get_abs_page(request, arxiv_id: str) -> Response:
 
             article = Article(
                 entry_id=arxiv_id,
-                entry_version=version,
+                entry_version=latest_version,
                 title_en=result.title,
                 title_cn=title_cn,
                 abstract_en=result.summary,
@@ -167,42 +177,286 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 link_ = Link(url=link.href, article=article)
                 link_.save()
 
+        # then search for all other latest versions
+        for version in range(1, latest_version):
+            try:
+                article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+            except Article.DoesNotExist:
+                search = arxiv_api.Search(id_list=[f'{arxiv_id}v{version}'])
+                result = list(client.results(search))[0]
 
-        response_data["title"] = result.title
-        primary_category = CATEGORIES[result.primary_category]
-        primary_archive = ARCHIVES[primary_category.in_archive]
-        response_data["primary_archive"] = primary_archive
-        response_data["primary_category"] = primary_category
+                # title_cn = translator.translate(result.title, 'zh-CN', 'en')
+                # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
+                title_cn = '中文标题'
+                abstract_cn = '中文摘要'
 
-        url = f'https://arxiv.org/abs/{request_id}'
-        response = requests.get(url)
+                article = Article(
+                    entry_id=arxiv_id,
+                    entry_version=version,
+                    title_en=result.title,
+                    title_cn=title_cn,
+                    abstract_en=result.summary,
+                    abstract_cn=abstract_cn,
+                    published_date=result.published,
+                    updated_date=result.updated,
+                    comment=result.comment,
+                    journal_ref=result.journal_ref,
+                    doi=result.doi,
+                    primary_category=result.primary_category,
+                )
+                article.save()
+                for author in result.authors:
+                    author_ = Author(name=author.name, article=article)
+                    author_.save()
+                for category in result.categories:
+                    category_ = Category(name=category, article=article)
+                    category_.save()
+                for link in result.links:
+                    link_ = Link(url=link.href, article=article)
+                    link_.save()
+
+
+        # get article of the request_version
+        article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=request_version)
+
+        language = get_language()
+
+        primary_cat = CATEGORIES[article.primary_category]
+        secondary_cats = [ CATEGORIES[sc.name] for sc in article.categories.all() if sc.name in CATEGORIES ]
+        modified = max(article.updated_date, article.published_date)
+        abs_meta = DocMetadata(
+            raw_safe='',
+            abstract=article.abstract_cn if language == 'zh-hans' else article.abstract_en,
+            arxiv_id=arxiv_id,
+            arxiv_id_v=f'{arxiv_id}v{request_version}',
+            arxiv_identifier=arxiv_identifier,
+            title=article.title_cn if language == 'zh-hans' else article.title_en,
+            modified=modified,
+            authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
+            submitter=Submitter(name='',
+                                email=''),
+            source_format='', # type: ignore
+            journal_ref=article.journal_ref,
+            report_num=0,
+            doi=article.doi,
+            acm_class= None,
+            msc_class= None,
+            proxy= None,
+            comments=article.comment,
+            version=request_version,
+            license='',
+            version_history=[
+                VersionEntry(
+                    version=version,
+                    raw="",
+                    submitted_date=Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version).updated_date,
+                    size_kilobytes=0,
+                    source_flag=''
+                ) for version in range(1, latest_version+1)
+            ],
+
+            is_definitive=True,
+            is_latest=(request_version == latest_version),
+
+            # Below are all from the latest version
+            # On the abs page the convention is to display all versions as having these fields with values from the latest
+            categories=[ cat.name for cat in article.categories.all() ],
+            primary_category=primary_cat,
+            secondary_categories=secondary_cats,
+            primary_archive=primary_cat.get_archive(),
+            primary_group=primary_cat.get_archive().get_group(),
+        )
+
+        # a_html = dts[i].find('a', string='html')
+        # if a_html:
+        #     abs_meta.latexml_link = a_html['href']
+        # a_other = dts[i].find('a', string='other')
+        # if a_other:
+        #     abs_meta.other_link = a_other['href']
+
+        # abs_meta.authors_list = str(authors_divs[i])
+        abs_meta.primary_display = abs_meta.primary_category.display()
+        abs_meta.secondaries_display = abs_meta.display_secondaries()
+
+        if language == 'zh-hans':
+            translation_dict = get_translation_dict()
+            # Define the regex pattern
+            pattern = r'^(.*?) \((.*?)\)$'
+
+            # Use re.search to find matches
+            match = re.search(pattern, abs_meta.primary_display)
+            if match:
+                # Extract the two groups
+                cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                category = match.group(2)  # e.g. 'astro-ph.HE'
+                cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                abs_meta.primary_display = f'{cat_full_name_cn} ({category})'
+
+            for i, secondary_display in enumerate(abs_meta.secondaries_display):
+                match = re.search(pattern, secondary_display)
+                if match:
+                    # Extract the two groups
+                    cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                    category = match.group(2)  # e.g. 'astro-ph.HE'
+                    cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                    abs_meta.secondaries_display[i] = f'{cat_full_name_cn} ({category})'
+
+
+        # response_data["arxiv_id"] = arxiv_id
+        response_data["latest_version"] = latest_version
+        response_data["request_version"] = request_version
+        response_data["first_version_submitted_date"] = abs_meta.version_history[0].submitted_date.strftime('%-d %b %Y')
+        response_data["request_version_submitted_date"] = abs_meta.version_history[request_version-1].submitted_date.strftime('%-d %b %Y')
+        response_data["this_is_the_first_version"] = (request_version == 1)
+        response_data["there_are_more_versions"] = (latest_version > 1)
+        response_data["this_is_the_latest_version"] = (request_version == latest_version)
+        response_data["latest_version_submitted_date"] = abs_meta.version_history[-1].submitted_date.strftime('%-d %b %Y')
+        response_data["arxiv_id_v1"] = f'{arxiv_id}v1'
+        response_data["arxiv_id_v_1"] = f'{arxiv_id}v{latest_version}'
+        # primary_category = CATEGORIES[result.primary_category]
+        # primary_archive = ARCHIVES[primary_category.in_archive]
+        # response_data["primary_archive"] = primary_archive
+        # response_data["primary_category"] = primary_category
+
+        url = request.get_full_path()
+        url = url.replace('/en', '')
+        url = url.replace('/zh-hans', '')
+        arxiv_url = 'https://arxiv.org' + url
+        response = requests.get(arxiv_url)
         soup = BeautifulSoup(response.content, 'lxml')
 
         meta_tags = soup.find_all('meta')
 
         div_content_inner = soup.find('div', {'id': 'content-inner'})
-        for a in div_content_inner.find_all('a'):
-            if a.get('href', ''):
-                a['href'] = a['href'].replace('https://arxiv.org', '')
+        authors_div = div_content_inner.find('div', {'class': 'authors'})
+        abs_meta.author_list = str(authors_div)
+        # metadata related
+        msc_class_td = div_content_inner.find('td', {'class': "tablecell msc-classes"})
+        if msc_class_td:
+            response_data['msc_class'] = msc_class_td.string
+        acm_class_td = div_content_inner.find('td', {'class': "tablecell acm-classes"})
+        if acm_class_td:
+            response_data['acm_class'] = acm_class_td.string
+        report_number_td = div_content_inner.find('td', {'class': "tablecell jref"}) # jref may be wrong
+        if report_number_td:
+            response_data['report_number'] = report_number_td.string
+        # datacite doi related
+        datacite_doi_td = div_content_inner.find('td', {'class': "tablecell arxivdoi"})
+        doi_a = datacite_doi_td.find('a', {'id': "arxiv-doi-link"})
+        doi_link = doi_a['href']
+        response_data['doi_link'] = doi_link
+        if not 'pending' in datacite_doi_td.find('div', {'id': "more-info-desc-1"}).text:
+            response_data['datacite_doi'] = True
+        # journal ref
+        journal_ref_td = div_content_inner.find('td', {'class': "tablecell jref"})
+        if journal_ref_td:
+            response_data['journal_ref'] = journal_ref_td.string
+        # doi
+        doi_td = div_content_inner.find('td', {'class': "tablecell doi"})
+        if journal_ref_td:
+            response_data['doi'] = str(doi_td.contents[0])
 
-        if get_language() == 'zh-hans':
-            div_content_inner.find('h1', {'class': "title mathjax"}).span.next_sibling.replace_with(article.title_cn)
-            div_content_inner.find('blockquote', {'class': "abstract mathjax"}).span.next_sibling.replace_with(article.abstract_cn)
+        # for a in div_content_inner.find_all('a'):
+        #     if a.get('href', ''):
+        #         a['href'] = a['href'].replace('https://arxiv.org', '')
+
+        # if get_language() == 'zh-hans':
+        #     div_content_inner.find('h1', {'class': "title mathjax"}).span.next_sibling.replace_with(article.title_cn)
+        #     div_content_inner.find('blockquote', {'class': "abstract mathjax"}).span.next_sibling.replace_with(article.abstract_cn)
+
+        div_submission_history = soup.find('div', {'class': 'submission-history'})
+        submitter_name = ''
+        show_email_link = ''
+        br_idx = 0
+        for i, ct in enumerate(div_submission_history.contents):
+            if ct.string and 'From: ' in ct.string.strip():
+                submitter_name = ct.string.strip().replace('From: ', '').replace(' [', '')
+            if ct.string and ct.string == 'view email' and ct.get('href', ''):
+                show_email_link = ct['href']
+            if ct.name == 'br':
+                br_idx = i
+                break
+        submission_history_entries = [ str(ct) for ct in div_submission_history.contents[br_idx:] ]
+        response_data['submitter_name'] = submitter_name
+        response_data['show_email_link'] = show_email_link
+        response_data['submission_history_entries'] = submission_history_entries
 
         div_extra_services = soup.find('div', {'class': 'extra-services'})
-        for img in div_extra_services.find_all('img'):
-            if img.get('src', ''):
-                img['src'] = re.sub(r'/static/browse/[\d.]+/images/', '/static/images/', img['src'])
-        div_extra_alink = div_extra_services.find('a', {'id': 'bib-cite-css'})
-        div_extra_alink['href'] = re.sub(r'/static/browse/[\d.]+/css/', '/static/css/', div_extra_alink['href'])
+        # for img in div_extra_services.find_all('img'):
+        #     if img.get('src', ''):
+        #         img['src'] = re.sub(r'/static/browse/[\d.]+/images/', '/static/images/', img['src'])
+        # div_extra_alink = div_extra_services.find('a', {'id': 'bib-cite-css'})
+        # div_extra_alink['href'] = re.sub(r'/static/browse/[\d.]+/css/', '/static/css/', div_extra_alink['href'])
+
+        # ancillary_files related
+        ancillary_files_div = div_extra_services.find('div', {'class': "ancillary"})
+        if ancillary_files_div:
+            response_data['ancillary_files'] = True
+        # TODO: need some further work for anc_file_list
+        # trackback_ping_count
+        trackback_ping_count_div = div_extra_services.find('div', {'class': "extra-general"})
+        if trackback_ping_count_div:
+            response_data['trackback_ping_count'] = int(trackback_ping_count_div.find('h3').text.strip().split(' ')[0])
+        # dblp
+        # dblp_div = div_extra_services.find('div', {'class': "dblp"})
+        # if dblp_div:
+        #     # response_data['dblp'] = True
+        # TODO: work for dblp
+
+        # latexml_link = ''
+        format_list = ['cn-pdf']
+        lis = div_extra_services.find('ul').find_all('li')
+        for li in lis:
+            if 'PDF' in li.text:
+                format_list.append('pdf')
+            if 'HTML' in li.text and 'experimental' in li.text:
+                format_list.append('latexml')
+                # latexml_link = li.a['href']
+            if 'Source' in li.text:
+                format_list.append('src')
+            if 'HTML' in li.text and (not 'experimental' in li.text):
+                format_list.append('html')
+            if 'Other' in li.text:
+                format_list.append('other')
+        response_data['format_list'] = format_list
+
+        # for license
+        license_effective_uri = ''
+        license_icon_uri_path = ''
+        license_div = div_extra_services.find('div', {'class': "abs-license"})
+        license_a = license_div.find('a')
+        if license_a:
+            license_effective_uri = license_a['href']
+            if 'has_license' in license_a.get('class', []): # return a list
+                license_icon_uri_path = license_a.find('img')['src']
+        response_data['license_effective_uri'] = license_effective_uri
+        response_data['license_icon_uri_path'] = license_icon_uri_path
+
+        # for browse
+        response_data['browse_context'] = div_extra_services.find('div', {'class': 'browse'}).find('div', {'class': 'current'}).string
+
+        browse_context_previous_url = None
+        browse_context_next_url = None
+        prevnext_div = div_extra_services.find('div', {'class': 'prevnext'})
+        prev_a = prevnext_div.find('a', {'class': "abs-button prev-url"})
+        if prev_a:
+            browse_context_previous_url = prev_a['href']
+        next_a = prevnext_div.find('a', {'class': "abs-button next-url"})
+        if next_a:
+            browse_context_next_url = next_a['href']
+
+        response_data['browse_context_previous_url'] = browse_context_previous_url
+        response_data['browse_context_next_url'] = browse_context_next_url
+        response_data['yyyymm'] = div_extra_services.find('div', {'class': 'list'}).find('a', {'class': "abs-button abs-button-grey abs-button-small context-id"}).string
 
         response_data['meta_tags'] = [ str(mt) for mt in meta_tags ]
-        response_data['div_content_inner'] = str(div_content_inner)
-        response_data['div_submission_history'] = str(soup.find('div', {'class': 'submission-history'}))
-        response_data['div_extra_services'] = str(div_extra_services)
-        response_data['div_labstabs'] = str(soup.find('div', {'id': 'labstabs'}))
+        # response_data['div_content_inner'] = str(div_content_inner)
+        # response_data['div_submission_history'] = str(div_submission_history)
+        # response_data['div_extra_services'] = str(div_extra_services)
+        # response_data['div_labstabs'] = str(soup.find('div', {'id': 'labstabs'}))
 
-        # response_data["abs_meta"] = abs_meta
+        # response_data["article"] = article
+        response_data["abs_meta"] = abs_meta
         # response_data["meta_tags"] = meta_tag_metadata(abs_meta)
         # response_data["author_links"] = split_long_author_list(
         #     queries_for_authors(abs_meta.authors.raw), truncate_author_list_size
@@ -221,6 +475,14 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         # if response_data['latexml_url'] is not None:
         #     response_data['formats'].insert(1, 'latexml')
 
+        sh_entries = [ entry for entry in submission_history_entries if 'KB' in entry ]
+        withdrawn_status = [ True if 'withdrawn' in sh_entry else False for sh_entry in sh_entries ]
+        response_data["withdrawn_versions"] = [ i+1 for i in range(latest_version) if withdrawn_status[i] ]
+        response_data["higher_version_withdrawn"] = any(withdrawn_status[request_version:])
+        response_data["withdrawn"] = withdrawn_status[request_version-1]
+        if response_data["higher_version_withdrawn"]:
+            response_data["higher_version_withdrawn_submitter"] = submitter_name
+
         # response_data["withdrawn_versions"] = []
         # response_data["higher_version_withdrawn"] = False
         # response_data["withdrawn"] = False
@@ -231,12 +493,12 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         #             response_data["withdrawn"] = True
         #         if not response_data["higher_version_withdrawn"] and ver.version > abs_meta.version:
         #             response_data["higher_version_withdrawn"] = True
-        #             response_data["higher_version_withdrawn_submitter"] = _get_submitter(abs_meta.arxiv_identifier,
-        #                                                                                  ver.version)
+        #             response_data["higher_version_withdrawn_submitter"] = _get_submitter(abs_meta.arxiv_identifier, ver.version)
 
         # response_data["encrypted"] = abs_meta.get_requested_version().source_flag.source_encrypted
         response_data["show_refs_cites"] = _show_refs_cites(arxiv_identifier)
         response_data["show_labs"] = _show_labs(arxiv_identifier)
+        response_data["rd_int"] = int(datetime.today().strftime("%Y%m%d%H%M"))
 
         # _non_critical_abs_data(abs_meta, arxiv_identifier, response_data)
 

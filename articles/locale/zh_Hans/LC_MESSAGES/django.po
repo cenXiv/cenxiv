@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-13 10:14+0800\n"
+"POT-Creation-Date: 2025-01-15 16:19+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,24 +18,88 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
+#: articles/controllers/archive_page/__init__.py:110
+#: articles/controllers/archive_page/by_month_form.py:10
+msgid "01 (Jan)"
+msgstr "01 (1月)"
+
+#: articles/controllers/archive_page/__init__.py:111
+#: articles/controllers/archive_page/by_month_form.py:11
+msgid "02 (Feb)"
+msgstr "02 (2月)"
+
+#: articles/controllers/archive_page/__init__.py:112
+#: articles/controllers/archive_page/by_month_form.py:12
+msgid "03 (Mar)"
+msgstr "03 (3月)"
+
+#: articles/controllers/archive_page/__init__.py:113
+#: articles/controllers/archive_page/by_month_form.py:13
+msgid "04 (Apr)"
+msgstr "04 (4月)"
+
+#: articles/controllers/archive_page/__init__.py:114
+#: articles/controllers/archive_page/by_month_form.py:14
+msgid "05 (May)"
+msgstr "05 (5月)"
+
+#: articles/controllers/archive_page/__init__.py:115
+#: articles/controllers/archive_page/by_month_form.py:15
+msgid "06 (Jun)"
+msgstr "06 (6月)"
+
+#: articles/controllers/archive_page/__init__.py:116
+#: articles/controllers/archive_page/by_month_form.py:16
+msgid "07 (Jul)"
+msgstr "07 (7月)"
+
+#: articles/controllers/archive_page/__init__.py:117
+#: articles/controllers/archive_page/by_month_form.py:17
+msgid "08 (Aug)"
+msgstr "08 (8月)"
+
+#: articles/controllers/archive_page/__init__.py:118
+#: articles/controllers/archive_page/by_month_form.py:18
+msgid "09 (Sep)"
+msgstr "09 (9月)"
+
+#: articles/controllers/archive_page/__init__.py:119
+#: articles/controllers/archive_page/by_month_form.py:19
+msgid "10 (Oct)"
+msgstr "10 (10月)"
+
+#: articles/controllers/archive_page/__init__.py:120
+#: articles/controllers/archive_page/by_month_form.py:20
+msgid "11 (Nov)"
+msgstr "11 (11月)"
+
+#: articles/controllers/archive_page/__init__.py:121
+#: articles/controllers/archive_page/by_month_form.py:21
+msgid "12 (Dec)"
+msgstr "12 (12月)"
+
+#: articles/controllers/archive_page/by_month_form.py:9
+msgid "all months"
+msgstr "所有月份"
+
 # Start of Selection
-#: articles/controllers/catchup_page.py:471
-#: articles/controllers/catchup_page.py:475
+#: articles/controllers/catchup_page.py:472
+#: articles/controllers/catchup_page.py:476
 #: articles/controllers/list_page/__init__.py:498
 #: articles/controllers/list_page/__init__.py:504
 msgid "New submissions"
 msgstr "新提交"
 
-#: articles/controllers/catchup_page.py:483
-#: articles/controllers/catchup_page.py:485
+#: articles/controllers/catchup_page.py:484
+#: articles/controllers/catchup_page.py:486
 #: articles/controllers/list_page/__init__.py:511
 #: articles/controllers/list_page/__init__.py:517
 msgid "Cross-lists"
 msgstr "交叉列表"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:495
-#: articles/controllers/catchup_page.py:497
+#: articles/controllers/catchup_page.py:496
+#: articles/controllers/catchup_page.py:498
 #: articles/controllers/list_page/__init__.py:523
 #: articles/controllers/list_page/__init__.py:529
 msgid "Replacements"
@@ -129,7 +193,8 @@ msgstr "文章"
 msgid "Name"
 msgstr "名称"
 
-#: articles/models.py:42 articles/templates/articles/base.html:70
+#: articles/models.py:42 articles/templates/abs/labs_tabs.html:337
+#: articles/templates/articles/base.html:70
 msgid "Author"
 msgstr "作者"
 
@@ -161,17 +226,362 @@ msgstr "链接"
 msgid "Abstract page for arXiv paper"
 msgstr "arXiv 论文的摘要页面"
 
-#: articles/templates/abs/abs.html:56
+#: articles/templates/abs/abs.html:50
+msgid "A newer version of this paper has been withdrawn by"
+msgstr "此论文的更新版本已被...撤回"
+
+#: articles/templates/abs/abs.html:52
+msgid "A newer version of this paper has been withdrawn"
+msgstr "此论文的更新版本已被撤回"
+
+#: articles/templates/abs/abs.html:55 articles/templates/abs/abs.html:69
+#: articles/templates/abs/abs.html:169 articles/templates/abs/abs.html:200
+msgid "Focus to learn more"
+msgstr "聚焦以了解更多"
+
+#: articles/templates/abs/abs.html:60 articles/templates/abs/abs.html:74
+msgid "Older arxiv papers may lack submitter name"
+msgstr "较旧的 arXiv 论文可能缺少提交者姓名"
+
+#: articles/templates/abs/abs.html:64
+msgid "This paper has been withdrawn by"
+msgstr "此论文已被...撤回"
+
+#: articles/templates/abs/abs.html:66
+msgid "This paper has been withdrawn"
+msgstr "此论文已被撤回"
+
+#: articles/templates/abs/abs.html:80
+msgid "Submitted on"
+msgstr "提交于"
+
+#: articles/templates/abs/abs.html:81
+msgid "this version"
+msgstr "此版本"
+
+#: articles/templates/abs/abs.html:84
+msgid ", revised"
+msgstr "，修订后的"
+
+#: articles/templates/abs/abs.html:84 articles/templates/abs/abs.html:89
+msgid "this version,"
+msgstr "此版本，"
+
+#: articles/templates/abs/abs.html:87
+msgid ","
+msgstr "，"
+
+#: articles/templates/abs/abs.html:87
+msgid "latest version"
+msgstr "最新版本"
+
+#: articles/templates/abs/abs.html:89
+msgid ", last revised"
+msgstr "，最后修订"
+
+#: articles/templates/abs/abs.html:91
+#: articles/templates/articles/catchup.html:92
+#: articles/templates/list/month.html:34 articles/templates/list/new.html:53
+#: articles/templates/list/recent.html:50 articles/templates/list/year.html:34
+msgid "Title:"
+msgstr "标题："
+
+#: articles/templates/abs/abs.html:100 articles/templates/abs/labs_tabs.html:12
+msgid "Abstract:"
+msgstr "摘要："
+
+#: articles/templates/abs/abs.html:108
+#: articles/templates/articles/catchup.html:98
+#: articles/templates/list/month.html:40 articles/templates/list/new.html:59
+#: articles/templates/list/recent.html:56 articles/templates/list/year.html:40
+msgid "Comments:"
+msgstr "评论："
+
+#: articles/templates/abs/abs.html:113
+#: articles/templates/articles/catchup.html:109
+#: articles/templates/list/month.html:51 articles/templates/list/new.html:70
+#: articles/templates/list/recent.html:67 articles/templates/list/year.html:51
+msgid "Subjects:"
+msgstr "主题："
+
+#: articles/templates/abs/abs.html:121
+msgid "Mathematical Subject Classification"
+msgstr "数学主题分类"
+
+#: articles/templates/abs/abs.html:121 articles/templates/abs/abs.html:127
+msgid "classes:"
+msgstr "类："
+
+#: articles/templates/abs/abs.html:127
+msgid "Association of Computing Machinery Classification"
+msgstr "计算机学会分类"
+
+#: articles/templates/abs/abs.html:134
+msgid "Report number:"
+msgstr "报告编号："
+
+#: articles/templates/abs/abs.html:139
+msgid "Cite as:"
+msgstr "引用方式："
+
+#: articles/templates/abs/abs.html:152
+#: articles/templates/articles/base.html:150
+#: articles/templates/articles/format.html:116
+msgid "or"
+msgstr "或者"
+
+#: articles/templates/abs/abs.html:159
+msgid "for this version"
+msgstr "对于此版本"
+
+#: articles/templates/abs/abs.html:175
+msgid "arXiv-issued DOI via DataCite"
+msgstr "通过 DataCite 发表的 arXiv DOI"
+
+#: articles/templates/abs/abs.html:177
+msgid "arXiv-issued DOI via DataCite (pending registration)"
+msgstr "通过 DataCite 发表的 arXiv DOI（待注册）"
+
+#: articles/templates/abs/abs.html:185
+msgid "Journal reference:"
+msgstr "期刊参考："
+
+#: articles/templates/abs/abs.html:192
+msgid "Digital Object Identifier"
+msgstr "数字对象标识符"
+
+#: articles/templates/abs/abs.html:192
+msgid "Related DOI"
+msgstr "相关 DOI"
+
+#: articles/templates/abs/abs.html:205
+msgid "DOI(s) linking to related resources"
+msgstr "链接到相关资源的 DOI"
+
+# Start of Selection
+#: articles/templates/abs/abs.html:217
+msgid "Submission history"
+msgstr "提交历史"
+
+#: articles/templates/abs/abs.html:217
+msgid "From:"
+msgstr "来自："
+
+#: articles/templates/abs/abs.html:217
+msgid "view email"
+msgstr "查看电子邮件"
+
+#: articles/templates/abs/abs.html:260
+msgid "Full-text links:"
+msgstr "全文链接："
+
+#: articles/templates/abs/abs.html:261
+msgid "Access Paper:"
+msgstr "获取论文："
+
+#: articles/templates/abs/abs.html:265 articles/templates/abs/abs.html:267
+#: articles/templates/abs/abs.html:269
+msgid "View a PDF of the paper titled"
+msgstr "查看标题为...的 PDF"
+
+#: articles/templates/abs/abs.html:265 articles/templates/abs/abs.html:267
+msgid "by"
+msgstr "作者"
+
+#: articles/templates/abs/abs.html:265
+msgid "and"
+msgstr "和"
+
+#: articles/templates/abs/abs.html:265
+msgid "other authors"
+msgstr "其他作者"
+
+#: articles/templates/abs/abs.html:274
+msgid "Withdrawn"
+msgstr "已撤回"
+
+#: articles/templates/abs/abs.html:276
+msgid "Unavailable"
+msgstr "不可用"
+
+#: articles/templates/abs/abs.html:280
+msgid "View Chinese PDF"
+msgstr "查看中文 PDF"
+
+#: articles/templates/abs/abs.html:283
+msgid "View PDF"
+msgstr "查看 PDF"
+
+#: articles/templates/abs/abs.html:286
+msgid "HTML (experimental)"
+msgstr "HTML（实验性）"
+
+#: articles/templates/abs/abs.html:289
+msgid "TeX Source"
+msgstr "TeX 源代码"
+
+#: articles/templates/abs/abs.html:293
+msgid "Other Formats"
+msgstr "其他格式"
+
+#: articles/templates/abs/abs.html:300
+msgid "No license for this version due to withdrawn"
+msgstr "由于已撤回，无此版本的许可"
+
+#: articles/templates/abs/abs.html:302 articles/templates/abs/abs.html:307
+msgid "Rights to this article"
+msgstr "此文章的权利"
+
+#: articles/templates/abs/abs.html:303
+msgid "license icon"
+msgstr "许可图标"
+
+#: articles/templates/abs/abs.html:304 articles/templates/abs/abs.html:307
+msgid "view license"
+msgstr "查看许可"
+
+#: articles/templates/abs/abs.html:315
+msgid "Ancillary-file links"
+msgstr "附属文件链接"
+
+#: articles/templates/abs/abs.html:316
+msgid "Ancillary files"
+msgstr "附属文件"
+
+#: articles/templates/abs/abs.html:316
+msgid "details"
+msgstr "详细信息"
+
+#: articles/templates/abs/abs.html:325
+msgid "Show entire file list."
+msgstr "显示完整的文件列表。"
+
+#: articles/templates/abs/abs.html:325
+msgid "You must enabled JavaScript to view entire file list."
+msgstr "您必须启用 JavaScript 才能查看完整的文件列表。"
+
+#: articles/templates/abs/abs.html:333
+msgid "Current browse context"
+msgstr "当前浏览上下文"
+
+#: articles/templates/abs/abs.html:339
+msgid "previous in"
+msgstr "上一篇在"
+
+#: articles/templates/abs/abs.html:339
+msgid "accesskey p"
+msgstr "访问键 p"
+
+#: articles/templates/abs/abs.html:339
+msgid "prev"
+msgstr "上一篇"
+
+#: articles/templates/abs/abs.html:343
+msgid "previous article"
+msgstr "上一篇文章"
+
+#: articles/templates/abs/abs.html:350
+msgid "next in"
+msgstr "下一篇在"
+
+#: articles/templates/abs/abs.html:350
+msgid "accesskey n"
+msgstr "访问键 n"
+
+#: articles/templates/abs/abs.html:350
+msgid "next"
+msgstr "下一篇"
+
+#: articles/templates/abs/abs.html:353
+msgid "next article"
+msgstr "下一篇文章"
+
+#: articles/templates/abs/abs.html:361
+#: articles/templates/archive/single_archive.html:23
+#: articles/templates/archive/single_archive.html:107
+#: articles/templates/articles/home.html:69
+#: articles/templates/list/recent.html:16
+msgid "new"
+msgstr "新的"
+
+#: articles/templates/abs/abs.html:363
+#: articles/templates/archive/single_archive.html:27
+#: articles/templates/archive/single_archive.html:108
+#: articles/templates/articles/home.html:70 articles/templates/list/new.html:17
+msgid "recent"
+msgstr "最近的"
+
+#: articles/templates/abs/abs.html:373
+msgid "Change to browse by"
+msgstr "切换浏览方式为"
+
+#: articles/templates/abs/abs.html:393
+msgid "References &amp; Citations"
+msgstr "参考文献与引用"
+
+#: articles/templates/abs/abs.html:403
+msgid "Google Scholar"
+msgstr "谷歌学术搜索"
+
+#: articles/templates/abs/abs.html:405
+msgid "Semantic Scholar"
+msgstr "语义学者"
+
+#: articles/templates/abs/abs.html:414
+msgid "blog link"
+msgstr "博客链接"
+
+#: articles/templates/abs/abs.html:414
+msgid "what is this?"
+msgstr "这是什么？"
+
+#: articles/templates/abs/abs.html:422
+msgid "CS Bibliography"
+msgstr "计算机科学参考书目"
+
+#: articles/templates/abs/abs.html:424
+msgid "listing on DBLP"
+msgstr "DBLP 上的列表"
+
+#: articles/templates/abs/abs.html:424
+msgid "listing"
+msgstr "列表"
+
+#: articles/templates/abs/abs.html:424
+msgid "DBLP bibtex record"
+msgstr "DBLP bibteX 记录"
+
+#: articles/templates/abs/abs.html:424
+msgid "bibtex"
+msgstr "bibteX"
+
+#: articles/templates/abs/abs.html:430
+msgid "DBLP author search"
+msgstr "DBLP 作者搜索"
+
+#: articles/templates/abs/abs.html:450
 msgid "Which authors of this paper are endorsers?"
 msgstr "这篇论文的哪些作者是支持者？"
 
-#: articles/templates/abs/abs.html:57
+#: articles/templates/abs/abs.html:451
 msgid "Disable MathJax"
 msgstr "禁用 MathJax"
 
-#: articles/templates/abs/abs.html:57
+#: articles/templates/abs/abs.html:451
 msgid "What is MathJax?"
 msgstr "什么是 MathJax？"
+
+#: articles/templates/abs/bookmarking.html:4
+msgid "Bookmark"
+msgstr "收藏"
+
+#: articles/templates/abs/bookmarking.html:6
+msgid "Bookmark on BibSonomy"
+msgstr "在 BibSonomy 上收藏"
+
+#: articles/templates/abs/bookmarking.html:11
+msgid "Bookmark on Reddit"
+msgstr "在 Reddit 上收藏"
 
 #: articles/templates/abs/cite.html:6
 msgid "export BibTeX citation"
@@ -196,6 +606,287 @@ msgstr "加载中..."
 #: articles/templates/abs/cite.html:20
 msgid "Data provided by:"
 msgstr "数据由提供："
+
+#: articles/templates/abs/labs_tabs.html:9
+#: articles/templates/articles/base.html:71
+#: articles/templates/articles/catchup.html:77
+#: articles/templates/list/month.html:19 articles/templates/list/new.html:38
+#: articles/templates/list/recent.html:35 articles/templates/list/year.html:19
+msgid "Abstract"
+msgstr "摘要"
+
+#: articles/templates/abs/labs_tabs.html:18
+msgid "Bibliographic Tools"
+msgstr "文献工具"
+
+#: articles/templates/abs/labs_tabs.html:20
+msgid "Bibliographic and Citation Tools"
+msgstr "文献和引用工具"
+
+#: articles/templates/abs/labs_tabs.html:29
+msgid "Bibliographic Explorer Toggle"
+msgstr "文献资源探索切换"
+
+#: articles/templates/abs/labs_tabs.html:33
+msgid "Bibliographic Explorer"
+msgstr "文献资源探索"
+
+#: articles/templates/abs/labs_tabs.html:33
+msgid "What is the Explorer?"
+msgstr "什么是资源探索？"
+
+#: articles/templates/abs/labs_tabs.html:47
+msgid "Connected Papers Toggle"
+msgstr "连接的论文切换"
+
+#: articles/templates/abs/labs_tabs.html:51
+msgid "Connected Papers"
+msgstr "连接的论文"
+
+#: articles/templates/abs/labs_tabs.html:51
+msgid "What is Connected Papers?"
+msgstr "什么是连接的论文？"
+
+#: articles/templates/abs/labs_tabs.html:65
+msgid "Litmaps Toggle"
+msgstr "Litmaps 切换"
+
+#: articles/templates/abs/labs_tabs.html:69
+msgid "Litmaps"
+msgstr "Litmaps"
+
+#: articles/templates/abs/labs_tabs.html:69
+msgid "What is Litmaps?"
+msgstr "什么是 Litmaps？"
+
+#: articles/templates/abs/labs_tabs.html:83
+msgid "scite.ai Toggle"
+msgstr "scite.ai 切换"
+
+#: articles/templates/abs/labs_tabs.html:87
+msgid "scite Smart Citations"
+msgstr "scite 智能引用"
+
+#: articles/templates/abs/labs_tabs.html:87
+msgid "What are Smart Citations?"
+msgstr "什么是智能引用？"
+
+#: articles/templates/abs/labs_tabs.html:99
+msgid "Code, Data, Media"
+msgstr "代码，数据，媒体"
+
+#: articles/templates/abs/labs_tabs.html:101
+msgid "Code, Data and Media Associated with this Article"
+msgstr "与本文相关的代码，数据和媒体"
+
+#: articles/templates/abs/labs_tabs.html:111
+msgid "alphaXiv Toggle"
+msgstr "alphaXiv 切换"
+
+#: articles/templates/abs/labs_tabs.html:115
+msgid "alphaXiv"
+msgstr "alphaXiv"
+
+#: articles/templates/abs/labs_tabs.html:115
+msgid "What is alphaXiv?"
+msgstr "什么是 alphaXiv？"
+
+#: articles/templates/abs/labs_tabs.html:127
+#: articles/templates/abs/labs_tabs.html:191
+msgid "Links to Code Toggle"
+msgstr "代码链接切换"
+
+#: articles/templates/abs/labs_tabs.html:131
+msgid "CatalyzeX Code Finder for Papers"
+msgstr "CatalyzeX 代码查找器"
+
+#: articles/templates/abs/labs_tabs.html:131
+msgid "What is CatalyzeX?"
+msgstr "什么是 CatalyzeX？"
+
+#: articles/templates/abs/labs_tabs.html:143
+msgid "DagsHub Toggle"
+msgstr "DagsHub 切换"
+
+#: articles/templates/abs/labs_tabs.html:147
+msgid "DagsHub"
+msgstr "DagsHub"
+
+#: articles/templates/abs/labs_tabs.html:147
+msgid "What is DagsHub?"
+msgstr "什么是 DagsHub？"
+
+#: articles/templates/abs/labs_tabs.html:159
+msgid "GotitPub Toggle"
+msgstr "GotitPub 切换"
+
+#: articles/templates/abs/labs_tabs.html:163
+msgid "Gotit.pub"
+msgstr "Gotit.pub"
+
+#: articles/templates/abs/labs_tabs.html:163
+msgid "What is GotitPub?"
+msgstr "什么是 GotitPub？"
+
+#: articles/templates/abs/labs_tabs.html:175
+msgid "Huggingface Toggle"
+msgstr "Huggingface 切换"
+
+#: articles/templates/abs/labs_tabs.html:179
+msgid "Hugging Face"
+msgstr "Hugging Face"
+
+#: articles/templates/abs/labs_tabs.html:179
+msgid "What is Huggingface?"
+msgstr "什么是 Huggingface？"
+
+#: articles/templates/abs/labs_tabs.html:195
+msgid "Papers with Code"
+msgstr "带有代码的论文"
+
+#: articles/templates/abs/labs_tabs.html:195
+msgid "What is Papers with Code?"
+msgstr "什么是带有代码的论文？"
+
+#: articles/templates/abs/labs_tabs.html:208
+msgid "ScienceCast Toggle"
+msgstr "ScienceCast 切换"
+
+#: articles/templates/abs/labs_tabs.html:212
+msgid "ScienceCast"
+msgstr "ScienceCast"
+
+#: articles/templates/abs/labs_tabs.html:212
+msgid "What is ScienceCast?"
+msgstr "什么是 ScienceCast？"
+
+#: articles/templates/abs/labs_tabs.html:229
+#: articles/templates/abs/labs_tabs.html:231
+msgid "Demos"
+msgstr "演示"
+
+#: articles/templates/abs/labs_tabs.html:241
+msgid "Replicate Toggle"
+msgstr "复制切换"
+
+#: articles/templates/abs/labs_tabs.html:245
+msgid "Replicate"
+msgstr "复制"
+
+#: articles/templates/abs/labs_tabs.html:245
+msgid "What is Replicate?"
+msgstr "什么是复制？"
+
+#: articles/templates/abs/labs_tabs.html:256
+#: articles/templates/abs/labs_tabs.html:271
+msgid "Spaces Toggle"
+msgstr "Spaces 切换"
+
+#: articles/templates/abs/labs_tabs.html:260
+msgid "Hugging Face Spaces"
+msgstr "Hugging Face Spaces"
+
+#: articles/templates/abs/labs_tabs.html:260
+msgid "What is Spaces?"
+msgstr "什么是 Spaces？"
+
+#: articles/templates/abs/labs_tabs.html:275
+msgid "TXYZ.AI"
+msgstr "TXYZ.AI"
+
+#: articles/templates/abs/labs_tabs.html:275
+msgid "What is TXYZ.AI?"
+msgstr "什么是 TXYZ.AI？"
+
+#: articles/templates/abs/labs_tabs.html:284
+msgid "Related Papers"
+msgstr "相关论文"
+
+#: articles/templates/abs/labs_tabs.html:286
+msgid "Recommenders and Search Tools"
+msgstr "推荐器和搜索工具"
+
+#: articles/templates/abs/labs_tabs.html:295
+msgid "Link to Influence Flower"
+msgstr "链接到影响之花"
+
+#: articles/templates/abs/labs_tabs.html:299
+msgid "Influence Flower"
+msgstr "影响之花"
+
+#: articles/templates/abs/labs_tabs.html:299
+msgid "What are Influence Flowers?"
+msgstr "什么是影响之花？"
+
+#: articles/templates/abs/labs_tabs.html:307
+msgid "Core recommender toggle"
+msgstr "核心推荐器切换"
+
+#: articles/templates/abs/labs_tabs.html:311
+msgid "CORE Recommender"
+msgstr "核心推荐器"
+
+#: articles/templates/abs/labs_tabs.html:311
+msgid "What is CORE?"
+msgstr "什么是核心？"
+
+#: articles/templates/abs/labs_tabs.html:324
+msgid "IArxiv recommender toggle"
+msgstr "IArxiv 推荐器切换"
+
+#: articles/templates/abs/labs_tabs.html:328
+msgid "IArxiv Recommender"
+msgstr "IArxiv 推荐器"
+
+#: articles/templates/abs/labs_tabs.html:329
+msgid "What is IArxiv?"
+msgstr "什么是 IArxiv？"
+
+#: articles/templates/abs/labs_tabs.html:338
+msgid "Venue"
+msgstr "地点"
+
+#: articles/templates/abs/labs_tabs.html:339
+msgid "Institution"
+msgstr "机构"
+
+#: articles/templates/abs/labs_tabs.html:340
+msgid "Topic"
+msgstr "主题"
+
+#: articles/templates/abs/labs_tabs.html:355
+msgid "About arXivLabs"
+msgstr "关于 arXivLabs"
+
+#: articles/templates/abs/labs_tabs.html:360
+msgid "arXivLabs: experimental projects with community collaborators"
+msgstr "arXivLabs：与社区合作伙伴的实验项目"
+
+#: articles/templates/abs/labs_tabs.html:361
+msgid ""
+"arXivLabs is a framework that allows collaborators to develop and share new "
+"arXiv features directly on our website."
+msgstr ""
+"arXivLabs 是一个框架，允许合作伙伴直接在我们的网站上开发和分享新的 arXiv 特"
+"性。"
+
+#: articles/templates/abs/labs_tabs.html:362
+msgid ""
+"Both individuals and organizations that work with arXivLabs have embraced "
+"and accepted our values of openness, community, excellence, and user data "
+"privacy. arXiv is committed to these values and only works with partners "
+"that adhere to them."
+msgstr ""
+"与 arXivLabs 合作的个人和组织都接受了我们的价值观，即开放、社区、卓越和用户数"
+"据隐私。arXiv 承诺这些价值观，并且只与遵守这些价值观的合作伙伴合作。"
+
+#: articles/templates/abs/labs_tabs.html:363
+msgid "Have an idea for a project that will add value for arXiv's community?"
+msgstr "有一个为 arXiv 社区增加价值的项目想法吗？"
+
+#: articles/templates/abs/labs_tabs.html:363
+msgid "Learn more about arXivLabs"
+msgstr "了解更多关于 arXivLabs 的信息"
 
 #: articles/templates/archive/archive_list_all.html:5
 #: articles/templates/archive/archive_list_all.html:8
@@ -256,22 +947,9 @@ msgstr "将标识符输入到右上角的搜索框中"
 msgid "Browse:"
 msgstr "浏览："
 
-#: articles/templates/archive/single_archive.html:23
-#: articles/templates/archive/single_archive.html:107
-#: articles/templates/articles/home.html:69
-#: articles/templates/list/recent.html:16
-msgid "new"
-msgstr "新的"
-
 #: articles/templates/archive/single_archive.html:24
 msgid "most recent mailing, with abstracts"
 msgstr "最近的邮件，带摘要"
-
-#: articles/templates/archive/single_archive.html:27
-#: articles/templates/archive/single_archive.html:108
-#: articles/templates/articles/home.html:70 articles/templates/list/new.html:17
-msgid "recent"
-msgstr "最近的"
 
 #: articles/templates/archive/single_archive.html:28
 msgid "last 5 mailings"
@@ -367,13 +1045,6 @@ msgstr "所有字段"
 msgid "Title"
 msgstr "标题"
 
-#: articles/templates/articles/base.html:71
-#: articles/templates/articles/catchup.html:77
-#: articles/templates/list/month.html:19 articles/templates/list/new.html:38
-#: articles/templates/list/recent.html:35 articles/templates/list/year.html:19
-msgid "Abstract"
-msgstr "摘要"
-
 #: articles/templates/articles/base.html:72
 msgid "Comments"
 msgstr "评论"
@@ -450,11 +1121,6 @@ msgstr "arXiv 运营状态"
 msgid "Get status notifications via"
 msgstr "通过...获取状态通知"
 
-#: articles/templates/articles/base.html:150
-#: articles/templates/articles/format.html:116
-msgid "or"
-msgstr "或者"
-
 #: articles/templates/articles/catchup.html:17
 #: articles/templates/articles/catchup_form.html:6
 #: articles/templates/articles/catchup_form.html:12
@@ -471,23 +1137,23 @@ msgid "on"
 msgstr "在"
 
 #: articles/templates/articles/catchup.html:39
-#: articles/templates/articles/catchup.html:175
+#: articles/templates/articles/catchup.html:170
 msgid "Continue to the next day"
 msgstr "继续到下一天"
 
 #: articles/templates/articles/catchup.html:43
-#: articles/templates/articles/catchup.html:158
+#: articles/templates/articles/catchup.html:153
 #: articles/templates/list/base.html:32 articles/templates/list/base.html:74
 msgid "Total of"
 msgstr "总共"
 
 #: articles/templates/articles/catchup.html:43
-#: articles/templates/articles/catchup.html:158
+#: articles/templates/articles/catchup.html:153
 msgid "entries for"
 msgstr "条目为"
 
 #: articles/templates/articles/catchup.html:45
-#: articles/templates/articles/catchup.html:160
+#: articles/templates/articles/catchup.html:155
 msgid "View page:"
 msgstr "查看页面："
 
@@ -529,61 +1195,43 @@ msgstr "中文pdf"
 msgid "Download PDF"
 msgstr "下载 PDF"
 
-#: articles/templates/articles/catchup.html:90
-#: articles/templates/list/month.html:32 articles/templates/list/new.html:51
-#: articles/templates/list/recent.html:48 articles/templates/list/year.html:32
+#: articles/templates/articles/catchup.html:88
+#: articles/templates/list/month.html:30 articles/templates/list/new.html:49
+#: articles/templates/list/recent.html:46 articles/templates/list/year.html:30
 msgid "View HTML"
 msgstr "查看 HTML"
 
-#: articles/templates/articles/catchup.html:93
-#: articles/templates/list/month.html:35 articles/templates/list/new.html:54
-#: articles/templates/list/recent.html:51 articles/templates/list/year.html:35
+#: articles/templates/articles/catchup.html:88
+#: articles/templates/list/month.html:30 articles/templates/list/new.html:49
+#: articles/templates/list/recent.html:46 articles/templates/list/year.html:30
 msgid "Other formats"
 msgstr "其他格式："
 
-#: articles/templates/articles/catchup.html:93
-#: articles/templates/list/month.html:35 articles/templates/list/new.html:54
-#: articles/templates/list/recent.html:51 articles/templates/list/year.html:35
+#: articles/templates/articles/catchup.html:88
+#: articles/templates/list/month.html:30 articles/templates/list/new.html:49
+#: articles/templates/list/recent.html:46 articles/templates/list/year.html:30
 msgid "other"
 msgstr "其他"
 
-#: articles/templates/articles/catchup.html:97
-#: articles/templates/list/month.html:39 articles/templates/list/new.html:58
-#: articles/templates/list/recent.html:55 articles/templates/list/year.html:39
-msgid "Title:"
-msgstr "标题："
-
-#: articles/templates/articles/catchup.html:103
-#: articles/templates/list/month.html:45 articles/templates/list/new.html:64
-#: articles/templates/list/recent.html:61 articles/templates/list/year.html:45
-msgid "Comments:"
-msgstr "评论："
-
-#: articles/templates/articles/catchup.html:109
-#: articles/templates/list/month.html:51 articles/templates/list/new.html:70
-#: articles/templates/list/recent.html:67 articles/templates/list/year.html:51
+#: articles/templates/articles/catchup.html:104
+#: articles/templates/list/month.html:46 articles/templates/list/new.html:65
+#: articles/templates/list/recent.html:62 articles/templates/list/year.html:46
 msgid "Journal-ref:"
 msgstr "期刊参考："
 
-#: articles/templates/articles/catchup.html:114
-#: articles/templates/list/month.html:56 articles/templates/list/new.html:75
-#: articles/templates/list/recent.html:72 articles/templates/list/year.html:56
-msgid "Subjects:"
-msgstr "主题："
-
-#: articles/templates/articles/catchup.html:141
+#: articles/templates/articles/catchup.html:136
 msgid "No further updates for"
 msgstr "没有更多的更新为"
 
-#: articles/templates/articles/catchup.html:144
+#: articles/templates/articles/catchup.html:139
 msgid "Go to page 1"
 msgstr "转到第 1 页"
 
-#: articles/templates/articles/catchup.html:148
+#: articles/templates/articles/catchup.html:143
 msgid "No updates for"
 msgstr "没有更新为"
 
-#: articles/templates/articles/catchup.html:148
+#: articles/templates/articles/catchup.html:143
 msgid ""
 "There was either no announcement for this day, or no updates within the "
 "requested subject."
@@ -945,7 +1593,7 @@ msgstr "查看"
 msgid "Showing new listings for"
 msgstr "显示新的列表为"
 
-#: articles/templates/list/new.html:99
+#: articles/templates/list/new.html:94
 msgid "No updates today."
 msgstr "今天没有更新。"
 
@@ -964,3 +1612,6 @@ msgstr "变化"
 #: articles/views.py:428
 msgid "Chinese PDF is coming soon..."
 msgstr "中文 PDF 即将到来..."
+
+#~ msgid "TXYZ.AI Toggle"
+#~ msgstr "TXYZ.AI 切换"
