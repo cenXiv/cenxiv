@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-16 16:48+0800\n"
+"POT-Creation-Date: 2025-01-16 22:01+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,37 +83,37 @@ msgid "all months"
 msgstr "所有月份"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:472
-#: articles/controllers/catchup_page.py:476
-#: articles/controllers/list_page/__init__.py:498
-#: articles/controllers/list_page/__init__.py:504
+#: articles/controllers/catchup_page.py:473
+#: articles/controllers/catchup_page.py:477
+#: articles/controllers/list_page/__init__.py:503
+#: articles/controllers/list_page/__init__.py:509
 msgid "New submissions"
 msgstr "新提交"
 
-#: articles/controllers/catchup_page.py:484
-#: articles/controllers/catchup_page.py:486
-#: articles/controllers/list_page/__init__.py:511
-#: articles/controllers/list_page/__init__.py:517
+#: articles/controllers/catchup_page.py:485
+#: articles/controllers/catchup_page.py:487
+#: articles/controllers/list_page/__init__.py:516
+#: articles/controllers/list_page/__init__.py:522
 msgid "Cross-lists"
 msgstr "交叉列表"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:496
-#: articles/controllers/catchup_page.py:498
-#: articles/controllers/list_page/__init__.py:523
-#: articles/controllers/list_page/__init__.py:529
+#: articles/controllers/catchup_page.py:497
+#: articles/controllers/catchup_page.py:499
+#: articles/controllers/list_page/__init__.py:528
+#: articles/controllers/list_page/__init__.py:534
 msgid "Replacements"
 msgstr "替换"
 
-#: articles/controllers/list_page/__init__.py:619
+#: articles/controllers/list_page/__init__.py:627
 msgid "New submissions "
 msgstr "新提交 "
 
-#: articles/controllers/list_page/__init__.py:629
+#: articles/controllers/list_page/__init__.py:637
 msgid "Cross submissions "
 msgstr "交叉提交 "
 
-#: articles/controllers/list_page/__init__.py:639
+#: articles/controllers/list_page/__init__.py:647
 msgid "Replacement submissions "
 msgstr "替换提交 "
 
@@ -194,7 +194,7 @@ msgid "Name"
 msgstr "名称"
 
 #: articles/models.py:42 articles/templates/abs/labs_tabs.html:337
-#: articles/templates/articles/base.html:70
+#: articles/templates/articles/base.html:77
 msgid "Author"
 msgstr "作者"
 
@@ -325,7 +325,7 @@ msgid "Cite as:"
 msgstr "引用方式："
 
 #: articles/templates/abs/abs.html:152
-#: articles/templates/articles/base.html:150
+#: articles/templates/articles/base.html:157
 #: articles/templates/articles/format.html:116
 msgid "or"
 msgstr "或者"
@@ -608,7 +608,7 @@ msgid "Data provided by:"
 msgstr "数据由提供："
 
 #: articles/templates/abs/labs_tabs.html:9
-#: articles/templates/articles/base.html:71
+#: articles/templates/articles/base.html:78
 #: articles/templates/articles/catchup.html:77
 #: articles/templates/list/month.html:19 articles/templates/list/new.html:38
 #: articles/templates/list/recent.html:35 articles/templates/list/year.html:19
@@ -1006,7 +1006,7 @@ msgid "abstracts"
 msgstr "摘要"
 
 #: articles/templates/archive/single_archive.html:92
-#: articles/templates/articles/base.html:87
+#: articles/templates/articles/base.html:94
 #: articles/templates/articles/home.html:31
 msgid "Search"
 msgstr "搜索"
@@ -1028,96 +1028,109 @@ msgstr "在...内的类别"
 msgid "current month"
 msgstr "本月"
 
-#: articles/templates/articles/base.html:63
-#: articles/templates/articles/base.html:115
+# Start of Selection
+#: articles/templates/articles/base.html:30
+msgid "We gratefully acknowledge support from all contributors."
+msgstr "我们衷心感谢所有贡献者的支持。"
+
+#: articles/templates/articles/base.html:30
+msgid "Contribute"
+msgstr "贡献"
+
+#: articles/templates/articles/base.html:31
+msgid "Donate"
+msgstr "赞助"
+
+#: articles/templates/articles/base.html:70
+#: articles/templates/articles/base.html:122
 msgid "Help"
 msgstr "帮助"
 
-#: articles/templates/articles/base.html:63
+#: articles/templates/articles/base.html:70
 msgid "Advanced Search"
 msgstr "高级搜索"
 
-#: articles/templates/articles/base.html:68
+#: articles/templates/articles/base.html:75
 msgid "All fields"
 msgstr "所有字段"
 
-#: articles/templates/articles/base.html:69
+#: articles/templates/articles/base.html:76
 msgid "Title"
 msgstr "标题"
 
-#: articles/templates/articles/base.html:72
+#: articles/templates/articles/base.html:79
 msgid "Comments"
 msgstr "评论"
 
-#: articles/templates/articles/base.html:73
+#: articles/templates/articles/base.html:80
 msgid "Journal reference"
 msgstr "期刊参考"
 
-#: articles/templates/articles/base.html:74
+#: articles/templates/articles/base.html:81
 msgid "ACM classification"
 msgstr "ACM 分类"
 
-#: articles/templates/articles/base.html:75
+#: articles/templates/articles/base.html:82
 msgid "MSC classification"
 msgstr "MSC 分类"
 
-#: articles/templates/articles/base.html:76
+#: articles/templates/articles/base.html:83
 msgid "Report number"
 msgstr "报告编号"
 
-#: articles/templates/articles/base.html:77
+#: articles/templates/articles/base.html:84
 msgid "arXiv identifier"
 msgstr "arXiv 编号"
 
-#: articles/templates/articles/base.html:80
+#: articles/templates/articles/base.html:87
 msgid "arXiv author ID"
 msgstr "arXiv 作者 ID"
 
-#: articles/templates/articles/base.html:81
+#: articles/templates/articles/base.html:88
 msgid "Help pages"
 msgstr "帮助页面"
 
-#: articles/templates/articles/base.html:82
+#: articles/templates/articles/base.html:89
 msgid "Full text"
 msgstr "全文"
 
-#: articles/templates/articles/base.html:114
+#: articles/templates/articles/base.html:121
 msgid "About"
 msgstr "关于"
 
-#: articles/templates/articles/base.html:122
+#: articles/templates/articles/base.html:129
 msgid "Contact"
 msgstr "联系"
 
-#: articles/templates/articles/base.html:125
+#: articles/templates/articles/base.html:132
 msgid "subscribe to arXiv mailings"
 msgstr "订阅 arXiv 邮件列表"
 
-#: articles/templates/articles/base.html:125
+#: articles/templates/articles/base.html:132
 msgid "Click here to subscribe"
 msgstr "点击这里订阅"
 
-#: articles/templates/articles/base.html:126
+#: articles/templates/articles/base.html:133
 msgid "Subscribe"
 msgstr "订阅"
 
-#: articles/templates/articles/base.html:138
+#: articles/templates/articles/base.html:145
 msgid "Copyright"
 msgstr "版权"
 
-#: articles/templates/articles/base.html:139
+#: articles/templates/articles/base.html:146
 msgid "Privacy Policy"
 msgstr "隐私政策"
 
-#: articles/templates/articles/base.html:144
+#: articles/templates/articles/base.html:151
 msgid "Web Accessibility Assistance"
 msgstr "网络无障碍帮助"
 
-#: articles/templates/articles/base.html:147
+#: articles/templates/articles/base.html:154
 msgid "arXiv Operational Status"
 msgstr "arXiv 运营状态"
 
-#: articles/templates/articles/base.html:148
+#: articles/templates/articles/base.html:155
 msgid "Get status notifications via"
 msgstr "通过...获取状态通知"
 
