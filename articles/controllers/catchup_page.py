@@ -35,7 +35,7 @@ import mtranslate as translator
 from .list_page import sub_sections_for_types
 from ..models import Article, Author, Category, Link
 from ..templatetags import article_filters
-from ..utils import get_translation_dict
+from ..utils import get_translation_dict, chinese_week_days
 from .archive_page.by_month_form import MONTHS
 
 
@@ -54,6 +54,9 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
                         'abs': include_abs
                     })
         return {}, HTTPStatus.MOVED_PERMANENTLY, {"Location": new_address}
+
+
+    language = get_language()
 
     headers: Dict[str,str] = {}
     headers = add_surrogate_key(headers, ["catchup", f"list-{start_day.year:04d}-{start_day.month:02d}-{subject.id}"])
@@ -207,8 +210,6 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
             #     if dd.p:
             #         dd.p.string = article.abstract_cn
 
-            language = get_language()
-
             arxiv_id, version = article.entry_id, article.entry_version
             primary_cat = CATEGORIES[article.primary_category]
             secondary_cats = [ CATEGORIES[sc.name] for sc in article.categories.all() if sc.name in CATEGORIES ]
@@ -305,7 +306,7 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
     response_data.update({
         'subject': subject,
         # 'date': start_day,
-        'date_adbY': start_day.strftime("%a, %d %b %Y"),
+        'date_adbY': start_day.strftime("%Y年%m月%d日") + f'， {chinese_week_days[start_day.weekday()]}' if language == 'zh-hans' else start_day.strftime("%a, %d %b %Y"),
         'date_Ymd': start_day.strftime('%Y-%m-%d'),
         'next_day': next_announce_day,
         'page': page,

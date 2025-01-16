@@ -305,12 +305,15 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         # response_data["arxiv_id"] = arxiv_id
         response_data["latest_version"] = latest_version
         response_data["request_version"] = request_version
-        response_data["first_version_submitted_date"] = abs_meta.version_history[0].submitted_date.strftime('%-d %b %Y')
-        response_data["request_version_submitted_date"] = abs_meta.version_history[request_version-1].submitted_date.strftime('%-d %b %Y')
+        first_version_submitted_date = abs_meta.version_history[0].submitted_date
+        request_version_submitted_date = abs_meta.version_history[request_version-1].submitted_date
+        latest_version_submitted_date = abs_meta.version_history[-1].submitted_date
+        response_data["first_version_submitted_date"] = first_version_submitted_date.strftime('%Y年%-m月%-d日') if language == 'zh-hans' else first_version_submitted_date.strftime('%-d %b %Y')
+        response_data["request_version_submitted_date"] = request_version_submitted_date.strftime('%Y年%-m月%-d日') if language == 'zh-hans' else request_version_submitted_date.strftime('%-d %b %Y')
         response_data["this_is_the_first_version"] = (request_version == 1)
         response_data["there_are_more_versions"] = (latest_version > 1)
         response_data["this_is_the_latest_version"] = (request_version == latest_version)
-        response_data["latest_version_submitted_date"] = abs_meta.version_history[-1].submitted_date.strftime('%-d %b %Y')
+        response_data["latest_version_submitted_date"] = latest_version_submitted_date.strftime('%Y年%-m月%-d日') if language == 'zh-hans' else latest_version_submitted_date.strftime('%-d %b %Y')
         response_data["arxiv_id_v1"] = f'{arxiv_id}v1'
         response_data["arxiv_id_v_1"] = f'{arxiv_id}v{latest_version}'
         # primary_category = CATEGORIES[result.primary_category]

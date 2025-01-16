@@ -76,7 +76,7 @@ import mtranslate as translator
 from .paging import paging
 from ...models import Article, Author, Category, Link
 from ...templatetags import article_filters
-from ...utils import get_translation_dict
+from ...utils import get_translation_dict, chinese_week_days
 
 
 logger = logging.getLogger(__name__)
@@ -185,6 +185,8 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
     else:
         return HttpResponseBadRequest(f"Invalid archive or category: {subject_or_category}")
 
+    language = get_language()
+
     if not skip or not skip.isdigit():
         skipn = 0
     else:
@@ -219,7 +221,7 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
             return {}, status.NOT_MODIFIED, response_headers
         listings = new_resp.listings
         count = new_resp.new_count + new_resp.rep_count + new_resp.cross_count
-        response_data['announced'] = new_resp.announced
+        response_data['announced'] = new_resp.announced.strftime("%Y年%m月%d日") + f'， {chinese_week_days[new_resp.announced.weekday()]}' if language == 'zh-hans' else new_resp.announced.strftime('%A, %-d %B %Y')
         response_data.update(index_for_types(new_resp, list_ctx_id, time_period, skipn, shown))
         # response_data.update(sub_sections_for_types((new_resp, dts, dds), skipn, shown))
         response_data.update(sub_sections_for_types(new_resp, skipn, shown))
@@ -246,7 +248,10 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         start = 0
         for day, number in rec_resp.pubdates:
             start += number
-            pubdates.append((day.strftime('%a, %-d %b %Y'), start-number))
+            if language == 'zh-hans':
+                pubdates.append((day.strftime("%Y年%m月%d日") + f'， {chinese_week_days[day.weekday()]}', start-number))
+            else:
+                pubdates.append((day.strftime('%a, %-d %b %Y'), start-number))
         response_data['pubdates'] = pubdates
         # response_data.update(sub_sections_for_recent((rec_resp, dts, dds), skipn, shown))
         response_data.update(sub_sections_for_recent(rec_resp, skipn, shown))
@@ -324,15 +329,15 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         if resp.pubdates and resp.pubdates[0]:
             # response_data['pubmonth'] = resp.pubdates[0][0]
             if list_type == 'month':
-                response_data['pubmonth'] = resp.pubdates[0][0].strftime('%B %Y')
+                response_data['pubmonth'] = resp.pubdates[0][0].strftime('%Y年%m月') if language == 'zh-hans' else resp.pubdates[0][0].strftime('%B %Y')
             else:
-                response_data['pubmonth'] = resp.pubdates[0][0].strftime('%Y')
+                response_data['pubmonth'] = resp.pubdates[0][0].strftime('%Y年') if language == 'zh-hans' else resp.pubdates[0][0].strftime('%Y')
         else:
             # response_data['pubmonth'] = datetime.now() # just to make the template happy
             if list_type == 'month':
-                response_data['pubmonth'] = datetime.now().strftime('%B %Y') # just to make the template happy
+                response_data['pubmonth'] = datetime.now().strftime('%Y年%m月') if language == 'zh-hans' else datetime.now().strftime('%B %Y') # just to make the template happy
             else:
-                response_data['pubmonth'] = datetime.now().strftime('%Y') # just to make the template happy
+                response_data['pubmonth'] = datetime.now().strftime('%Y年')  if language == 'zh-hans' else datetime.now().strftime('%Y') # just to make the template happy
 
     # TODO if it is a HEAD, and nothing has changed, send not modified
 
@@ -539,6 +544,8 @@ def sub_sections_for_recent(
     articles_passed = 0
     shown = 0
 
+    language = get_language()
+
     for entry in resp.pubdates:
         day, count = entry
         skipped = max(skip - articles_passed, 0)
@@ -556,7 +563,7 @@ def sub_sections_for_recent(
         # listings = [ (resp.listings[i], str(dts[i]), str(dds[i])) for i in range(shown, shown+to_show) ]
         listings = resp.listings[shown:shown+to_show]
         sec = ListingSection(
-            day=day.strftime('%a, %-d %b %Y'),
+            day=day.strftime("%Y年%m月%d日") + f'， {chinese_week_days[day.weekday()]}' if language == 'zh-hans' else day.strftime('%a, %-d %b %Y'),
             items=listings,
             total=count,
             continued=skipped > 0,
@@ -607,7 +614,8 @@ def sub_sections_for_types(resp: ListingNew, skipn: int, shown: int) -> Dict[str
     rep_start = new_count + cross_count + 1
     last_shown = skipn + shown
 
-    date = resp.announced.strftime('%A, %-d %B %Y')
+    language = get_language()
+    date = resp.announced.strftime("%Y年%m月%d日") + f'， {chinese_week_days[resp.announced.weekday()]}' if language == 'zh-hans' else resp.announced.strftime('%A, %-d %B %Y')
 
     sec_new = ListingSection(
         day=date,
@@ -620,7 +628,7 @@ def sub_sections_for_types(resp: ListingNew, skipn: int, shown: int) -> Dict[str
     )
 
     sec_cross = ListingSection(
-        day=resp.announced.strftime('%A, %-d %B %Y'),
+        day=date,
         items=crosses,
         total=cross_count,
         continued=skipn + 1 > cross_start,
@@ -630,7 +638,7 @@ def sub_sections_for_types(resp: ListingNew, skipn: int, shown: int) -> Dict[str
     )
 
     sec_rep = ListingSection(
-        day=resp.announced.strftime('%A, %-d %B %Y'),
+        day=date,
         items=reps,
         total=rep_count,
         continued=skipn + 1 > rep_start,
@@ -682,6 +690,8 @@ def _check_modified(items: List[ListingItem], if_modified_since: Optional[str] =
 
 def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> ListingNew:
     "Gets the most recent day of listings for an archive or category"
+    language = get_language()
+
     url = request.get_full_path()
     url = url.replace('/en', '')
     url = url.replace('/zh-hans', '')
@@ -767,8 +777,6 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
             listing_type = 'rep'
 
         article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
-
-        language = get_language()
 
         # dt = dts[i]
         # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
@@ -871,6 +879,8 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
                       expires=gen_expires())#, dts, dds
 
 def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Listing:
+    language = get_language()
+
     url = request.get_full_path()
     url = url.replace('/en', '')
     url = url.replace('/zh-hans', '')
@@ -983,8 +993,6 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         #     if dd.p:
         #         dd.p.string = article.abstract_cn
 
-        language = get_language()
-
         listing_type = 'new' # need to get the correct 'new' or 'cross'
         arxiv_id, version = article.entry_id, article.entry_version
         primary_cat = CATEGORIES[article.primary_category]
@@ -1078,6 +1086,8 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
     Searches for all possible category names that could apply to a particular archive or category
     also retrieves information on if any of the possible categories is the articles primary
     """
+    language = get_language()
+
     url = request.get_full_path()
     url = url.replace('/en', '')
     url = url.replace('/zh-hans', '')
@@ -1165,8 +1175,6 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         #     dd.find('div', {'class': "list-title mathjax"}).span.next_sibling.replace_with(article.title_cn)
         #     if dd.p:
         #         dd.p.string = article.abstract_cn
-
-        language = get_language()
 
         listing_type = 'new' # need to get the correct 'new' or 'cross'
         arxiv_id, version = article.entry_id, article.entry_version
