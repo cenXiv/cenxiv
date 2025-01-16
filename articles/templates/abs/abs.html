@@ -26,7 +26,7 @@
 
 {% block header_h1 %}
   <div class="header-breadcrumbs is-hidden-mobile">
-    <a href="{% url 'articles:home' %}"><img src="{% static 'images/arxiv-logo-one-color-white.svg' %}" alt="arxiv logo" style="height:40px;"/></a> <span>&gt;</span> <a href="{% url 'articles:list_articles' context=abs_meta.primary_archive.id subcontext='recent' %}">{{ abs_meta.primary_archive.id }}</a> <span>&gt;</span> arXiv:{{ requested_id }}
+    <a href="{% url 'articles:home' %}"><img src="{% static 'images/cenxiv-logo-one-color-white.svg' %}" alt="cenxiv logo" style="height:40px;"/></a> <span>&gt;</span> <a href="{% url 'articles:list_articles' context=abs_meta.primary_archive.id subcontext='recent' %}">{{ abs_meta.primary_archive.id }}</a> <span>&gt;</span> arXiv:{{ requested_id }}
   </div>
 {% endblock header_h1 %}
 
