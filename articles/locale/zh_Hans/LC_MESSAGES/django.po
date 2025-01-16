@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-15 16:19+0800\n"
+"POT-Creation-Date: 2025-01-16 16:48+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,62 +18,62 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: articles/controllers/archive_page/__init__.py:110
+#: articles/controllers/archive_page/__init__.py:121
 #: articles/controllers/archive_page/by_month_form.py:10
 msgid "01 (Jan)"
 msgstr "01 (1月)"
 
-#: articles/controllers/archive_page/__init__.py:111
+#: articles/controllers/archive_page/__init__.py:122
 #: articles/controllers/archive_page/by_month_form.py:11
 msgid "02 (Feb)"
 msgstr "02 (2月)"
 
-#: articles/controllers/archive_page/__init__.py:112
+#: articles/controllers/archive_page/__init__.py:123
 #: articles/controllers/archive_page/by_month_form.py:12
 msgid "03 (Mar)"
 msgstr "03 (3月)"
 
-#: articles/controllers/archive_page/__init__.py:113
+#: articles/controllers/archive_page/__init__.py:124
 #: articles/controllers/archive_page/by_month_form.py:13
 msgid "04 (Apr)"
 msgstr "04 (4月)"
 
-#: articles/controllers/archive_page/__init__.py:114
+#: articles/controllers/archive_page/__init__.py:125
 #: articles/controllers/archive_page/by_month_form.py:14
 msgid "05 (May)"
 msgstr "05 (5月)"
 
-#: articles/controllers/archive_page/__init__.py:115
+#: articles/controllers/archive_page/__init__.py:126
 #: articles/controllers/archive_page/by_month_form.py:15
 msgid "06 (Jun)"
 msgstr "06 (6月)"
 
-#: articles/controllers/archive_page/__init__.py:116
+#: articles/controllers/archive_page/__init__.py:127
 #: articles/controllers/archive_page/by_month_form.py:16
 msgid "07 (Jul)"
 msgstr "07 (7月)"
 
-#: articles/controllers/archive_page/__init__.py:117
+#: articles/controllers/archive_page/__init__.py:128
 #: articles/controllers/archive_page/by_month_form.py:17
 msgid "08 (Aug)"
 msgstr "08 (8月)"
 
-#: articles/controllers/archive_page/__init__.py:118
+#: articles/controllers/archive_page/__init__.py:129
 #: articles/controllers/archive_page/by_month_form.py:18
 msgid "09 (Sep)"
 msgstr "09 (9月)"
 
-#: articles/controllers/archive_page/__init__.py:119
+#: articles/controllers/archive_page/__init__.py:130
 #: articles/controllers/archive_page/by_month_form.py:19
 msgid "10 (Oct)"
 msgstr "10 (10月)"
 
-#: articles/controllers/archive_page/__init__.py:120
+#: articles/controllers/archive_page/__init__.py:131
 #: articles/controllers/archive_page/by_month_form.py:20
 msgid "11 (Nov)"
 msgstr "11 (11月)"
 
-#: articles/controllers/archive_page/__init__.py:121
+#: articles/controllers/archive_page/__init__.py:132
 #: articles/controllers/archive_page/by_month_form.py:21
 msgid "12 (Dec)"
 msgstr "12 (12月)"
@@ -995,7 +995,7 @@ msgstr "，查看结果"
 
 #: articles/templates/archive/single_archive.html:83
 msgid "without"
-msgstr "没有"
+msgstr "无"
 
 #: articles/templates/archive/single_archive.html:84
 msgid "with"

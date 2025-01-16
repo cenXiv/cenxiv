@@ -149,7 +149,7 @@
             </tr>
             <tr>
               <td class="tablecell label">&nbsp;</td>
-              <td class="tablecell arxividv">{% trans "or" %}
+              <td class="tablecell arxividv">({% trans "or" %}
                   <span class="arxivid">
                     {% if abs_meta.primary_category.id in abs_meta.arxiv_id %}
                       <a href="{{ abs_meta.arxiv_id }}">arXiv:{{ abs_meta.arxiv_id_v }}</a>
@@ -214,7 +214,7 @@
     </div>
 
     <div class="submission-history">
-      <h2>{% trans "Submission history" %}</h2> {% trans "From:" %} {{ submitter_name }} [<a href="{{ show_email_link }} }}" rel="nofollow">{% trans "view email" %} </a>]
+      <h2>{% trans "Submission history" %}</h2> {% trans "From:" %} {{ submitter_name }} [<a href="{{ show_email_link }} }}" rel="nofollow">{% trans "view email" %}</a>]
       {# Extra message for proxy sites (i.e. Proxy line has username and id) #}
       {# TODO: revisit this. Logic for display follows classic but is strange; sometimes a proxy is just a person's name. #}
       {% for entry in submission_history_entries %}

@@ -582,7 +582,7 @@ def sub_sections_for_recent(
         heading = sec.day
         if sec.total > 0:
             if language == 'zh-hans':
-                heading += f' ({showing}{len(sec.items)} 之 {sec.total} 条目 )'
+                heading += f' ({showing}{sec.total} 之 {len(sec.items)} 条目 )'
             else:
                 heading += f' ({showing}{len(sec.items)} of {sec.total} entries )'
         sec.heading = heading
@@ -652,7 +652,7 @@ def sub_sections_for_types(resp: ListingNew, skipn: int, shown: int) -> Dict[str
             showing = showing + ('首先 ' if language == 'zh-hans' else 'first ')
 
         if language == 'zh-hans':
-            sec.heading += f' ({showing}{len(sec.items)} 之 {sec.total} 条目 )'
+            sec.heading += f' ({showing}{sec.total} 之 {len(sec.items)} 条目 )'
         else:
             sec.heading += f' ({showing}{len(sec.items)} of {sec.total} entries )'
 

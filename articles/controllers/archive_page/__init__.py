@@ -1,5 +1,6 @@
 """Archive landing page."""
 
+import json
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Optional
 from http import HTTPStatus as status
@@ -19,6 +20,7 @@ from browse.controllers import biz_tz
 from browse.controllers.years_operating import years_operating
 from browse.controllers.response_headers import abs_expires_header
 
+from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
 from ..years_operating import stats_by_year
@@ -29,40 +31,49 @@ def get_archive(archive_id: Optional[str]) -> Tuple[Dict[str, Any], int, Dict[st
     """Gets archive page."""
     data: Dict[str, Any] = {}
     response_headers: Dict[str, Any] = {}
-    response_headers["Surrogate-Control"]="max-age=86400" #one day
-    response_headers=add_surrogate_key(response_headers,["archive"])
+    response_headers["Surrogate-Control"] = "max-age=86400" #one day
+    response_headers = add_surrogate_key(response_headers, ["archive"])
 
     if not archive_id or archive_id == "list":
         return archive_index("list", status_in=status.OK)
 
     archive = ARCHIVES.get(archive_id, None)
-    if not archive: #check if maybe its a category
+    if not archive: # check if maybe its a category
         category = CATEGORIES.get(archive_id, None)
         if category:
-            archive=category.get_archive()
+            archive = category.get_archive()
     if not archive:
-        return archive_index(archive_id,
-                                 status_in=status.NOT_FOUND)
+        return archive_index(archive_id, status_in=status.NOT_FOUND)
 
-    if archive.is_active==False: #subsumed archives
-        subsuming_category=archive.get_canonical()
+    if archive.is_active == False: # subsumed archives
+        subsuming_category = archive.get_canonical()
         if not isinstance(subsuming_category, Category):
-            return archive_index(archive_id,
-                                 status_in=status.NOT_FOUND)
+            return archive_index(archive_id, status_in=status.NOT_FOUND)
         data["subsumed_id"] = archive.id
         data["subsuming_category"] = subsuming_category
         archive = subsuming_category.get_archive()
 
+    cats_list = category_list(archive)
     years = years_operating(archive)
-    data["years"] = [datetime.now().year, datetime.now().year-1] #only last 90 days allowed anyways
+    data["years"] = [datetime.now().year, datetime.now().year-1] # only last 90 days allowed anyways
     data["months"] = MONTHS
     data["days"] = DAYS
     data["archive"] = archive
     data["list_form"] = ByMonthForm(archive, years)
     data["stats_by_year"] = stats_by_year(archive, years)
-    data["category_list"] = category_list(archive)
+    # data["category_list"] = cats_list
     data["current_month"] = datetime.now().strftime('%m')
     data["template"] = "archive/single_archive.html"
+
+    if get_language() == 'zh-hans':
+        with open("articles/categories_description_dict.json", "r") as f:
+            categories_description_dict = json.load(f)
+        for cat in cats_list:
+            if cat.id in categories_description_dict:
+                for key, val in categories_description_dict[cat.id].items():
+                    cat.description = cat.description.replace(key, val)
+    data["category_list"] = cats_list
+
     return data, status.OK, response_headers
 
 
@@ -87,8 +98,8 @@ def archive_index(bad_archive_id: str, status_in: int) -> Tuple[Dict[str, Any], 
     data["defunct"] = defunct
 
     data["template"] = "archive/archive_list_all.html"
-    headers: Dict[str,str]={}
-    headers=add_surrogate_key(headers,["archive"])
+    headers: Dict[str, str]={}
+    headers = add_surrogate_key(headers, ["archive"])
     return data, status_in, headers
 
 
