@@ -53,19 +53,22 @@ def get_archive(archive_id: Optional[str]) -> Tuple[Dict[str, Any], int, Dict[st
         data["subsuming_category"] = subsuming_category
         archive = subsuming_category.get_archive()
 
+    language = get_language()
+
     cats_list = category_list(archive)
     years = years_operating(archive)
     data["years"] = [datetime.now().year, datetime.now().year-1] # only last 90 days allowed anyways
     data["months"] = MONTHS
     data["days"] = DAYS
     data["archive"] = archive
+    data["archive_start_date"] = archive.start_date.strftime('%Y年%-m月') if language == 'zh-hans' else archive.start_date.strftime('%B %Y')
     data["list_form"] = ByMonthForm(archive, years)
     data["stats_by_year"] = stats_by_year(archive, years)
     # data["category_list"] = cats_list
     data["current_month"] = datetime.now().strftime('%m')
     data["template"] = "archive/single_archive.html"
 
-    if get_language() == 'zh-hans':
+    if language == 'zh-hans':
         with open("articles/categories_description_dict.json", "r") as f:
             categories_description_dict = json.load(f)
         for cat in cats_list:

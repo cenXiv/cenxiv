@@ -5,7 +5,7 @@
 {% block title %}{{ translation_dict|dict_get_key:archive.full_name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ translation_dict|dict_get_key:archive.full_name }} <span style="font-size: 70%;">({% trans "since" %} {{ archive.start_date|date:"F Y" }})</span></h1>
+  <h1>{{ translation_dict|dict_get_key:archive.full_name }} <span style="font-size: 70%;">({% trans "since" %} {{ archive_start_date }})</span></h1>
 
   {% if subsumed_id %}
     <p>The <b>{{ subsumed_id }}</b> archive has been subsumed into
