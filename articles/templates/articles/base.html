@@ -63,7 +63,6 @@
             </div>
 
             <form class="level-item mini-search" method="GET" action="{% url 'articles:search_box' %}">
-            {% csrf_token %}
             <div class="field has-addons">
                 <div class="control">
                 <input class="input is-small" type="text" name="query" placeholder="{% trans 'Search' %}..." aria-label="Search term or terms" />

@@ -33,7 +33,6 @@
         </li>
         <li>{% trans "specific year/month:" %}
           <form action="{% url 'articles:list_default' %}" method="get">
-            {% csrf_token %}
             {{ list_form.archive }}
             {{ list_form.year }} {{ list_form.month }}
             <button type="submit">{% trans "Go" %}</button>
@@ -44,7 +43,6 @@
 
     <li><b>{% trans "Catch-up:" %}</b>
       <form id="catchup-form" action="{% url 'articles:catchup_form' %}" method="get" onsubmit="catchupParamSelection('{{ archive.id }}')">
-        {% csrf_token %}
         <input id="catchup_archive" type="hidden" value="{{ archive.id }}"/>
         <input type="hidden" id="subject" name="subject" />
         {% if archive.get_categories|length > 1 %}

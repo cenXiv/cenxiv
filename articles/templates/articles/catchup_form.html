@@ -17,7 +17,6 @@
   <h1>{% trans "Catchup on:" %}</h1>
 
   <form id="catchup-form" action="{% url 'articles:catchup_form' %}" method="get" onsubmit="combineDate(); selectSubject();">
-    {% csrf_token %}
     <div role="group" aria-labelledby="subject_header">
       <h3 id="subject_header">{% trans "Subject:" %}</h3>
 

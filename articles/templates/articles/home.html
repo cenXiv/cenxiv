@@ -14,7 +14,6 @@
 
     {#  /multi sends to either search, catchup or form interface based on which button is hit. #}
     <form name="home-adv-search" class="home-search" action="/multi" method="get" role="search">
-      {% csrf_token %}
       <label for="search-category">{% trans "Subject search and browse:" %}</label><br>
       <select name="group" title="{% trans 'Search in' %}" id="search-category">
       {% for group_key, group_details in groups.items %}
