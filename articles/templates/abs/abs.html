@@ -88,7 +88,29 @@
             {% elif not this_is_the_first_version and this_is_the_latest_version %}
               {% trans ", last revised" %} {{ latest_version_submitted_date }} ({% trans "this version," %} v{{ request_version }}){% endif %}]
           </div>
-        <h1 class="title mathjax"><span class="descriptor">{% trans "Title:" %}</span>{{ abs_meta.title }}</h1>
+          <h1 class="title mathjax"><span class="descriptor">{% trans "Title:" %}</span>
+              {{ abs_meta.title }}
+              <button id="toggle-title" type="button">{{ abs_meta.show_title_text }}</button>
+          </h1>
+          <h1 class="title mathjax" id="title-other-language" style="display: none;"><span class="descriptor">{% trans "Title:" %}</span>
+              {{ abs_meta.title_other_language }}
+          </h1>
+          <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                  const toggleButton = document.getElementById('toggle-title');
+                  const titleOtherLanguage = document.getElementById('title-other-language');
+
+                  toggleButton.addEventListener('click', function() {
+                      if (titleOtherLanguage.style.display === 'none') {
+                          titleOtherLanguage.style.display = 'block'; // Show the title
+                          toggleButton.textContent = '{{ abs_meta.hide_title_text }}';
+                      } else {
+                          titleOtherLanguage.style.display = 'none'; // Hide the title
+                          toggleButton.textContent = '{{ abs_meta.show_title_text }}';
+                      }
+                  });
+              });
+          </script>
         {{ abs_meta.author_list|safe }}
 
         {# optionally include markup for the download button #}
@@ -97,8 +119,30 @@
         {% endif %}
 
         <blockquote class="abstract mathjax">
-            <span class="descriptor">{% trans "Abstract:" %}</span>{{ abs_meta.abstract }}
+            <span class="descriptor">{% trans "Abstract:" %}</span>
+            {{ abs_meta.abstract }}
+            <button id="toggle-abstract" type="button">{{ abs_meta.show_abstract_text }}</button>
         </blockquote>
+        <blockquote class="abstract mathjax" id="abstract-other-language" style="display: none;">
+            <span class="descriptor">{% trans "Abstract:" %}</span>
+            {{ abs_meta.abstract_other_language }}
+        </blockquote>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleButton = document.getElementById('toggle-abstract');
+                const abstractOtherLanguage = document.getElementById('abstract-other-language');
+
+                toggleButton.addEventListener('click', function() {
+                    if (abstractOtherLanguage.style.display === 'none') {
+                        abstractOtherLanguage.style.display = 'block'; // Show the abstract
+                        toggleButton.textContent = '{{ abs_meta.hide_abstract_text }}';
+                    } else {
+                        abstractOtherLanguage.style.display = 'none'; // Hide the abstract
+                        toggleButton.textContent = '{{ abs_meta.show_abstract_text }}';
+                    }
+                });
+            });
+        </script>
 
         <!--CONTEXT-->
         <div class="metatable">

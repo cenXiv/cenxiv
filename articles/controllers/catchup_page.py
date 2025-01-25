@@ -262,6 +262,13 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
             doc.primary_display = doc.primary_category.display()
             doc.secondaries_display = doc.display_secondaries()
 
+            doc.title_other_language = article.title_en if language == 'zh-hans' else article.title_cn
+            doc.abstract_other_language = article.abstract_en if language == 'zh-hans' else article.abstract_cn
+            doc.show_title_text = '显示英文标题' if language == 'zh-hans' else 'Show Chinese title'
+            doc.hide_title_text = '隐藏英文标题' if language == 'zh-hans' else 'Hide Chinese title'
+            doc.show_abstract_text = '显示英文摘要' if language == 'zh-hans' else 'Show Chinese abstract'
+            doc.hide_abstract_text = '隐藏英文摘要' if language == 'zh-hans' else 'Hide Chinese abstract'
+
             if language == 'zh-hans':
                 translation_dict = get_translation_dict()
                 # Define the regex pattern

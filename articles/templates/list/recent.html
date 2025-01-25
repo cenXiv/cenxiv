@@ -49,7 +49,27 @@
               <div class='meta'>
                 <div class='list-title mathjax'><span class='descriptor'>{% trans "Title:" %}</span>
                   {{ article.title }}
+                  <button id="toggle-title-{{ article.arxiv_id }}" type="button">{{ article.show_title_text }}</button>
                 </div>
+                <div class='list-title mathjax' id="title-other-language-{{ article.arxiv_id }}" style="display: none;"><span class='descriptor'>{% trans "Title:" %}</span>
+                  {{ article.title_other_language }}
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const toggleButton = document.getElementById('toggle-title-{{ article.arxiv_id }}');
+                        const titleOtherLanguage = document.getElementById('title-other-language-{{ article.arxiv_id }}');
+
+                        toggleButton.addEventListener('click', function() {
+                            if (titleOtherLanguage.style.display === 'none') {
+                                titleOtherLanguage.style.display = 'block'; // Show the title
+                                toggleButton.textContent = '{{ article.hide_title_text }}';
+                            } else {
+                                titleOtherLanguage.style.display = 'none'; // Hide the title
+                                toggleButton.textContent = '{{ article.show_title_text }}';
+                            }
+                        });
+                    });
+                </script>
                 {{ article.authors_list|safe }}
 
                 {% if article.comments %}

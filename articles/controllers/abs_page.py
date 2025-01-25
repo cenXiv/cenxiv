@@ -293,6 +293,13 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         abs_meta.primary_display = abs_meta.primary_category.display()
         abs_meta.secondaries_display = abs_meta.display_secondaries()
 
+        abs_meta.title_other_language = article.title_en if language == 'zh-hans' else article.title_cn
+        abs_meta.abstract_other_language = article.abstract_en if language == 'zh-hans' else article.abstract_cn
+        abs_meta.show_title_text = '显示英文标题' if language == 'zh-hans' else 'Show Chinese title'
+        abs_meta.hide_title_text = '隐藏英文标题' if language == 'zh-hans' else 'Hide Chinese title'
+        abs_meta.show_abstract_text = '显示英文摘要' if language == 'zh-hans' else 'Show Chinese abstract'
+        abs_meta.hide_abstract_text = '隐藏英文摘要' if language == 'zh-hans' else 'Hide Chinese abstract'
+
         if language == 'zh-hans':
             translation_dict = get_translation_dict()
             # Define the regex pattern

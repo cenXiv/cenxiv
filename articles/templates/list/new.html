@@ -52,7 +52,27 @@ It needs to do headings for the new/cross/rep sections.
               <div class='meta'>
                 <div class='list-title mathjax'><span class='descriptor'>{% trans "Title:" %}</span>
                   {{ article.title }}
+                  <button id="toggle-title-{{ article.arxiv_id }}" type="button">{{ article.show_title_text }}</button>
                 </div>
+                <div class='list-title mathjax' id="title-other-language-{{ article.arxiv_id }}" style="display: none;"><span class='descriptor'>{% trans "Title:" %}</span>
+                  {{ article.title_other_language }}
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const toggleButton = document.getElementById('toggle-title-{{ article.arxiv_id }}');
+                        const titleOtherLanguage = document.getElementById('title-other-language-{{ article.arxiv_id }}');
+
+                        toggleButton.addEventListener('click', function() {
+                            if (titleOtherLanguage.style.display === 'none') {
+                                titleOtherLanguage.style.display = 'block'; // Show the title
+                                toggleButton.textContent = '{{ article.hide_title_text }}';
+                            } else {
+                                titleOtherLanguage.style.display = 'none'; // Hide the title
+                                toggleButton.textContent = '{{ article.show_title_text }}';
+                            }
+                        });
+                    });
+                </script>
                 {{ article.authors_list|safe }}
 
                 {% if article.comments %}
@@ -79,7 +99,27 @@ It needs to do headings for the new/cross/rep sections.
                 {% if list_type == 'new' %}
                 <p class='mathjax'>
                   {{ article.abstract }}
+                  <button id="toggle-abstract-{{ article.arxiv_id }}" type="button">{{ article.show_abstract_text }}</button>
                 </p>
+                <p class='mathjax' id="abstract-other-language-{{ article.arxiv_id }}" style="display: none;">
+                  {{ article.abstract_other_language }}
+                </p>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const toggleButton = document.getElementById('toggle-abstract-{{ article.arxiv_id }}');
+                        const abstractOtherLanguage = document.getElementById('abstract-other-language-{{ article.arxiv_id }}');
+
+                        toggleButton.addEventListener('click', function() {
+                            if (abstractOtherLanguage.style.display === 'none') {
+                                abstractOtherLanguage.style.display = 'block'; // Show the abstract
+                                toggleButton.textContent = '{{ article.hide_abstract_text }}';
+                            } else {
+                                abstractOtherLanguage.style.display = 'none'; // Hide the abstract
+                                toggleButton.textContent = '{{ article.show_abstract_text }}';
+                            }
+                        });
+                    });
+                </script>
                 {% endif %}
               </div>
             </dd>
@@ -93,5 +133,6 @@ It needs to do headings for the new/cross/rep sections.
   {% if not sub_sections_for_types.0.visible and not sub_sections_for_types.1.visible and not sub_sections_for_types.2.visible %}
     <p>{% trans "No updates today." %}</p>
   {% endif %}
+
 
 {% endblock %}

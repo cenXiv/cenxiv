@@ -846,6 +846,13 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         doc.primary_display = doc.primary_category.display()
         doc.secondaries_display = doc.display_secondaries()
 
+        doc.title_other_language = article.title_en if language == 'zh-hans' else article.title_cn
+        doc.abstract_other_language = article.abstract_en if language == 'zh-hans' else article.abstract_cn
+        doc.show_title_text = '显示英文标题' if language == 'zh-hans' else 'Show Chinese title'
+        doc.hide_title_text = '隐藏英文标题' if language == 'zh-hans' else 'Hide Chinese title'
+        doc.show_abstract_text = '显示英文摘要' if language == 'zh-hans' else 'Show Chinese abstract'
+        doc.hide_abstract_text = '隐藏英文摘要' if language == 'zh-hans' else 'Hide Chinese abstract'
+
         if language == 'zh-hans':
             translation_dict = get_translation_dict()
             # Define the regex pattern
@@ -1056,6 +1063,13 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         doc.primary_display = doc.primary_category.display()
         doc.secondaries_display = doc.display_secondaries()
 
+        doc.title_other_language = article.title_en if language == 'zh-hans' else article.title_cn
+        doc.abstract_other_language = article.abstract_en if language == 'zh-hans' else article.abstract_cn
+        doc.show_title_text = '显示英文标题' if language == 'zh-hans' else 'Show Chinese title'
+        doc.hide_title_text = '隐藏英文标题' if language == 'zh-hans' else 'Hide Chinese title'
+        doc.show_abstract_text = '显示英文摘要' if language == 'zh-hans' else 'Show Chinese abstract'
+        doc.hide_abstract_text = '隐藏英文摘要' if language == 'zh-hans' else 'Hide Chinese abstract'
+
         if language == 'zh-hans':
             translation_dict = get_translation_dict()
             # Define the regex pattern
@@ -1246,6 +1260,13 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         doc.authors_list = str(authors_divs[i])
         doc.primary_display = doc.primary_category.display()
         doc.secondaries_display = doc.display_secondaries()
+
+        doc.title_other_language = article.title_en if language == 'zh-hans' else article.title_cn
+        doc.abstract_other_language = article.abstract_en if language == 'zh-hans' else article.abstract_cn
+        doc.show_title_text = '显示英文标题' if language == 'zh-hans' else 'Show Chinese title'
+        doc.hide_title_text = '隐藏英文标题' if language == 'zh-hans' else 'Hide Chinese title'
+        doc.show_abstract_text = '显示英文摘要' if language == 'zh-hans' else 'Show Chinese abstract'
+        doc.hide_abstract_text = '隐藏英文摘要' if language == 'zh-hans' else 'Hide Chinese abstract'
 
         if language == 'zh-hans':
             translation_dict = get_translation_dict()
