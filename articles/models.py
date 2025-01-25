@@ -11,18 +11,24 @@ class Article(models.Model):
     abstract_cn = models.TextField(_('Chinese Abstract'))
     published_date = models.DateTimeField(_('Article Published Date'))
     updated_date = models.DateTimeField(_('Article Updated Date'))
-    comment = models.CharField(_('Comment'), max_length=200, null=True, blank=True)
-    journal_ref = models.CharField(_('Journal Ref'), max_length=200, null=True, blank=True)
-    doi = models.CharField(_('DOI'), max_length=200, null=True, blank=True)
+    comment_cn = models.CharField(_('Chiness Comment'), max_length=200, null=True, blank=True)
+    comment_en = models.CharField(_('English Comment'), max_length=200, null=True, blank=True)
+    journal_ref_cn = models.CharField(_('Chinses Journal Ref'), max_length=200, null=True, blank=True)
+    journal_ref_en = models.CharField(_('English Journal Ref'), max_length=200, null=True, blank=True)
+    doi = models.CharField(_('DOI'), max_length=50, null=True, blank=True)
     primary_category = models.CharField(_('Primary Category'), max_length=50)
     created_at = models.DateTimeField(_('Created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('Updated at'), auto_now=True)
     translation_validated = models.BooleanField(_('Translation Validated'), default=False)
 
     class Meta:
-        ordering = ['-published_date']
+        ordering = ['-updated_date']
         verbose_name = _('Article')
         verbose_name_plural = _('Articles')
+        indexes = [
+            models.Index(fields=['-updated_date']),
+            models.Index(fields=['source_archive', 'entry_id', 'entry_version']),
+        ]
 
     def __str__(self):
         return f"{self.source_archive}:{self.entry_id}v{self.entry_version}"

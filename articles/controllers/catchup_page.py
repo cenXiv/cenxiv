@@ -30,13 +30,12 @@ from browse.controllers.list_page import latexml_links_for_articles, dl_for_arti
 from browse.services.database.catchup import get_catchup_data, CATCHUP_LIMIT, get_next_announce_day
 from browse.services.listing import ListingNew, ListingItem, gen_expires
 
-import mtranslate as translator
-
 from .list_page import sub_sections_for_types
 from ..models import Article, Author, Category, Link
 from ..templatetags import article_filters
 from ..utils import get_translation_dict, chinese_week_days
 from .archive_page.by_month_form import MONTHS
+from ..translators import translator
 
 
 def get_catchup_page(request, subject_str:str, date:str)-> Response:
@@ -142,10 +141,16 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
             try:
                 article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
             except Article.DoesNotExist:
-                # title_cn = translator.translate(result.title, 'zh-CN', 'en')
-                # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
-                title_cn = '中文标题'
-                abstract_cn = '中文摘要'
+                title_cn = translator('alibaba')(result.title)
+                abstract_cn = translator('alibaba')(result.summary)
+                comment_cn = None
+                journal_ref_cn = None
+                if result.comment:
+                    comment_cn = translator('baidu')(result.comment)
+                if result.journal_ref:
+                    journal_ref_cn = translator('baidu')(result.journal_ref)
+                # title_cn = '中文标题'
+                # abstract_cn = '中文摘要'
 
                 article = Article(
                     entry_id=arxiv_id,
@@ -156,8 +161,10 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
                     abstract_cn=abstract_cn,
                     published_date=result.published,
                     updated_date=result.updated,
-                    comment=result.comment,
-                    journal_ref=result.journal_ref,
+                    comment_en=result.comment,
+                    comment_cn=comment_cn,
+                    journal_ref_en=result.journal_ref,
+                    journal_ref_cn=journal_ref_cn,
                     doi=result.doi,
                     primary_category=result.primary_category,
                 )
@@ -224,8 +231,8 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
                 categories=[ cat.name for cat in article.categories.all() ],
                 primary_category=primary_cat,
                 secondary_categories=secondary_cats,
-                comments=article.comment,
-                journal_ref=article.journal_ref,
+                comments=article.comment_cn if language == 'zh-hans' else article.comment_en,
+                journal_ref=article.journal_ref_cn if language == 'zh-hans' else article.journal_ref_en,
                 version=version,
                 version_history=[
                     VersionEntry(

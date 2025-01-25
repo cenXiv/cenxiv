@@ -16,7 +16,6 @@ from dateutil.tz import tzutc
 from flask import request, url_for, current_app
 from werkzeug.exceptions import InternalServerError
 
-import mtranslate as translator
 from django.utils.translation import get_language
 
 import arxiv as arxiv_api  # The PyPI arxiv package
@@ -71,6 +70,7 @@ from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
 from ..templatetags import article_filters
 from ..utils import get_translation_dict
+from ..translators import translator
 
 
 logger = logging.getLogger(__name__)
@@ -147,10 +147,16 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         try:
             article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=latest_version)
         except Article.DoesNotExist:
-            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
-            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
-            title_cn = '中文标题'
-            abstract_cn = '中文摘要'
+            title_cn = translator('alibaba')(result.title)
+            abstract_cn = translator('alibaba')(result.summary)
+            comment_cn = None
+            journal_ref_cn = None
+            if result.comment:
+                comment_cn = translator('baidu')(result.comment)
+            if result.journal_ref:
+                journal_ref_cn = translator('baidu')(result.journal_ref)
+            # title_cn = '中文标题'
+            # abstract_cn = '中文摘要'
 
             article = Article(
                 entry_id=arxiv_id,
@@ -161,8 +167,10 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 abstract_cn=abstract_cn,
                 published_date=result.published,
                 updated_date=result.updated,
-                comment=result.comment,
-                journal_ref=result.journal_ref,
+                comment_en=result.comment,
+                comment_cn=comment_cn,
+                journal_ref_en=result.journal_ref,
+                journal_ref_cn=journal_ref_cn,
                 doi=result.doi,
                 primary_category=result.primary_category,
             )
@@ -185,10 +193,16 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 search = arxiv_api.Search(id_list=[f'{arxiv_id}v{version}'])
                 result = list(client.results(search))[0]
 
-                # title_cn = translator.translate(result.title, 'zh-CN', 'en')
-                # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
-                title_cn = '中文标题'
-                abstract_cn = '中文摘要'
+                title_cn = translator('alibaba')(result.title)
+                abstract_cn = translator('alibaba')(result.summary)
+                comment_cn = None
+                journal_ref_cn = None
+                if result.comment:
+                    comment_cn = translator('baidu')(result.comment)
+                if result.journal_ref:
+                    journal_ref_cn = translator('baidu')(result.journal_ref)
+                # title_cn = '中文标题'
+                # abstract_cn = '中文摘要'
 
                 article = Article(
                     entry_id=arxiv_id,
@@ -199,8 +213,10 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     abstract_cn=abstract_cn,
                     published_date=result.published,
                     updated_date=result.updated,
-                    comment=result.comment,
-                    journal_ref=result.journal_ref,
+                    comment_en=result.comment,
+                    comment_cn=comment_cn,
+                    journal_ref_en=result.journal_ref,
+                    journal_ref_cn=journal_ref_cn,
                     doi=result.doi,
                     primary_category=result.primary_category,
                 )
@@ -233,16 +249,15 @@ def get_abs_page(request, arxiv_id: str) -> Response:
             title=article.title_cn if language == 'zh-hans' else article.title_en,
             modified=modified,
             authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
-            submitter=Submitter(name='',
-                                email=''),
+            submitter=Submitter(name='', email=''),
             source_format='', # type: ignore
-            journal_ref=article.journal_ref,
+            journal_ref=article.journal_ref_cn if language == 'zh-hans' else article.journal_ref_en,
             report_num=0,
             doi=article.doi,
             acm_class= None,
             msc_class= None,
             proxy= None,
-            comments=article.comment,
+            comments=article.comment_cn if language == 'zh-hans' else article.comment_en,
             version=request_version,
             license='',
             version_history=[

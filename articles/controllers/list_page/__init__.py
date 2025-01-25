@@ -71,12 +71,11 @@ from django.http import HttpResponseBadRequest
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
-import mtranslate as translator
-
 from .paging import paging
 from ...models import Article, Author, Category, Link
 from ...templatetags import article_filters
 from ...utils import get_translation_dict, chinese_week_days
+from ...translators import translator
 
 
 logger = logging.getLogger(__name__)
@@ -728,10 +727,16 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         try:
             article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
         except Article.DoesNotExist:
-            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
-            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
-            title_cn = '中文标题'
-            abstract_cn = '中文摘要'
+            title_cn = translator('alibaba')(result.title)
+            abstract_cn = translator('alibaba')(result.summary)
+            comment_cn = None
+            journal_ref_cn = None
+            if result.comment:
+                comment_cn = translator('baidu')(result.comment)
+            if result.journal_ref:
+                journal_ref_cn = translator('baidu')(result.journal_ref)
+            # title_cn = '中文标题'
+            # abstract_cn = '中文摘要'
 
             article = Article(
                 entry_id=arxiv_id,
@@ -742,8 +747,10 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
                 abstract_cn=abstract_cn,
                 published_date=result.published,
                 updated_date=result.updated,
-                comment=result.comment,
-                journal_ref=result.journal_ref,
+                comment_en=result.comment,
+                comment_cn=comment_cn,
+                journal_ref_en=result.journal_ref,
+                journal_ref_cn=journal_ref_cn,
                 doi=result.doi,
                 primary_category=result.primary_category,
             )
@@ -808,8 +815,8 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
             categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
-            comments=article.comment,
-            journal_ref=article.journal_ref,
+            comments=article.comment_cn if language == 'zh-hans' else article.comment_en,
+            journal_ref=article.journal_ref_cn if language == 'zh-hans' else article.journal_ref_en,
             version=version,
             version_history=[
                 VersionEntry(
@@ -937,10 +944,16 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         try:
             article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
         except Article.DoesNotExist:
-            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
-            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
-            title_cn = '中文标题'
-            abstract_cn = '中文摘要'
+            title_cn = translator('alibaba')(result.title)
+            abstract_cn = translator('alibaba')(result.summary)
+            comment_cn = None
+            journal_ref_cn = None
+            if result.comment:
+                comment_cn = translator('baidu')(result.comment)
+            if result.journal_ref:
+                journal_ref_cn = translator('baidu')(result.journal_ref)
+            # title_cn = '中文标题'
+            # abstract_cn = '中文摘要'
 
             article = Article(
                 entry_id=arxiv_id,
@@ -951,8 +964,10 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
                 abstract_cn=abstract_cn,
                 published_date=result.published,
                 updated_date=result.updated,
-                comment=result.comment,
-                journal_ref=result.journal_ref,
+                comment_en=result.comment,
+                comment_cn=comment_cn,
+                journal_ref_en=result.journal_ref,
+                journal_ref_cn=journal_ref_cn,
                 doi=result.doi,
                 primary_category=result.primary_category,
             )
@@ -1007,8 +1022,8 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
             categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
-            comments=article.comment,
-            journal_ref=article.journal_ref,
+            comments=article.comment_cn if language == 'zh-hans' else article.comment_en,
+            journal_ref=article.journal_ref_cn if language == 'zh-hans' else article.journal_ref_en,
             version=version,
             version_history=[
                 VersionEntry(
@@ -1120,10 +1135,16 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         try:
             article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
         except Article.DoesNotExist:
-            # title_cn = translator.translate(result.title, 'zh-CN', 'en')
-            # abstract_cn = translator.translate(result.summary, 'zh-CN', 'en')
-            title_cn = '中文标题'
-            abstract_cn = '中文摘要'
+            title_cn = translator('alibaba')(result.title)
+            abstract_cn = translator('alibaba')(result.summary)
+            comment_cn = None
+            journal_ref_cn = None
+            if result.comment:
+                comment_cn = translator('baidu')(result.comment)
+            if result.journal_ref:
+                journal_ref_cn = translator('baidu')(result.journal_ref)
+            # title_cn = '中文标题'
+            # abstract_cn = '中文摘要'
 
             article = Article(
                 entry_id=arxiv_id,
@@ -1134,8 +1155,10 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
                 abstract_cn=abstract_cn,
                 published_date=result.published,
                 updated_date=result.updated,
-                comment=result.comment,
-                journal_ref=result.journal_ref,
+                comment_en=result.comment,
+                comment_cn=comment_cn,
+                journal_ref_en=result.journal_ref,
+                journal_ref_cn=journal_ref_cn,
                 doi=result.doi,
                 primary_category=result.primary_category,
             )
@@ -1190,8 +1213,8 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
             categories=[ cat.name for cat in article.categories.all() ],
             primary_category=primary_cat,
             secondary_categories=secondary_cats,
-            comments=article.comment,
-            journal_ref=article.journal_ref,
+            comments=article.comment_cn if language == 'zh-hans' else article.comment_en,
+            journal_ref=article.journal_ref_cn if language == 'zh-hans' else article.journal_ref_en,
             version=version,
             version_history=[
                 VersionEntry(
