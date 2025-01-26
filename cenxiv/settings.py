@@ -148,3 +148,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CENXIV_FILE_PATH = config('CENXIV_FILE_PATH')
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'LOCATION': config('HOST_DOMAIN') + ':11211',
+    }
+}
