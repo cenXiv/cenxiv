@@ -1,0 +1,14 @@
+{% extends 'articles/base.html' %}
+{% load i18n %}
+
+{% block title %}No Chinese PDF{% endblock %}
+
+{% block content %}
+  <h1>{% blocktranslate %}Chinese full text PDF {{ arxiv_idv }}.pdf is unavailable.{% endblocktranslate %}</h1>
+
+  <p>
+      {% url 'articles:pdf' arxiv_idv as pdf_url %}
+      {% blocktranslate %}The requested Chinese full text PDF {{ arxiv_idv }}.pdf is currently unavailable. You can either wait for some time and try accessing it again, or you can access the <a href="{{ pdf_url }}">English full text PDF</a> instead.{% endblocktranslate %}
+  </p>
+
+{% endblock %}

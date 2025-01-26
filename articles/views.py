@@ -1,9 +1,11 @@
+import os
 import re
 import requests
 from http import HTTPStatus
 from typing import Optional, Tuple, Dict, Any, Union
 from bs4 import BeautifulSoup
 
+from django.conf import settings
 from django.urls import reverse
 from django.http import Http404
 from django.core.exceptions import BadRequest
@@ -425,7 +427,29 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
     Returns:
         HttpResponse with a message indicating the availability of the Chinese PDF.
     """
-    return HttpResponse(_('Chinese PDF is coming soon...'))
+    # Strip any query parameters by redirecting
+    if request.GET:
+        url_name = 'articles:pdf_with_archive' if archive else 'articles:pdf'
+        kwargs = {'arxiv_id': arxiv_id}
+        if archive:
+            kwargs['archive'] = archive
+        return redirect(reverse(url_name, kwargs=kwargs), permanent=True)
+
+    arxiv_id = request.path.split('/')[-1]
+    arxiv_idv = arxiv_id
+    version = None
+    if 'v' in arxiv_id:
+        arxiv_id, version = arxiv_id.split('v')
+    if version:
+        arxiv_idv = f'{arxiv_id}v{version}'
+    cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/cn_pdf/{arxiv_id}/{arxiv_idv}.pdf'
+
+    if os.path.isfile(cn_pdf_file):
+        # open and display the pdf file
+        return HttpResponse(open(cn_pdf_file, 'rb'), content_type='application/pdf')
+
+    # return HttpResponse(_('Chinese PDF is coming soon...'))
+    return render(request, "articles/no_cn_pdf.html", {'arxiv_idv': arxiv_idv})
 
 def html(request, arxiv_id: str, archive: str = None):
     """Get HTML for article.
