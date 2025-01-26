@@ -6,6 +6,8 @@ cenXiv 是一个基于 Django 的电子预印本存档，旨在为用户提供�
 
 ![首页截图](https://github.com/cenXiv/cenxiv/blob/main/pictures/cenXiv_home.png)
 
+[查看更多网站截图](https://github.com/cenXiv/cenxiv/tree/main/pictures)
+
 ## 安装和运行
 
 ### 前提条件
