@@ -4,10 +4,11 @@ The primary entrypoint to this module is :func:`.get_abs_page`, which
 handles GET requests to the abs endpoint.
 """
 import re
+import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
-import requests
+# import requests
 from bs4 import BeautifulSoup
 
 from http import HTTPStatus as status
@@ -21,7 +22,7 @@ from django.utils.translation import get_language
 import arxiv as arxiv_api  # The PyPI arxiv package
 
 # From arxiv-base package
-from arxiv.base import logging
+# from arxiv.base import logging
 from arxiv.taxonomy.definitions import ARCHIVES, CATEGORIES
 from arxiv.taxonomy.category import Category
 from arxiv.identifier import (

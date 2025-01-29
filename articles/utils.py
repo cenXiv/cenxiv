@@ -7,7 +7,8 @@ from requests.exceptions import HTTPError, RequestException
 
 
 # Configure logging (do this once at the module level)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
 
@@ -51,16 +52,16 @@ def request_get(url, retries=3, retry_delay=1, max_retry_delay=60):
         try:
             response = requests.get(url)
             response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-            logging.info(f"Successfully fetched URL: {url}")
+            logger.info(f"Successfully fetched URL: {url}")
             return response  # Return the response object
 
         except HTTPError as exc:
             code = exc.response.status_code if exc.response else None # Handle cases where exc.response might be None
-            logging.warning(f"HTTP Error: {code} for URL: {url}. Attempt {attempt + 1}/{retries}")
+            logger.warning(f"HTTP Error: {code} for URL: {url}. Attempt {attempt + 1}/{retries}")
 
             if code in retry_codes:
                 current_delay = min(retry_delay * (2**attempt), max_retry_delay)
-                logging.info(f"Retrying in {current_delay} seconds...")
+                logger.info(f"Retrying in {current_delay} seconds...")
                 time.sleep(current_delay)
                 continue
 
@@ -68,12 +69,12 @@ def request_get(url, retries=3, retry_delay=1, max_retry_delay=60):
             raise  # This will exit the loop and raise the original HTTPError
 
         except RequestException as exc:  # Catch other request exceptions
-            logging.error(f"Request Exception: {exc} for URL: {url}. Attempt {attempt + 1}/{retries}")
+            logger.error(f"Request Exception: {exc} for URL: {url}. Attempt {attempt + 1}/{retries}")
             current_delay = min(retry_delay * (2**attempt), max_retry_delay)
-            logging.info(f"Retrying in {current_delay} seconds...")
+            logger.info(f"Retrying in {current_delay} seconds...")
             time.sleep(current_delay)
             continue
 
     else:  # This block executes if the loop completes without a successful request
-        logging.error(f"Failed to fetch URL: {url} after {retries} attempts.")
+        logger.error(f"Failed to fetch URL: {url} after {retries} attempts.")
         return None # Return None to indicate failure

@@ -1,5 +1,6 @@
 import os
 import re
+import logging
 import requests
 from http import HTTPStatus
 from typing import Optional, Tuple, Dict, Any, Union
@@ -34,6 +35,8 @@ from .controllers import archive_page, list_page, catchup_page, year as year_con
 from .controllers import check_supplied_identifier
 from .utils import get_translation_dict
 
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     if get_language() == 'zh-hans':
