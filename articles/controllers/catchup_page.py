@@ -3,9 +3,10 @@ Allows users to access something equivalent to the /new page for up to 90 days b
 """
 import re
 import itertools
+import logging
 from typing import Tuple, Union, Dict, Any, List
 from datetime import date, datetime, timedelta
-import requests
+# import requests
 from bs4 import BeautifulSoup
 
 from http import HTTPStatus
@@ -33,10 +34,12 @@ from browse.services.listing import ListingNew, ListingItem, gen_expires
 from .list_page import sub_sections_for_types
 from ..models import Article, Author, Category, Link
 from ..templatetags import article_filters
-from ..utils import get_translation_dict, chinese_week_days
+from ..utils import get_translation_dict, chinese_week_days, request_get
 from .archive_page.by_month_form import MONTHS
 from ..translators import translator
 
+
+logger = logging.getLogger(__name__)
 
 def get_catchup_page(request, subject_str:str, date:str)-> Response:
     """get the catchup page for a given set of request parameters
@@ -89,7 +92,13 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
     url = url.replace('/en', '')
     url = url.replace('/zh-hans', '')
     arxiv_url = 'https://arxiv.org' + url
-    response = requests.get(arxiv_url)
+    retries = 3
+    retry_delay = 0.5
+    response = request_get(arxiv_url, retries=retries, retry_delay=retry_delay)
+    if not response:
+        msg = f"Failed to fetch URL: {arxiv_url} after {retries} attempts."
+        # logger.error(msg)
+        raise Exception(msg)
     soup = BeautifulSoup(response.content, 'lxml')
 
     # Define the regex pattern to match the text and capture count and date
@@ -136,48 +145,64 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
             search = arxiv_api.Search(id_list=pids)
             results.extend(list(client.results(search)))
 
-        for result in results:
-            arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-            try:
-                article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
-            except Article.DoesNotExist:
-                title_cn = translator('alibaba')(result.title)
-                abstract_cn = translator('alibaba')(result.summary)
-                comment_cn = None
-                journal_ref_cn = None
-                if result.comment:
-                    comment_cn = translator('baidu')(result.comment)
-                if result.journal_ref:
-                    journal_ref_cn = translator('baidu')(result.journal_ref)
-                # title_cn = '中文标题'
-                # abstract_cn = '中文摘要'
+        retry = 0
+        while results:
+            if retry >= retries:
+                msg = f'Failed to translate some of the articles after {retries} retries'
+                logger.error(msg)
+                raise Exception(msg)
 
-                article = Article(
-                    entry_id=arxiv_id,
-                    entry_version=version,
-                    title_en=result.title,
-                    title_cn=title_cn,
-                    abstract_en=result.summary,
-                    abstract_cn=abstract_cn,
-                    published_date=result.published,
-                    updated_date=result.updated,
-                    comment_en=result.comment,
-                    comment_cn=comment_cn,
-                    journal_ref_en=result.journal_ref,
-                    journal_ref_cn=journal_ref_cn,
-                    doi=result.doi,
-                    primary_category=result.primary_category,
-                )
-                article.save()
-                for author in result.authors:
-                    author_ = Author(name=author.name, article=article)
-                    author_.save()
-                for category in result.categories:
-                    category_ = Category(name=category, article=article)
-                    category_.save()
-                for link in result.links:
-                    link_ = Link(url=link.href, article=article)
-                    link_.save()
+            for result in list(results):  # Copy the results list so we can alter it.
+                arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+                try:
+                    article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+                except Article.DoesNotExist:
+                    try:
+                        title_cn = translator('google')(result.title)
+                        abstract_cn = translator('google')(result.summary)
+                        comment_cn = None
+                        journal_ref_cn = None
+                        if result.comment:
+                            comment_cn = translator('google')(result.comment)
+                        if result.journal_ref:
+                            journal_ref_cn = translator('google')(result.journal_ref)
+                        # title_cn = '中文标题'
+                        # abstract_cn = '中文摘要'
+                        logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
+                    except Exception:
+                        logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+                        continue
+
+                    article = Article(
+                        entry_id=arxiv_id,
+                        entry_version=version,
+                        title_en=result.title,
+                        title_cn=title_cn,
+                        abstract_en=result.summary,
+                        abstract_cn=abstract_cn,
+                        published_date=result.published,
+                        updated_date=result.updated,
+                        comment_en=result.comment,
+                        comment_cn=comment_cn,
+                        journal_ref_en=result.journal_ref,
+                        journal_ref_cn=journal_ref_cn,
+                        doi=result.doi,
+                        primary_category=result.primary_category,
+                    )
+                    article.save()
+                    for author in result.authors:
+                        author_ = Author(name=author.name, article=article)
+                        author_.save()
+                    for category in result.categories:
+                        category_ = Category(name=category, article=article)
+                        category_.save()
+                    for link in result.links:
+                        link_ = Link(url=link.href, article=article)
+                        link_.save()
+
+                results.remove(result)
+
+            retry += 1
 
 
         new_count = cross_start - new_start

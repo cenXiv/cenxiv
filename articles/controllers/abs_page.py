@@ -69,7 +69,7 @@ from browse.formatting.metatags import meta_tag_metadata
 from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
 from ..templatetags import article_filters
-from ..utils import get_translation_dict
+from ..utils import get_translation_dict, request_get
 from ..translators import translator
 
 
@@ -144,69 +144,39 @@ def get_abs_page(request, arxiv_id: str) -> Response:
             request_version = int(request_id.split('v')[-1])
         else:
             request_version = latest_version
-        try:
-            article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=latest_version)
-        except Article.DoesNotExist:
-            title_cn = translator('alibaba')(result.title)
-            abstract_cn = translator('alibaba')(result.summary)
-            comment_cn = None
-            journal_ref_cn = None
-            if result.comment:
-                comment_cn = translator('baidu')(result.comment)
-            if result.journal_ref:
-                journal_ref_cn = translator('baidu')(result.journal_ref)
-            # title_cn = '中文标题'
-            # abstract_cn = '中文摘要'
 
-            article = Article(
-                entry_id=arxiv_id,
-                entry_version=latest_version,
-                title_en=result.title,
-                title_cn=title_cn,
-                abstract_en=result.summary,
-                abstract_cn=abstract_cn,
-                published_date=result.published,
-                updated_date=result.updated,
-                comment_en=result.comment,
-                comment_cn=comment_cn,
-                journal_ref_en=result.journal_ref,
-                journal_ref_cn=journal_ref_cn,
-                doi=result.doi,
-                primary_category=result.primary_category,
-            )
-            article.save()
-            for author in result.authors:
-                author_ = Author(name=author.name, article=article)
-                author_.save()
-            for category in result.categories:
-                category_ = Category(name=category, article=article)
-                category_.save()
-            for link in result.links:
-                link_ = Link(url=link.href, article=article)
-                link_.save()
+        retries = 3
+        retry = 0
+        while True:
+            if retry >= retries:
+                msg = f'Failed to translate article arxiv:{arxiv_id}v{latest_version} after {retries} retries'
+                logger.error(msg)
+                raise Exception(msg)
 
-        # then search for all other latest versions
-        for version in range(1, latest_version):
             try:
-                article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+                article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=latest_version)
+                break
             except Article.DoesNotExist:
-                search = arxiv_api.Search(id_list=[f'{arxiv_id}v{version}'])
-                result = list(client.results(search))[0]
-
-                title_cn = translator('alibaba')(result.title)
-                abstract_cn = translator('alibaba')(result.summary)
-                comment_cn = None
-                journal_ref_cn = None
-                if result.comment:
-                    comment_cn = translator('baidu')(result.comment)
-                if result.journal_ref:
-                    journal_ref_cn = translator('baidu')(result.journal_ref)
-                # title_cn = '中文标题'
-                # abstract_cn = '中文摘要'
+                try:
+                    title_cn = translator('google')(result.title)
+                    abstract_cn = translator('google')(result.summary)
+                    comment_cn = None
+                    journal_ref_cn = None
+                    if result.comment:
+                        comment_cn = translator('google')(result.comment)
+                    if result.journal_ref:
+                        journal_ref_cn = translator('google')(result.journal_ref)
+                    # title_cn = '中文标题'
+                    # abstract_cn = '中文摘要'
+                    logger.info(f'Successfully translated arxiv:{arxiv_id}v{latest_version}.')
+                except Exception:
+                    logger.warning(f'Failed to translate arxiv:{arxiv_id}v{latest_version}, will retry latter.')
+                    retry += 1
+                    continue
 
                 article = Article(
                     entry_id=arxiv_id,
-                    entry_version=version,
+                    entry_version=latest_version,
                     title_en=result.title,
                     title_cn=title_cn,
                     abstract_en=result.summary,
@@ -230,6 +200,71 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 for link in result.links:
                     link_ = Link(url=link.href, article=article)
                     link_.save()
+
+                break
+
+        # then search for all other latest versions
+        versions = list(range(1, latest_version))
+        retry = 0
+        while versions:
+            if retry >= retries:
+                msg = f'Failed to translate versions {versions} of the article arxiv:{arxiv_id} after {retries} retries'
+                logger.error(msg)
+                raise Exception(msg)
+
+            for version in list(versions):  # Copy the versions list so we can alter it.
+                try:
+                    article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+                except Article.DoesNotExist:
+                    search = arxiv_api.Search(id_list=[f'{arxiv_id}v{version}'])
+                    result = list(client.results(search))[0]
+
+                    try:
+                        title_cn = translator('google')(result.title)
+                        abstract_cn = translator('google')(result.summary)
+                        comment_cn = None
+                        journal_ref_cn = None
+                        if result.comment:
+                            comment_cn = translator('google')(result.comment)
+                        if result.journal_ref:
+                            journal_ref_cn = translator('google')(result.journal_ref)
+                        # title_cn = '中文标题'
+                        # abstract_cn = '中文摘要'
+                        logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
+                    except Exception:
+                        logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+                        continue
+
+                    article = Article(
+                        entry_id=arxiv_id,
+                        entry_version=version,
+                        title_en=result.title,
+                        title_cn=title_cn,
+                        abstract_en=result.summary,
+                        abstract_cn=abstract_cn,
+                        published_date=result.published,
+                        updated_date=result.updated,
+                        comment_en=result.comment,
+                        comment_cn=comment_cn,
+                        journal_ref_en=result.journal_ref,
+                        journal_ref_cn=journal_ref_cn,
+                        doi=result.doi,
+                        primary_category=result.primary_category,
+                    )
+                    article.save()
+                    for author in result.authors:
+                        author_ = Author(name=author.name, article=article)
+                        author_.save()
+                    for category in result.categories:
+                        category_ = Category(name=category, article=article)
+                        category_.save()
+                    for link in result.links:
+                        link_ = Link(url=link.href, article=article)
+                        link_.save()
+
+                versions.remove(version)
+
+            retry += 1
 
 
         # get article of the request_version
@@ -347,7 +382,13 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         url = url.replace('/en', '')
         url = url.replace('/zh-hans', '')
         arxiv_url = 'https://arxiv.org' + url
-        response = requests.get(arxiv_url)
+        retries = 3
+        retry_delay = 0.5
+        response = request_get(arxiv_url, retries=retries, retry_delay=retry_delay)
+        if not response:
+            msg = f"Failed to fetch URL: {arxiv_url} after {retries} attempts."
+            # logger.error(msg)
+            raise Exception(msg)
         soup = BeautifulSoup(response.content, 'lxml')
 
         meta_tags = soup.find_all('meta')
