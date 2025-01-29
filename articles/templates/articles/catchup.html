@@ -21,7 +21,7 @@
 {% block content %}
 <div id='content-inner'>
 <div id='dlpage'>
-  <h1>{% trans "Catchup results for" %} {{ translation_dict|dict_get_key:subject.full_name }} {% trans "on" %} {{ date_adbY }}</h1>
+  <h1>{% blocktranslate with subject_full_name=translation_dict|dict_get_key:subject.full_name %}Catchup results for {{ subject_full_name }} on {{ date_adbY }}{% endblocktranslate %}</h1>
 
   {% block list_index %}
     <ul>
@@ -40,7 +40,7 @@
         <br><br>
       {% endif %}
 
-      {% trans "Total of" %} {{ count }} {% trans "entries for" %} {{ date_adbY }}
+      {% blocktranslate %}Total of {{ count }} entries for {{ date_adbY }}{% endblocktranslate %}
       {% if paging|length > 0 %}
       {% trans "View page:" %}
         {% for number, link in paging %}
@@ -173,14 +173,14 @@
       <br>
       {% if page > 1 %}
         <div>
-          {% trans "No further updates for" %} {{ date_adbY }}
+          {% blocktranslate %}No further updates for {{ date_adbY }}{% endblocktranslate %}
           <br>
             {% url 'articles:catchup' subject=subject.id date=date_Ymd as base_url %}
             <a href="{{ base_url }}?abs={{ include_abs }}&page=1">{% trans "Go to page 1" %}</a>
         </div>
       {% else %}
         <div>
-          <p>{% trans "No updates for" %} {{ date_adbY }}. {% trans "There was either no announcement for this day, or no updates within the requested subject." %}</p>
+          <p>{% blocktranslate %}No updates for {{ date_adbY }}. There was either no announcement for this day, or no updates within the requested subject.{% endblocktranslate %}</p>
         </div>
       {% endif %}
       <br>
@@ -190,7 +190,7 @@
 
   {% block post_items %}
     <div>
-    {% trans "Total of" %} {{ count }} {% trans "entries for" %} {{ date_adbY }}
+    {% blocktranslate %}Total of {{ count }} entries for {{ date_adbY }}{% endblocktranslate %}
     {% if paging|length > 0 %}
     {% trans "View page:" %}
       {% for number, link in paging %}

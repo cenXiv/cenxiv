@@ -1,7 +1,7 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Format selector for" %} {{ arxiv_idv }}{% endblock %}
+{% block title %}{% blocktranslate %}Format selector for {{ arxiv_idv }}{% endblocktranslate %}{% endblock %}
 
 {% block header_h1 %}
 <div class="header-breadcrumbs">

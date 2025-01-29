@@ -15,7 +15,7 @@ It needs to do headings for the new/cross/rep sections.
 </ul>
 
 <p>{% trans "See" %} <a id="recent-{{ context }}" aria-labelledby="recent-{{ context }}" href="/list/{{ context }}/recent">{% trans "recent" %}</a> {% trans "articles" %}</p>
-<h3>{% trans "Showing new listings for" %} {{ announced }}</h3>
+<h3>{% blocktranslate %}Showing new listings for {{ announced }}{% endblocktranslate %}</h3>
 {% endblock %}
 
 {% block items %}

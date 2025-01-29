@@ -15,7 +15,7 @@
 {% block content %}
 
 <h1>{{ translation_dict|dict_get_key:archive.full_name }}</h1>
-<h2>{% trans "Article statistics for" %} {{ year }}</h2>
+<h2>{% blocktranslate %}Article statistics for {{ year }}{% endblocktranslate %}</h2>
 <p>{% trans "Available monthly lists with counts of" %} <b>{{ archive.id }} {% trans "articles" %}</b> +
 <i>{% trans "cross-listings to" %} {{ archive.id }}</i> {% trans "in" %} {{ year }}
 {% trans "(each '|' represents 20 articles)" %}:</p>

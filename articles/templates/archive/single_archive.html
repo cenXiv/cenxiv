@@ -5,10 +5,10 @@
 {% block title %}{{ translation_dict|dict_get_key:archive.full_name }}{% endblock %}
 
 {% block content %}
-  <h1>{{ translation_dict|dict_get_key:archive.full_name }} <span style="font-size: 70%;">({% trans "since" %} {{ archive_start_date }})</span></h1>
+  <h1>{{ translation_dict|dict_get_key:archive.full_name }} <span style="font-size: 70%;">({% blocktranslate %}since {{ archive_start_date }}{% endblocktranslate %})</span></h1>
 
   {% if subsumed_id %}
-    <p>The <b>{{ subsumed_id }}</b> archive has been subsumed into
+    <p>{% trans "The" %} <b>{{ subsumed_id }}</b> {% trans "archive has been subsumed into" %}
       <span class="primary-subject">{{ translation_dict|dict_get_key:subsuming_category.full_name }} ({{ subsuming_category.id }}).</span></p>
     <p>{{ translation_dict|dict_get_key:subsuming_category.full_name }} ({{ subsuming_category.id }}) {% trans "is part of the" %} {{ translation_dict|dict_get_key:archive.full_name }} {% trans "archive" %}.</p>
   {% endif %}

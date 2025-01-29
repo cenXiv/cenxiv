@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block list_index %}
-<h2>{% trans "Authors and titles for" %} {{ pubmonth }} </h2>
+<h2>{% blocktranslate %}Authors and titles for {{ pubmonth }}{% endblocktranslate %}</h2>
 {% endblock %}
 
 {% block items %}

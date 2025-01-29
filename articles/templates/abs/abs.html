@@ -47,7 +47,7 @@
       <div id="abs">
           {% if withdrawn or higher_version_withdrawn %}
             {% if higher_version_withdrawn and higher_version_withdrawn_submitter != None %}
-            <span class="error" style="border: 2px solid grey">{% trans "A newer version of this paper has been withdrawn by" %} {{ higher_version_withdrawn_submitter }}</span>
+            <span class="error" style="border: 2px solid grey">{% blocktranslate %}A newer version of this paper has been withdrawn by {{ higher_version_withdrawn_submitter }}{% endblocktranslate %}</span>
             {% elif higher_version_withdrawn and higher_version_withdrawn_submitter == None %}
             <span class="error" style="border: 2px solid grey">{% trans "A newer version of this paper has been withdrawn" %}    <div class="button-and-tooltip">
               <button class="more-info" aria-describedby="more-info-desc-1">
@@ -61,7 +61,7 @@
               </div>
             </div></span>
             {% elif abs_meta.submitter.name != None %}
-            <span class="error" style="border: 2px solid grey">{% trans "This paper has been withdrawn by" %} {{ abs_meta.submitter.name }}</span>
+            <span class="error" style="border: 2px solid grey">{% blocktranslate %}This paper has been withdrawn by {{ abs_meta.submitter.name }}{% endblocktranslate %}</span>
             {% elif abs_meta.submitter.name == None %}
             <span class="error" style="border: 2px solid grey">{% trans "This paper has been withdrawn" %}     <div class="button-and-tooltip">
               <button class="more-info" aria-describedby="more-info-desc-1">
@@ -306,11 +306,11 @@
           <ul>
             <div id="download-button-info" hidden>
               {% if author_list|length > 1 %}
-              {% trans "View a PDF of the paper titled" %} {{ abs_meta.title }}, {% trans "by" %} {{ author_list.0 }} {% trans "and" %} {{ author_list|length }} {% trans "other authors" %}
+              {% blocktranslate with author_list_length=author_list|length %}View a PDF of the paper titled {{ abs_meta.title }}, by {{ author_list.0 }} and {{ author_list_length }} other authors{% endblocktranslate %}
               {% elif author_list|length == 1 %}
-              {% trans "View a PDF of the paper titled" %} {{ abs_meta.title }}, {% trans "by" %} {{ author_list.0 }}
+              {% blocktranslate %}View a PDF of the paper titled {{ abs_meta.title }}, by {{ author_list.0 }}{% endblocktranslate %}
               {% else %}
-              {% trans "View a PDF of the paper titled" %} {{ abs_meta.title }}
+              {% blocktranslate %}View a PDF of the paper titled {{ abs_meta.title }}{% endblocktranslate %}
               {% endif %}
             </div>
 

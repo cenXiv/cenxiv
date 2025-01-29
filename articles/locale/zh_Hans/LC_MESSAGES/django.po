@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-26 20:24+0800\n"
+"POT-Creation-Date: 2025-01-29 17:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,23 +131,23 @@ msgid "all months"
 msgstr "所有月份"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:487
-#: articles/controllers/catchup_page.py:491
+#: articles/controllers/catchup_page.py:512
+#: articles/controllers/catchup_page.py:516
 #: articles/controllers/list_page/__init__.py:502
 #: articles/controllers/list_page/__init__.py:508
 msgid "New submissions"
 msgstr "新提交"
 
-#: articles/controllers/catchup_page.py:499
-#: articles/controllers/catchup_page.py:501
+#: articles/controllers/catchup_page.py:524
+#: articles/controllers/catchup_page.py:526
 #: articles/controllers/list_page/__init__.py:515
 #: articles/controllers/list_page/__init__.py:521
 msgid "Cross-lists"
 msgstr "交叉列表"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:511
-#: articles/controllers/catchup_page.py:513
+#: articles/controllers/catchup_page.py:536
+#: articles/controllers/catchup_page.py:538
 #: articles/controllers/list_page/__init__.py:527
 #: articles/controllers/list_page/__init__.py:533
 msgid "Replacements"
@@ -263,8 +263,10 @@ msgid "Abstract page for arXiv paper"
 msgstr "arXiv 论文的摘要页面"
 
 #: articles/templates/abs/abs.html:50
-msgid "A newer version of this paper has been withdrawn by"
-msgstr "此论文的更新版本已被...撤回"
+msgid ""
+"A newer version of this paper has been withdrawn by "
+"%(higher_version_withdrawn_submitter)s"
+msgstr "此论文的更新版本已被 %(higher_version_withdrawn_submitter)s 撤回"
 
 #: articles/templates/abs/abs.html:52
 msgid "A newer version of this paper has been withdrawn"
@@ -280,8 +282,8 @@ msgid "Older arxiv papers may lack submitter name"
 msgstr "较旧的 arXiv 论文可能缺少提交者姓名"
 
 #: articles/templates/abs/abs.html:64
-msgid "This paper has been withdrawn by"
-msgstr "此论文已被...撤回"
+msgid "This paper has been withdrawn by %(abs_meta.submitter.name)s"
+msgstr "此论文已被 %(abs_meta.submitter.name)s 撤回"
 
 #: articles/templates/abs/abs.html:66
 msgid "This paper has been withdrawn"
@@ -420,22 +422,21 @@ msgstr "全文链接："
 msgid "Access Paper:"
 msgstr "获取论文："
 
-#: articles/templates/abs/abs.html:309 articles/templates/abs/abs.html:311
+#: articles/templates/abs/abs.html:309
+#, python-format
+msgid ""
+"View a PDF of the paper titled %(abs_meta.title)s, by %(author_list.0)s and "
+"%(author_list_length)s other authors"
+msgstr "查看作者为 %(author_list.0)s 和其他 %(author_list_length)s 人的标题为《%(abs_meta.title)s》的论文 PDF"
+
+#: articles/templates/abs/abs.html:311
+#, python-format
+msgid "View a PDF of the paper titled %(abs_meta.title)s, by %(author_list.0)s"
+msgstr "查看作者为 %(author_list.0)s 的标题为《%(abs_meta.title)s》的论文 PDF"
+
 #: articles/templates/abs/abs.html:313
-msgid "View a PDF of the paper titled"
-msgstr "查看标题为...的 PDF"
-
-#: articles/templates/abs/abs.html:309 articles/templates/abs/abs.html:311
-msgid "by"
-msgstr "作者"
-
-#: articles/templates/abs/abs.html:309
-msgid "and"
-msgstr "和"
-
-#: articles/templates/abs/abs.html:309
-msgid "other authors"
-msgstr "其他作者"
+msgid "View a PDF of the paper titled %(abs_meta.title)s"
+msgstr "查看标题为《%(abs_meta.title)s》的 PDF"
 
 #: articles/templates/abs/abs.html:318
 msgid "Withdrawn"
@@ -952,8 +953,13 @@ msgid "subsumed into"
 msgstr "合并到"
 
 #: articles/templates/archive/single_archive.html:8
-msgid "since"
-msgstr "自"
+#, python-format
+msgid "since %(archive_start_date)s"
+msgstr "自 %(archive_start_date)s 以来"
+
+#: articles/templates/archive/single_archive.html:11
+msgid "The"
+msgstr ""
 
 #: articles/templates/archive/single_archive.html:13
 msgid "is part of the"
@@ -1172,12 +1178,9 @@ msgid "Catchup"
 msgstr "追踪"
 
 #: articles/templates/articles/catchup.html:24
-msgid "Catchup results for"
-msgstr "追踪结果为"
-
-#: articles/templates/articles/catchup.html:24
-msgid "on"
-msgstr "在"
+#, python-format
+msgid "Catchup results for %(subject_full_name)s on %(date_adbY)s"
+msgstr "%(subject_full_name)s 在 %(date_adbY)s 的追踪结果"
 
 #: articles/templates/articles/catchup.html:39
 #: articles/templates/articles/catchup.html:210
@@ -1186,14 +1189,9 @@ msgstr "继续到下一天"
 
 #: articles/templates/articles/catchup.html:43
 #: articles/templates/articles/catchup.html:193
-#: articles/templates/list/base.html:32 articles/templates/list/base.html:74
-msgid "Total of"
-msgstr "总共"
-
-#: articles/templates/articles/catchup.html:43
-#: articles/templates/articles/catchup.html:193
-msgid "entries for"
-msgstr "条目为"
+#, python-format
+msgid "Total of %(count)s entries for %(date_adbY)s"
+msgstr "%(date_adbY)s 的总共 %(count)s 条目"
 
 #: articles/templates/articles/catchup.html:45
 #: articles/templates/articles/catchup.html:195
@@ -1263,22 +1261,18 @@ msgid "Journal-ref:"
 msgstr "期刊参考："
 
 #: articles/templates/articles/catchup.html:176
-msgid "No further updates for"
-msgstr "没有更多的更新为"
+msgid "No further updates for %(date_adbY)s"
+msgstr "没有 %(date_adbY)s 的更多更新"
 
 #: articles/templates/articles/catchup.html:179
 msgid "Go to page 1"
 msgstr "转到第 1 页"
 
 #: articles/templates/articles/catchup.html:183
-msgid "No updates for"
-msgstr "没有更新为"
-
-#: articles/templates/articles/catchup.html:183
 msgid ""
-"There was either no announcement for this day, or no updates within the "
-"requested subject."
-msgstr "这一天要么没有公告，要么没有在请求的主题内的更新。"
+"No updates for %(date_adbY)s. There was either no announcement for this day, "
+"or no updates within the requested subject."
+msgstr "%(date_adbY)s 没有更新。这一天要么没有公告，要么没有在请求的主题内的更新。"
 
 #: articles/templates/articles/catchup_form.html:17
 msgid "Catchup on:"
@@ -1326,13 +1320,16 @@ msgid "Include abstracts: "
 msgstr "包括摘要："
 
 #: articles/templates/articles/format.html:4
-#: articles/templates/articles/format.html:14
-msgid "Format selector for"
-msgstr "格式选择器为"
+msgid "Format selector for %(arxiv_idv)s"
+msgstr "%(arxiv_idv)s 的格式选择器"
 
 #: articles/templates/articles/format.html:9
 msgid "format"
 msgstr "格式"
+
+#: articles/templates/articles/format.html:14
+msgid "Format selector for"
+msgstr "格式选择器为"
 
 #: articles/templates/articles/format.html:22
 #: articles/templates/articles/format.html:52
@@ -1577,8 +1574,8 @@ msgstr ""
 "访问<a href=\"%(pdf_url)s\">英文全文 PDF</a>。"
 
 #: articles/templates/articles/year.html:18
-msgid "Article statistics for"
-msgstr "文章统计"
+msgid "Article statistics for %(year)s"
+msgstr "%(year)s 年的文章统计"
 
 #: articles/templates/articles/year.html:19
 msgid "Available monthly lists with counts of"
@@ -1614,6 +1611,10 @@ msgid "Other years:"
 msgstr "其他年份："
 
 #: articles/templates/list/base.html:32 articles/templates/list/base.html:74
+msgid "Total of"
+msgstr "总共"
+
+#: articles/templates/list/base.html:32 articles/templates/list/base.html:74
 msgid "entries"
 msgstr "条目"
 
@@ -1641,16 +1642,16 @@ msgid "all"
 msgstr "所有"
 
 #: articles/templates/list/month.html:5 articles/templates/list/year.html:5
-msgid "Authors and titles for"
-msgstr "作者和标题为"
+msgid "Authors and titles for %(pubmonth)s"
+msgstr "%(pubmonth)s 的作者和标题"
 
 #: articles/templates/list/new.html:17
 msgid "See"
 msgstr "查看"
 
 #: articles/templates/list/new.html:18
-msgid "Showing new listings for"
-msgstr "显示新的列表为"
+msgid "Showing new listings for %(announced)s"
+msgstr "显示 %(announced)s 新的列表"
 
 #: articles/templates/list/new.html:134
 msgid "No updates today."
@@ -1667,6 +1668,30 @@ msgstr "查看今天的"
 #: articles/templates/list/recent.html:16
 msgid "changes"
 msgstr "变化"
+
+#~ msgid "by"
+#~ msgstr "作者"
+
+#~ msgid "and"
+#~ msgstr "和"
+
+#~ msgid "other authors"
+#~ msgstr "其他作者"
+
+#~ msgid "since"
+#~ msgstr "自"
+
+#~ msgid "Catchup results for"
+#~ msgstr "追踪结果为"
+
+#~ msgid "on"
+#~ msgstr "在"
+
+#~ msgid "entries for"
+#~ msgstr "条目为"
+
+#~ msgid "No updates for"
+#~ msgstr "没有更新为"
 
 #~ msgid "Chinese PDF is coming soon..."
 #~ msgstr "中文 PDF 即将到来..."
