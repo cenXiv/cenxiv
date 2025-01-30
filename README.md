@@ -15,7 +15,9 @@ cenXiv 是一个基于 Django 的电子预印本存档，旨在为用户提供�
 确保您的系统上已安装以下软件：
 
 - **Python 3.13** 或更高版本
-- **Poetry**（用于依赖管理和虚拟环境）
+- **Memcached**（用于页面缓存）
+- **RabbitMQ**（用于依赖管理和虚拟环境）
+- **Poetry**（用于异步任务的消息队列）
 - **Git**（用于代码版本控制）
 
 ### 安装步骤
@@ -75,19 +77,37 @@ cenXiv 是一个基于 Django 的电子预印本存档，旨在为用户提供�
    python manage.py createsuperuser
    ```
 
-8. **启动开发服务器**
+8. **启动 memcached**
+
+   ```bash
+   memcached -m 256 -I 64m
+   ```
+
+9. **启动 rabbitmq**
+
+   ```bash
+   brew services start rabbitmq
+   rabbitmqctl enable_feature_flag all
+   ```
+
+10. **启动 celery**
+
+   ```bash
+   poetry run celery -A cenxiv worker -l INFO
+   ```
+
+11. **启动开发服务器**
 
    ```bash
    python manage.py runserver
    ```
 
-9. **访问项目**
+12. **访问项目**
 
    在浏览器中访问 `http://127.0.0.1:8000/` 查看 cenXiv 项目。
 
 ## TODO 列表
 
-- [ ] **实现页面缓存功能**
 - [ ] **实现论文的中文翻译及中文全文 PDF 下载**
 - [ ] **实现用户注册和登录功能**
 - [ ] **编写单元测试和集成测试**
@@ -142,6 +162,8 @@ cenXiv 是一个基于 Django 的电子预印本存档，旨在为用户提供�
 - **后端**：Django 5.1.4
 - **前端**：HTML, CSS, JavaScript
 - **数据库**：SQLite（开发），建议使用 PostgreSQL（生产）
+- **缓存**：Memcached
+- **异步任务 + 消息队列**：Celery + RabbitMQ
 - **依赖管理**：Poetry
 - **版本控制**：Git
 
