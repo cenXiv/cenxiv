@@ -8,6 +8,7 @@ from typing import Tuple, Union, Dict, Any, List
 from datetime import date, datetime, timedelta
 # import requests
 from bs4 import BeautifulSoup
+from celery import group
 
 from http import HTTPStatus
 from flask import request, redirect, url_for
@@ -33,6 +34,7 @@ from browse.services.listing import ListingNew, ListingItem, gen_expires
 
 from .list_page import sub_sections_for_types
 from ..models import Article, Author, Category, Link
+from ..tasks import download_and_compile_arxiv
 from ..templatetags import article_filters
 from ..utils import get_translation_dict, chinese_week_days, request_get
 from .archive_page.by_month_form import MONTHS
@@ -135,6 +137,10 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
         atags = soup.find_all('a', {'title': 'Abstract'})
         for atag in atags:
             paper_ids.append(atag['id'])
+
+        # use celery to download and compile pdfs asynchronously
+        processing_group = group(download_and_compile_arxiv.s(paper_id) for paper_id in paper_ids)
+        processing_group.apply_async()
 
         # Create the search client
         client = arxiv_api.Client()

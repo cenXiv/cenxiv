@@ -48,6 +48,7 @@ import re
 import itertools
 # import requests
 from bs4 import BeautifulSoup
+from celery import group
 
 import arxiv as arxiv_api  # The PyPI arxiv package
 
@@ -73,6 +74,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .paging import paging
 from ...models import Article, Author, Category, Link
+from ...tasks import download_and_compile_arxiv
 from ...templatetags import article_filters
 from ...utils import get_translation_dict, chinese_week_days, request_get
 from ...translators import translator
@@ -719,6 +721,10 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
     for atag in atags:
         paper_ids.append(atag['id'])
 
+    # use celery to download and compile pdfs asynchronously
+    processing_group = group(download_and_compile_arxiv.s(paper_id) for paper_id in paper_ids)
+    processing_group.apply_async()
+
     # Create the search client
     client = arxiv_api.Client()
 
@@ -965,6 +971,10 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
     for atag in atags:
         paper_ids.append(atag['id'])
 
+    # use celery to download and compile pdfs asynchronously
+    processing_group = group(download_and_compile_arxiv.s(paper_id) for paper_id in paper_ids)
+    processing_group.apply_async()
+
     # Create the search client
     client = arxiv_api.Client()
 
@@ -1184,6 +1194,10 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
     atags = soup.find_all('a', {'title': 'Abstract'})
     for atag in atags:
         paper_ids.append(atag['id'])
+
+    # use celery to download and compile pdfs asynchronously
+    processing_group = group(download_and_compile_arxiv.s(paper_id) for paper_id in paper_ids)
+    processing_group.apply_async()
 
     # Create the search client
     client = arxiv_api.Client()

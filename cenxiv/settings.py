@@ -158,6 +158,12 @@ CACHES = {
 }
 
 
+# Celery Configuration Options
+CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 5 * 60
+
+
 LOG_LEVEL = config("LOG_LEVEL", default=logging.DEBUG)
 
 LOGGING = {

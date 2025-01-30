@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
 # import requests
 from bs4 import BeautifulSoup
+from celery import group
 
 from http import HTTPStatus as status
 from dateutil import parser
@@ -69,6 +70,7 @@ from browse.formatting.metatags import meta_tag_metadata
 
 from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
+from ..tasks import download_and_compile_arxiv
 from ..templatetags import article_filters
 from ..utils import get_translation_dict, request_get
 from ..translators import translator
@@ -145,6 +147,10 @@ def get_abs_page(request, arxiv_id: str) -> Response:
             request_version = int(request_id.split('v')[-1])
         else:
             request_version = latest_version
+
+        # use celery to download and compile pdfs asynchronously
+        processing_group = group(download_and_compile_arxiv.s(f'{arxiv_id}v{v}') for v in range(1, latest_version+1))
+        processing_group.apply_async()
 
         retries = 3
         retry = 0
