@@ -235,7 +235,7 @@
               <td class="tablecell label">
                 <abbr title="{% trans "Digital Object Identifier" %}">{% trans "Related DOI" %}</abbr>:
               </td>
-              <td class="tablecell doi">{{ doi }}
+              <td class="tablecell doi">{{ doi|safe }}
 
                 <!-- accessible tooltip example -->
                 <div class="button-and-tooltip">
@@ -261,8 +261,18 @@
       <h2>{% trans "Submission history" %}</h2> {% trans "From:" %} {{ submitter_name }} [<a href="{{ show_email_link }} }}" rel="nofollow">{% trans "view email" %}</a>]
       {# Extra message for proxy sites (i.e. Proxy line has username and id) #}
       {# TODO: revisit this. Logic for display follows classic but is strange; sometimes a proxy is just a person's name. #}
-      {% for entry in submission_history_entries %}
-          {{ entry|safe }}
+      <br/>
+      {% for v, idv, d, kb, w in version_entries %}
+        {% if v == request_version %}
+          <strong>[v{{ v }}]</strong>
+        {% else %}
+          <strong><a href="{% url 'articles:abstract' idv %}" rel="nofollow">[v{{ v }}]</a></strong>
+        {% endif %}
+        {% if w %}
+          {{ d }} ({{ kb }} KB) <em>({% trans "withdrawn" %})</em><br/>
+        {% else %}
+            {{ d }} ({{ kb }} KB)<br/>
+        {% endif %}
       {% endfor %}
     </div>
 

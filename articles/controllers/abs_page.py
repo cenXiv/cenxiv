@@ -72,7 +72,7 @@ from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
 from ..tasks import download_and_compile_arxiv
 from ..templatetags import article_filters
-from ..utils import get_translation_dict, request_get
+from ..utils import get_translation_dict, request_get, chinese_week_days
 from ..translators import translator
 
 
@@ -549,7 +549,16 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         #     response_data['formats'].insert(1, 'latexml')
 
         sh_entries = [ entry for entry in submission_history_entries if 'KB' in entry ]
+        pattern = r"\(([\d,]+) KB\)"
+        matches = [ re.search(pattern, text) for text in sh_entries ]
+        kbs = [ match.group(1) if match else 0 for match in matches ]
+        if language == 'zh-hans':
+            sh_dates = [ (chinese_week_days[abs_meta.version_history[v].submitted_date.weekday()] + '， ' + abs_meta.version_history[v].submitted_date.strftime('%Y 年 %-m 月 %-d 日 %H:%M:%S %Z')) for v in range(0, latest_version) ]
+        else:
+            sh_dates = [ abs_meta.version_history[v].submitted_date.strftime('%a, %-d %b %Y %H:%M:%S %Z') for v in range(0, latest_version) ]
         withdrawn_status = [ True if 'withdrawn' in sh_entry else False for sh_entry in sh_entries ]
+        version_entries = [ (v, f'{arxiv_id}v{v}', d, kb, w) for (v, d, kb, w) in zip(range(1, latest_version+1), sh_dates, kbs, withdrawn_status) ]
+        response_data['version_entries'] = version_entries
         response_data["withdrawn_versions"] = [ i+1 for i in range(latest_version) if withdrawn_status[i] ]
         response_data["higher_version_withdrawn"] = any(withdrawn_status[request_version:])
         response_data["withdrawn"] = withdrawn_status[request_version-1]
