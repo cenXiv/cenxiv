@@ -49,6 +49,7 @@ import itertools
 # import requests
 from bs4 import BeautifulSoup
 from celery import group
+import concurrent.futures
 
 import arxiv as arxiv_api  # The PyPI arxiv package
 
@@ -73,11 +74,11 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
 from .paging import paging
-from ...models import Article, Author, Category, Link
+from ...models import Article#, Author, Category, Link
 from ...tasks import download_and_compile_arxiv
 from ...templatetags import article_filters
-from ...utils import get_translation_dict, chinese_week_days, request_get
-from ...translators import translator
+from ...utils import get_translation_dict, chinese_week_days, request_get, translate_and_save_article
+# from ...translators import translator
 
 
 logger = logging.getLogger(__name__)
@@ -735,63 +736,73 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         results.extend(list(client.results(search)))
 
     retry = 0
-    while results:
+    while True:
         if retry >= retries:
             msg = f'Failed to translate some of the articles after {retries} retries'
             logger.error(msg)
             raise Exception(msg)
 
-        for result in list(results):  # Copy the results list so we can alter it.
-            arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-            try:
-                article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
-            except Article.DoesNotExist:
-                try:
-                    title_cn = translator('google')(result.title)
-                    abstract_cn = translator('google')(result.summary)
-                    comment_cn = None
-                    journal_ref_cn = None
-                    if result.comment:
-                        comment_cn = translator('google')(result.comment)
-                    if result.journal_ref:
-                        journal_ref_cn = translator('google')(result.journal_ref)
-                    # title_cn = '中文标题'
-                    # abstract_cn = '中文摘要'
-                    logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
-                except Exception:
-                    logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
-                    continue
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            oks = list(executor.map(translate_and_save_article, results))
 
-                article = Article(
-                    entry_id=arxiv_id,
-                    entry_version=version,
-                    title_en=result.title,
-                    title_cn=title_cn,
-                    abstract_en=result.summary,
-                    abstract_cn=abstract_cn,
-                    published_date=result.published,
-                    updated_date=result.updated,
-                    comment_en=result.comment,
-                    comment_cn=comment_cn,
-                    journal_ref_en=result.journal_ref,
-                    journal_ref_cn=journal_ref_cn,
-                    doi=result.doi,
-                    primary_category=result.primary_category,
-                )
-                article.save()
-                for author in result.authors:
-                    author_ = Author(name=author.name, article=article)
-                    author_.save()
-                for category in result.categories:
-                    category_ = Category(name=category, article=article)
-                    category_.save()
-                for link in result.links:
-                    link_ = Link(url=link.href, article=article)
-                    link_.save()
+        if all(oks):
+            break
 
-            results.remove(result)
-
+        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
         retry += 1
+
+
+        # for result in list(results):  # Copy the results list so we can alter it.
+        #     arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        #     try:
+        #         article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        #     except Article.DoesNotExist:
+        #         try:
+        #             title_cn = translator('google')(result.title)
+        #             abstract_cn = translator('google')(result.summary)
+        #             comment_cn = None
+        #             journal_ref_cn = None
+        #             if result.comment:
+        #                 comment_cn = translator('google')(result.comment)
+        #             if result.journal_ref:
+        #                 journal_ref_cn = translator('google')(result.journal_ref)
+        #             # title_cn = '中文标题'
+        #             # abstract_cn = '中文摘要'
+        #             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
+        #         except Exception:
+        #             logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+        #             continue
+
+        #         article = Article(
+        #             entry_id=arxiv_id,
+        #             entry_version=version,
+        #             title_en=result.title,
+        #             title_cn=title_cn,
+        #             abstract_en=result.summary,
+        #             abstract_cn=abstract_cn,
+        #             published_date=result.published,
+        #             updated_date=result.updated,
+        #             comment_en=result.comment,
+        #             comment_cn=comment_cn,
+        #             journal_ref_en=result.journal_ref,
+        #             journal_ref_cn=journal_ref_cn,
+        #             doi=result.doi,
+        #             primary_category=result.primary_category,
+        #         )
+        #         article.save()
+        #         for author in result.authors:
+        #             author_ = Author(name=author.name, article=article)
+        #             author_.save()
+        #         for category in result.categories:
+        #             category_ = Category(name=category, article=article)
+        #             category_.save()
+        #         for link in result.links:
+        #             link_ = Link(url=link.href, article=article)
+        #             link_.save()
+
+        #     results.remove(result)
+
+        # retry += 1
 
     new_count = cross_start - new_start - 1
     cross_count = rep_start - cross_start
@@ -991,57 +1002,67 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
             logger.error(msg)
             raise Exception(msg)
 
-        for result in list(results):  # Copy the results list so we can alter it.
-            arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-            try:
-                article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
-            except Article.DoesNotExist:
-                try:
-                    title_cn = translator('google')(result.title)
-                    abstract_cn = translator('google')(result.summary)
-                    comment_cn = None
-                    journal_ref_cn = None
-                    if result.comment:
-                        comment_cn = translator('google')(result.comment)
-                    if result.journal_ref:
-                        journal_ref_cn = translator('google')(result.journal_ref)
-                    # title_cn = '中文标题'
-                    # abstract_cn = '中文摘要'
-                    logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
-                except Exception:
-                    logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
-                    continue
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            oks = list(executor.map(translate_and_save_article, results))
 
-                article = Article(
-                    entry_id=arxiv_id,
-                    entry_version=version,
-                    title_en=result.title,
-                    title_cn=title_cn,
-                    abstract_en=result.summary,
-                    abstract_cn=abstract_cn,
-                    published_date=result.published,
-                    updated_date=result.updated,
-                    comment_en=result.comment,
-                    comment_cn=comment_cn,
-                    journal_ref_en=result.journal_ref,
-                    journal_ref_cn=journal_ref_cn,
-                    doi=result.doi,
-                    primary_category=result.primary_category,
-                )
-                article.save()
-                for author in result.authors:
-                    author_ = Author(name=author.name, article=article)
-                    author_.save()
-                for category in result.categories:
-                    category_ = Category(name=category, article=article)
-                    category_.save()
-                for link in result.links:
-                    link_ = Link(url=link.href, article=article)
-                    link_.save()
+        if all(oks):
+            break
 
-            results.remove(result)
-
+        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
         retry += 1
+
+
+        # for result in list(results):  # Copy the results list so we can alter it.
+        #     arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        #     try:
+        #         article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        #     except Article.DoesNotExist:
+        #         try:
+        #             title_cn = translator('google')(result.title)
+        #             abstract_cn = translator('google')(result.summary)
+        #             comment_cn = None
+        #             journal_ref_cn = None
+        #             if result.comment:
+        #                 comment_cn = translator('google')(result.comment)
+        #             if result.journal_ref:
+        #                 journal_ref_cn = translator('google')(result.journal_ref)
+        #             # title_cn = '中文标题'
+        #             # abstract_cn = '中文摘要'
+        #             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
+        #         except Exception:
+        #             logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+        #             continue
+
+        #         article = Article(
+        #             entry_id=arxiv_id,
+        #             entry_version=version,
+        #             title_en=result.title,
+        #             title_cn=title_cn,
+        #             abstract_en=result.summary,
+        #             abstract_cn=abstract_cn,
+        #             published_date=result.published,
+        #             updated_date=result.updated,
+        #             comment_en=result.comment,
+        #             comment_cn=comment_cn,
+        #             journal_ref_en=result.journal_ref,
+        #             journal_ref_cn=journal_ref_cn,
+        #             doi=result.doi,
+        #             primary_category=result.primary_category,
+        #         )
+        #         article.save()
+        #         for author in result.authors:
+        #             author_ = Author(name=author.name, article=article)
+        #             author_.save()
+        #         for category in result.categories:
+        #             category_ = Category(name=category, article=article)
+        #             category_.save()
+        #         for link in result.links:
+        #             link_ = Link(url=link.href, article=article)
+        #             link_.save()
+
+        #     results.remove(result)
+
+        # retry += 1
 
     dts = soup.find_all('dt')
     # dds = soup.find_all('dd')
@@ -1215,57 +1236,67 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
             logger.error(msg)
             raise Exception(msg)
 
-        for result in list(results):  # Copy the results list so we can alter it.
-            arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-            try:
-                article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
-            except Article.DoesNotExist:
-                try:
-                    title_cn = translator('google')(result.title)
-                    abstract_cn = translator('google')(result.summary)
-                    comment_cn = None
-                    journal_ref_cn = None
-                    if result.comment:
-                        comment_cn = translator('google')(result.comment)
-                    if result.journal_ref:
-                        journal_ref_cn = translator('google')(result.journal_ref)
-                    # title_cn = '中文标题'
-                    # abstract_cn = '中文摘要'
-                    logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
-                except Exception:
-                    logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
-                    continue
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            oks = list(executor.map(translate_and_save_article, results))
 
-                article = Article(
-                    entry_id=arxiv_id,
-                    entry_version=version,
-                    title_en=result.title,
-                    title_cn=title_cn,
-                    abstract_en=result.summary,
-                    abstract_cn=abstract_cn,
-                    published_date=result.published,
-                    updated_date=result.updated,
-                    comment_en=result.comment,
-                    comment_cn=comment_cn,
-                    journal_ref_en=result.journal_ref,
-                    journal_ref_cn=journal_ref_cn,
-                    doi=result.doi,
-                    primary_category=result.primary_category,
-                )
-                article.save()
-                for author in result.authors:
-                    author_ = Author(name=author.name, article=article)
-                    author_.save()
-                for category in result.categories:
-                    category_ = Category(name=category, article=article)
-                    category_.save()
-                for link in result.links:
-                    link_ = Link(url=link.href, article=article)
-                    link_.save()
+        if all(oks):
+            break
 
-            results.remove(result)
-
+        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
         retry += 1
+
+
+        # for result in list(results):  # Copy the results list so we can alter it.
+        #     arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        #     try:
+        #         article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        #     except Article.DoesNotExist:
+        #         try:
+        #             title_cn = translator('google')(result.title)
+        #             abstract_cn = translator('google')(result.summary)
+        #             comment_cn = None
+        #             journal_ref_cn = None
+        #             if result.comment:
+        #                 comment_cn = translator('google')(result.comment)
+        #             if result.journal_ref:
+        #                 journal_ref_cn = translator('google')(result.journal_ref)
+        #             # title_cn = '中文标题'
+        #             # abstract_cn = '中文摘要'
+        #             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
+        #         except Exception:
+        #             logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+        #             continue
+
+        #         article = Article(
+        #             entry_id=arxiv_id,
+        #             entry_version=version,
+        #             title_en=result.title,
+        #             title_cn=title_cn,
+        #             abstract_en=result.summary,
+        #             abstract_cn=abstract_cn,
+        #             published_date=result.published,
+        #             updated_date=result.updated,
+        #             comment_en=result.comment,
+        #             comment_cn=comment_cn,
+        #             journal_ref_en=result.journal_ref,
+        #             journal_ref_cn=journal_ref_cn,
+        #             doi=result.doi,
+        #             primary_category=result.primary_category,
+        #         )
+        #         article.save()
+        #         for author in result.authors:
+        #             author_ = Author(name=author.name, article=article)
+        #             author_.save()
+        #         for category in result.categories:
+        #             category_ = Category(name=category, article=article)
+        #             category_.save()
+        #         for link in result.links:
+        #             link_ = Link(url=link.href, article=article)
+        #             link_.save()
+
+        #     results.remove(result)
+
+        # retry += 1
 
     dts = soup.find_all('dt')
     # dds = soup.find_all('dd')

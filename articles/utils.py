@@ -4,6 +4,8 @@ import logging
 from http import HTTPStatus
 import requests
 from requests.exceptions import HTTPError, RequestException
+from .models import Article, Author, Category, Link
+from .translators import translator
 
 
 # Configure logging (do this once at the module level)
@@ -78,3 +80,54 @@ def request_get(url, retries=3, retry_delay=1, max_retry_delay=60):
     else:  # This block executes if the loop completes without a successful request
         logger.error(f"Failed to fetch URL: {url} after {retries} attempts.")
         return None # Return None to indicate failure
+
+def translate_and_save_article(result):
+    arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+    try:
+        article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+        return True
+    except Article.DoesNotExist:
+        try:
+            title_cn = translator('google')(result.title)
+            abstract_cn = translator('google')(result.summary)
+            comment_cn = None
+            journal_ref_cn = None
+            if result.comment:
+                comment_cn = translator('google')(result.comment)
+            if result.journal_ref:
+                journal_ref_cn = translator('google')(result.journal_ref)
+            # title_cn = '中文标题'
+            # abstract_cn = '中文摘要'
+            logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
+        except Exception:
+            logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+            return False
+
+        article = Article(
+            entry_id=arxiv_id,
+            entry_version=version,
+            title_en=result.title,
+            title_cn=title_cn,
+            abstract_en=result.summary,
+            abstract_cn=abstract_cn,
+            published_date=result.published,
+            updated_date=result.updated,
+            comment_en=result.comment,
+            comment_cn=comment_cn,
+            journal_ref_en=result.journal_ref,
+            journal_ref_cn=journal_ref_cn,
+            doi=result.doi,
+            primary_category=result.primary_category,
+        )
+        article.save()
+        for author in result.authors:
+            author_ = Author(name=author.name, article=article)
+            author_.save()
+        for category in result.categories:
+            category_ = Category(name=category, article=article)
+            category_.save()
+        for link in result.links:
+            link_ = Link(url=link.href, article=article)
+            link_.save()
+
+        return True
