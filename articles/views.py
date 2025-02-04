@@ -440,12 +440,12 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
 
     arxiv_id = request.path.split('/')[-1]
     arxiv_idv = arxiv_id
-    version = None
+    version = 1
     if 'v' in arxiv_id:
         arxiv_id, version = arxiv_id.split('v')
     if version:
         arxiv_idv = f'{arxiv_id}v{version}'
-    cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/cn_pdf/{arxiv_id}/{arxiv_idv}.pdf'
+    cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/arxiv{arxiv_id}/v{version}/cn_pdf/{arxiv_idv}.pdf'
 
     if os.path.isfile(cn_pdf_file):
         # open and display the pdf file

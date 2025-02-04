@@ -139,10 +139,6 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
         for atag in atags:
             paper_ids.append(atag['id'])
 
-        # use celery to download and compile pdfs asynchronously
-        processing_group = group(download_and_compile_arxiv.s(paper_id) for paper_id in paper_ids)
-        processing_group.apply_async()
-
         # Create the search client
         client = arxiv_api.Client()
 
@@ -151,6 +147,12 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
         for pids in itertools.batched(paper_ids, 200):
             search = arxiv_api.Search(id_list=pids)
             results.extend(list(client.results(search)))
+
+        # get arxiv_idv for all paper_ids
+        arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+        # use celery to download and compile pdfs asynchronously
+        processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
+        processing_group.apply_async()
 
         retry = 0
         while results:
