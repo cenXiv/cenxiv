@@ -25,7 +25,7 @@ import arxiv as arxiv_api  # The PyPI arxiv package
 # From arxiv-base package
 # from arxiv.base import logging
 from arxiv.taxonomy.definitions import ARCHIVES, CATEGORIES
-from arxiv.taxonomy.category import Category
+from arxiv.taxonomy.category import Category as Cat
 from arxiv.identifier import (
     Identifier,
     IdentifierException,
@@ -51,7 +51,7 @@ from browse.services.database import (
     get_latexml_publish_dt,
 )
 # from browse.services.documents import get_doc_service
-from browse.services.documents.db_implementation import db_abs
+# from browse.services.documents.db_implementation import db_abs
 from browse.services.dissemination import get_article_store
 # from browse.controllers import check_supplied_identifier
 from browse.formatting.external_refs_cits import (
@@ -63,10 +63,10 @@ from browse.formatting.external_refs_cits import (
     get_computed_dblp_listing_path,
     get_dblp_bibtex_path,
 )
-from browse.formatting.latexml import get_latexml_url
-from browse.formatting.search_authors import queries_for_authors, split_long_author_list
+# from browse.formatting.latexml import get_latexml_url
+# from browse.formatting.search_authors import queries_for_authors, split_long_author_list
 from browse.controllers.response_headers import mime_header_date
-from browse.formatting.metatags import meta_tag_metadata
+# from browse.formatting.metatags import meta_tag_metadata
 
 from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
@@ -728,7 +728,7 @@ def _check_legacy_id_params(request, arxiv_id: str) -> str:
 
 def _prevnext_links(
     arxiv_identifier: Identifier,
-    primary_category: Optional[Category],
+    primary_category: Optional[Cat],
     response_data: Dict[str, Any],
 ) -> None:
     """Adds previous and next URLs and context to response."""

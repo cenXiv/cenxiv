@@ -12,7 +12,7 @@ from celery import group
 import concurrent.futures
 
 from http import HTTPStatus
-from flask import request, redirect, url_for
+# from flask import request, redirect, url_for
 from werkzeug.exceptions import BadRequest
 
 from django.urls import reverse
@@ -529,7 +529,7 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
     if new_count > 0:
         if page != 1:
             ift.append((_('New submissions'),
-                        url_for('.catchup', subject=subject.id, date=day.strftime('%Y-%m-%d'), abs=include_abs, page=1),
+                        reverse('articles:catchup', kwargs={'subject': subject.id, 'date': day.strftime('%Y-%m-%d')}) + f'?abs={include_abs}&page=1',
                         1))
         else:
             ift.append((_('New submissions'), '', 1))
@@ -543,7 +543,7 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
             ift.append((_('Cross-lists'), '', cross_index))
         else:
             ift.append((_('Cross-lists'),
-                        url_for('.catchup', subject=subject.id, date=day.strftime('%Y-%m-%d'), abs=include_abs, page=cross_start_page),
+                        reverse('articles:catchup', kwargs={'subject': subject.id, 'date': day.strftime('%Y-%m-%d')}) + f'?abs={include_abs}&page={cross_start_page}',
                         cross_index))
 
     if rep_count > 0:
@@ -555,7 +555,7 @@ def catchup_index_for_types(new_count:int, cross_count:int, rep_count:int,  subj
             ift.append((_('Replacements'), '', rep_index))
         else:
             ift.append((_('Replacements'),
-                        url_for('.catchup', subject=subject.id, date=day.strftime('%Y-%m-%d'), abs=include_abs, page=rep_start_page),
+                        reverse('articles:catchup', kwargs={'subject': subject.id, 'date': day.strftime('%Y-%m-%d')}) + f'?abs={include_abs}&page={rep_start_page}',
                         rep_index))
 
     return {'index_for_types': ift}

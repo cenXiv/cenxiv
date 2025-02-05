@@ -56,7 +56,7 @@ import arxiv as arxiv_api  # The PyPI arxiv package
 # From arxiv-base package
 from arxiv.taxonomy.definitions import CATEGORIES, ARCHIVES_SUBSUMED, ARCHIVES
 from arxiv.integration.fastly.headers import add_surrogate_key
-from arxiv.document.version import VersionEntry, SourceFlag
+from arxiv.document.version import VersionEntry#, SourceFlag
 from arxiv.document.metadata import DocMetadata, AuthorList as AuList
 from arxiv.formats import formats_from_source_flag
 

@@ -13,8 +13,8 @@ from werkzeug.exceptions import BadRequest, NotFound
 
 from arxiv.integration.fastly.headers import add_surrogate_key
 
-from browse.controllers.list_page import get_listing_service
-from browse.controllers.years_operating import stats_by_year, years_operating
+# from browse.controllers.list_page import get_listing_service
+# from browse.controllers.years_operating import stats_by_year, years_operating
 from browse.services.listing import MonthCount
 
 

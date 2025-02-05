@@ -3,7 +3,7 @@ import re
 import logging
 import requests
 from http import HTTPStatus
-from typing import Optional, Tuple, Dict, Any, Union
+from typing import Optional#, Tuple, Dict, Any, Union
 from bs4 import BeautifulSoup
 
 from django.conf import settings
@@ -12,21 +12,11 @@ from django.http import Http404
 from django.core.exceptions import BadRequest
 from django.shortcuts import render, redirect
 from django.utils.translation import get_language
-from django.http import (
-    HttpResponse,
-    HttpResponseRedirect,
-    HttpResponseBadRequest,
-    HttpResponseNotFound,
-)
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotFound
 from django.http.response import HttpResponsePermanentRedirect
 from django.views.decorators.http import require_http_methods
-from django.utils.translation import gettext_lazy as _
 
-from arxiv.identifier import (
-    Identifier,
-    IdentifierException,
-    IdentifierIsArchiveException,
-)
+from arxiv.identifier import Identifier, IdentifierException#, IdentifierIsArchiveException
 from arxiv.taxonomy.definitions import GROUPS, CATEGORIES
 from arxiv.integration.fastly.headers import add_surrogate_key
 

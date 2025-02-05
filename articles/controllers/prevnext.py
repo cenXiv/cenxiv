@@ -1,21 +1,21 @@
 """Handle requests to support sequential navigation between arXiv IDs."""
 
+import logging
 from typing import Any, Dict, Tuple
 from http import HTTPStatus as status
 
 from django.urls import reverse
 from django.utils.html import escape
 from django.core.exceptions import BadRequest
-from django.http import Http404
+# from django.http import Http404
 
 from arxiv.taxonomy.definitions import ARCHIVES, CATEGORIES_ACTIVE
 from arxiv.identifier import Identifier, IdentifierException
 
-import logging
 
-Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
 logger = logging.getLogger(__name__)
 
+Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
 
 def get_prevnext(id: str, function: str, context: str) -> Response:
     """

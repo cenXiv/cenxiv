@@ -4,10 +4,10 @@ Each controller corresponds to a distinct browse feature with its own
 request handling logic.
 """
 from typing import Any, Dict, Optional, Tuple
-from zoneinfo import ZoneInfo
+# from zoneinfo import ZoneInfo
 
 from http import HTTPStatus as status
-from flask import url_for, current_app
+# from flask import url_for, current_app
 
 from arxiv.identifier import Identifier
 
@@ -41,13 +41,13 @@ def check_supplied_identifier(id: Identifier, route: str) -> Optional[Response]:
 
 
 
-_arxiv_biz_tz = None
-def biz_tz() -> ZoneInfo:
-    global _arxiv_biz_tz
-    if _arxiv_biz_tz is None:
-        _arxiv_biz_tz = ZoneInfo(current_app.config["ARXIV_BUSINESS_TZ"])
-        if _arxiv_biz_tz is None:
-            raise ValueError("Must set ARXIV_BUSINESS_TZ to a valid timezone")
-        return _arxiv_biz_tz
-    else:
-        return _arxiv_biz_tz
+# _arxiv_biz_tz = None
+# def biz_tz() -> ZoneInfo:
+#     global _arxiv_biz_tz
+#     if _arxiv_biz_tz is None:
+#         _arxiv_biz_tz = ZoneInfo(current_app.config["ARXIV_BUSINESS_TZ"])
+#         if _arxiv_biz_tz is None:
+#             raise ValueError("Must set ARXIV_BUSINESS_TZ to a valid timezone")
+#         return _arxiv_biz_tz
+#     else:
+#         return _arxiv_biz_tz

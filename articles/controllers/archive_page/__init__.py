@@ -5,12 +5,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Tuple, Optional
 from http import HTTPStatus as status
 
-from arxiv.taxonomy.definitions import (
-    ARCHIVES,
-    ARCHIVES_ACTIVE,
-    ARCHIVES_SUBSUMED,
-    CATEGORIES
-)
+from arxiv.taxonomy.definitions import ARCHIVES, ARCHIVES_ACTIVE, ARCHIVES_SUBSUMED, CATEGORIES
 from arxiv.taxonomy.category import Category, Archive
 from arxiv.integration.fastly.headers import add_surrogate_key
 
