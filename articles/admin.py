@@ -4,6 +4,10 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from .models import Article#, Author, Category, Link
+from django.utils.html import escape
+from django.contrib.admin import DateFieldListFilter
+from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.contenttypes.models import ContentType
 
 
 # class AuthorInline(admin.StackedInline):
@@ -18,13 +22,27 @@ from .models import Article#, Author, Category, Link
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     # readonly_fields = ['source_archive', 'entry_id', 'entry_version', 'title_en', 'abstract_en', 'published_date', 'updated_date', 'comment_en', 'journal_ref_en', 'doi', 'primary_category', 'display_authors', 'display_categories', 'display_links']
-    list_filter = ['updated_date', 'primary_category']
-    search_fields = ['entry_id', 'title_en', 'title_cn', 'abstract_en', 'abstract_cn']
+    list_filter = [
+        ('updated_date', DateFieldListFilter),
+        'primary_category',
+        'translation_validated'
+    ]
+    search_fields = [
+        'entry_id',
+        'title_en', 'title_cn',
+        'abstract_en', 'abstract_cn',
+        'authors__name',  # 支持作者搜索
+        'primary_category'
+    ]
+    search_help_text = "支持按文章ID、标题、摘要、作者和分类搜索"
     show_facets = admin.ShowFacets.ALWAYS
     # inlines = [AuthorInline, CategoryInline, LinkInline]
 
     def has_add_permission(self, request):
         return False  # Disable the add permission
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # Disable the delete permission
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super().get_readonly_fields(request, obj))
@@ -35,9 +53,17 @@ class ArticleAdmin(admin.ModelAdmin):
             readonly_fields.append('journal_ref_cn')
         return readonly_fields
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related(
+            'authors',
+            'categories',
+            'links'
+        )
+
     def display_authors(self, obj):
-        # Query all author names for the article and join them with ', '
-        return ', '.join(author.name for author in obj.authors.all())
+        # 使用缓存的预加载数据
+        authors = list(obj.authors.all())  # 已经预加载
+        return ', '.join(author.name for author in authors)
     display_authors.short_description = _('Authors')  # Set the column name in the admin
 
     def display_categories(self, obj):
@@ -46,10 +72,26 @@ class ArticleAdmin(admin.ModelAdmin):
     display_categories.short_description = _('Categories')  # Set the column name in the admin
 
     def display_links(self, obj):
-        # Query all link urls for the article and create clickable HTML links
-        return mark_safe('<br>'.join(f'<a href="{link.url}" target="_blank" rel="noopener noreferrer">{link.url}</a>' for link in obj.links.all()))
+        return mark_safe('<br>'.join(
+            f'<a href="{escape(link.url)}" target="_blank" rel="noopener noreferrer nofollow">{escape(link.url)}</a>'
+            for link in obj.links.all()
+        ))
     display_links.short_description = _('Links')  # Set the column name in the admin
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+        if change:  # 记录修改操作
+            LogEntry.objects.log_action(
+                user_id=request.user.id,
+                content_type_id=ContentType.objects.get_for_model(obj).pk,
+                object_id=obj.pk,
+                object_repr=str(obj),
+                action_flag=CHANGE,
+                change_message=f"修改了文章 {obj.entry_id} 的翻译"
+            )
+
+    # Define the fieldsets for the admin form
     fieldsets = [
         # (_("Entry Info"), {
         #     "fields": ["source_archive", "entry_id", "entry_version"]
@@ -86,6 +128,16 @@ class ArticleAdmin(admin.ModelAdmin):
     # Override the formfield_overrides to customize the width of title_cn
     formfield_overrides = {
         models.CharField: {
-            'widget': forms.TextInput(attrs={'style': 'width: 1000px;'})  # Set the width to 500px
+            'widget': forms.TextInput(attrs={
+                'style': 'width: 1000px;',
+                'class': 'vLargeTextField'
+            })
         },
+        models.TextField: {
+            'widget': forms.Textarea(attrs={
+                'rows': 10,
+                'cols': 100,
+                'class': 'vLargeTextField'
+            })
+        }
     }

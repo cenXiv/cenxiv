@@ -11,9 +11,9 @@ def years_operating(archive: Archive) -> List[int]:
     """Returns list of years operating in desc order. ex [1993,1992,1991]."""
     start = archive.start_date.year
     if archive.end_date:
-        end=archive.end_date.year
+        end = archive.end_date.year
     else:
-        end=date.today().year
+        end = date.today().year
     return list(reversed(range(start, end + 1)))
 
 
