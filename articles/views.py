@@ -217,8 +217,7 @@ def catchup(request, subject: str, date: str):
 
 def author_search(request, article_id: str, author_id: str):
     """Search for articles by a specific author."""
-
-    return redirect(f'https://arxiv.org/search/{archive_id}??searchtype=author&query={author_id}')
+    return redirect(f'https://arxiv.org/search/{article_id}?searchtype=author&query={author_id}')
 
     # if request.method != "GET":
     #     return HttpResponse('Method not allowed', status=405)
