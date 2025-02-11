@@ -64,7 +64,7 @@ def get_archive(archive_id: Optional[str]) -> Tuple[Dict[str, Any], int, Dict[st
     data["template"] = "archive/single_archive.html"
 
     if language == 'zh-hans':
-        with open("articles/categories_description_dict.json", "r") as f:
+        with open("articles/categories_description_dict.json", "r", encoding='utf-8') as f:
             categories_description_dict = json.load(f)
         for cat in cats_list:
             if cat.id in categories_description_dict:

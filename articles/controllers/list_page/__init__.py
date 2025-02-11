@@ -51,7 +51,7 @@ from bs4 import BeautifulSoup
 from celery import group
 import concurrent.futures
 
-import arxiv as arxiv_api  # The PyPI arxiv package
+import arxivapi  # The PyPI arxiv package
 
 # From arxiv-base package
 from arxiv.taxonomy.definitions import CATEGORIES, ARCHIVES_SUBSUMED, ARCHIVES
@@ -723,12 +723,12 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         paper_ids.append(atag['id'])
 
     # Create the search client
-    client = arxiv_api.Client()
+    client = arxivapi.Client()
 
     # Create the search query
     results = []
     for pids in itertools.batched(paper_ids, 200):
-        search = arxiv_api.Search(id_list=pids)
+        search = arxivapi.Search(id_list=pids)
         results.extend(list(client.results(search)))
 
     # get arxiv_idv for all paper_ids
@@ -985,12 +985,12 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         paper_ids.append(atag['id'])
 
     # Create the search client
-    client = arxiv_api.Client()
+    client = arxivapi.Client()
 
     # Create the search query
     results = []
     for pids in itertools.batched(paper_ids, 200):
-        search = arxiv_api.Search(id_list=pids)
+        search = arxivapi.Search(id_list=pids)
         results.extend(list(client.results(search)))
 
     # get arxiv_idv for all paper_ids
@@ -1221,12 +1221,12 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         paper_ids.append(atag['id'])
 
     # Create the search client
-    client = arxiv_api.Client()
+    client = arxivapi.Client()
 
     # Create the search query
     results = []
     for pids in itertools.batched(paper_ids, 200):
-        search = arxiv_api.Search(id_list=pids)
+        search = arxivapi.Search(id_list=pids)
         results.extend(list(client.results(search)))
 
     # get arxiv_idv for all paper_ids

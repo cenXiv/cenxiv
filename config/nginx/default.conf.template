@@ -1,0 +1,24 @@
+# upstream for uWSGI
+upstream uwsgi_app {
+    server localhost:8000;
+}
+
+server {
+    listen 80;
+    server_name localhost;
+    error_log stderr warn;
+    access_log /dev/stdout main;
+
+    location / {
+        include /etc/nginx/uwsgi_params;
+        uwsgi_pass uwsgi_app;
+    }
+
+    location /static/ {
+        alias /app/static/;
+    }
+
+    location /media/ {
+        alias /app/media/;
+    }
+}

@@ -77,12 +77,24 @@ WSGI_APPLICATION = 'cenxiv.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Set the database configuration
+if config('DB', default='sqlite3') == 'sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+elif config('DB', default='sqlite3') in [ 'mysql', 'postgresql' ]:
+    DATABASES = {
+        'default': {
+            'ENGINE': config('DB_ENGINE'),
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+        }
+    }
 
 
 # Password validation
@@ -153,7 +165,7 @@ CENXIV_FILE_PATH = config('CENXIV_FILE_PATH')
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': config('HOST_DOMAIN') + ':11211',
+        'LOCATION': config('MEMCACHED_LOCATION'),
     }
 }
 

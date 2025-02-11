@@ -20,7 +20,7 @@ from werkzeug.exceptions import InternalServerError
 
 from django.utils.translation import get_language
 
-import arxiv as arxiv_api  # The PyPI arxiv package
+import arxivapi  # The PyPI arxiv package
 
 # From arxiv-base package
 # from arxiv.base import logging
@@ -134,11 +134,11 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         response_data["requested_id"] = request_id
 
         # Create the search client
-        client = arxiv_api.Client()
+        client = arxivapi.Client()
 
         # Create the search query
         # first search for the latest version
-        search = arxiv_api.Search(id_list=[arxiv_identifier.id])
+        search = arxivapi.Search(id_list=[arxiv_identifier.id])
         result = list(client.results(search))[0]
 
         arxiv_id, latest_version = result.entry_id.split('/')[-1].split('v')
@@ -223,7 +223,7 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 try:
                     article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
                 except Article.DoesNotExist:
-                    search = arxiv_api.Search(id_list=[f'{arxiv_id}v{version}'])
+                    search = arxivapi.Search(id_list=[f'{arxiv_id}v{version}'])
                     result = list(client.results(search))[0]
 
                     try:

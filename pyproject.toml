@@ -10,19 +10,22 @@ python = ">=3.13,<4.0"
 django = "^5.1.4"
 mtranslate = "^1.8"
 requests = "^2.32.3"
+# arxivapi = { path = "../arxiv-api" }
 # arxiv-base = { path = "../arxiv-base" }
 # browse = { path = "../arxiv-browse" }
 # latextranslate = { path = "../latextranslate" }
-arxiv-base = { git = "https://github.com/cenXiv/arxiv-base", branch = "develop" }
-browse = { git = "https://github.com/cenXiv/arxiv-browse", branch = "develop" }
+arxivapi = { git = "https://github.com/cenXiv/arxiv-api", branch = "cenxiv" }
+arxiv-base = { git = "https://github.com/cenXiv/arxiv-base", branch = "cenxiv" }
+browse = { git = "https://github.com/cenXiv/arxiv-browse", branch = "cenxiv" }
 latextranslate = { git = "https://github.com/cenXiv/latextranslate", branch = "main" }
 beautifulsoup4 = "^4.12.3"
-arxiv = "^2.1.3"
 lxml = "^5.3.0"
 python-decouple = "^3.8"
 translators = "^5.9.3"
 pymemcache = "^4.0.0"
 celery = "^5.4.0"
+psycopg = "^3.2.4"
+uwsgi = "^2.0.28"
 
 [build-system]
 requires = ["poetry-core"]
