@@ -17,6 +17,7 @@ from dateutil import parser
 from dateutil.tz import tzutc
 from flask import request, url_for, current_app
 from werkzeug.exceptions import InternalServerError
+from decouple import config
 
 from django.utils.translation import get_language
 
@@ -77,6 +78,8 @@ from ..translators import translator
 
 
 logger = logging.getLogger(__name__)
+
+tl = config('TRANSLATOR', default='google')
 
 Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
 
@@ -165,14 +168,14 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 break
             except Article.DoesNotExist:
                 try:
-                    title_cn = translator('google')(result.title)
-                    abstract_cn = translator('google')(result.summary)
+                    title_cn = translator(tl)(result.title)
+                    abstract_cn = translator(tl)(result.summary)
                     comment_cn = None
                     journal_ref_cn = None
                     if result.comment:
-                        comment_cn = translator('google')(result.comment)
+                        comment_cn = translator(tl)(result.comment)
                     if result.journal_ref:
-                        journal_ref_cn = translator('google')(result.journal_ref)
+                        journal_ref_cn = translator(tl)(result.journal_ref)
                     # title_cn = '中文标题'
                     # abstract_cn = '中文摘要'
                     logger.info(f'Successfully translated arxiv:{arxiv_id}v{latest_version}.')
@@ -227,14 +230,14 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     result = list(client.results(search))[0]
 
                     try:
-                        title_cn = translator('google')(result.title)
-                        abstract_cn = translator('google')(result.summary)
+                        title_cn = translator(tl)(result.title)
+                        abstract_cn = translator(tl)(result.summary)
                         comment_cn = None
                         journal_ref_cn = None
                         if result.comment:
-                            comment_cn = translator('google')(result.comment)
+                            comment_cn = translator(tl)(result.comment)
                         if result.journal_ref:
-                            journal_ref_cn = translator('google')(result.journal_ref)
+                            journal_ref_cn = translator(tl)(result.journal_ref)
                         # title_cn = '中文标题'
                         # abstract_cn = '中文摘要'
                         logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')

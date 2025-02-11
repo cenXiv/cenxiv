@@ -165,7 +165,7 @@ CENXIV_FILE_PATH = config('CENXIV_FILE_PATH')
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': config('MEMCACHED_LOCATION'),
+        'LOCATION': config('MEMCACHED_LOCATION', default='127.0.0.1:11211'),
     }
 }
 

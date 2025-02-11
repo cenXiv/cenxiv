@@ -3,6 +3,7 @@ import json
 import logging
 from http import HTTPStatus
 import requests
+from decouple import config
 from requests.exceptions import HTTPError, RequestException
 from .models import Article, Author, Category, Link
 from .translators import translator
@@ -13,6 +14,7 @@ from .translators import translator
 logger = logging.getLogger(__name__)
 
 
+tl = config('TRANSLATOR', default='google')
 
 chinese_week_days = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
 
@@ -88,14 +90,14 @@ def translate_and_save_article(result):
         return True
     except Article.DoesNotExist:
         try:
-            title_cn = translator('google')(result.title)
-            abstract_cn = translator('google')(result.summary)
+            title_cn = translator(tl)(result.title)
+            abstract_cn = translator(tl)(result.summary)
             comment_cn = None
             journal_ref_cn = None
             if result.comment:
-                comment_cn = translator('google')(result.comment)
+                comment_cn = translator(tl)(result.comment)
             if result.journal_ref:
-                journal_ref_cn = translator('google')(result.journal_ref)
+                journal_ref_cn = translator(tl)(result.journal_ref)
             # title_cn = '中文标题'
             # abstract_cn = '中文摘要'
             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
