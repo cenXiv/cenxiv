@@ -1,5 +1,6 @@
 """Archive landing page."""
 
+import copy
 import json
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Optional
@@ -50,7 +51,7 @@ def get_archive(archive_id: Optional[str]) -> Tuple[Dict[str, Any], int, Dict[st
 
     language = get_language()
 
-    cats_list = category_list(archive)
+    cats_list = copy.deepcopy(category_list(archive))
     years = years_operating(archive)
     data["years"] = [datetime.now().year, datetime.now().year-1] # only last 90 days allowed anyways
     data["months"] = MONTHS

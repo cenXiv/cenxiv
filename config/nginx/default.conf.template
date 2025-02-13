@@ -1,17 +1,16 @@
-# upstream for uWSGI
-upstream uwsgi_app {
-    server localhost:8000;
+upstream django {
+    server unix:/tmp/uwsgi.sock;
 }
 
 server {
-    listen 80;
-    server_name localhost;
+    listen 8080;
+    server_name -;
     error_log stderr warn;
-    access_log /dev/stdout main;
+    access_log /dev/stdout combined;
 
     location / {
+        uwsgi_pass django;
         include /etc/nginx/uwsgi_params;
-        uwsgi_pass uwsgi_app;
     }
 
     location /static/ {

@@ -3,8 +3,8 @@ from celery import Celery
 from decouple import config
 
 
-rb_user = config('RABBITMQ_USER', default='guest'))
-rb_passwd = config('RABBITMQ_PASSWORD', default='guest'))
+rb_user = config('RABBITMQ_USER', default='guest')
+rb_passwd = config('RABBITMQ_PASSWORD', default='guest')
 rb_location = config('RABBITMQ_LOCATION', default='localhost:5672')
 
 

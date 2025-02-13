@@ -26,6 +26,12 @@
           <a href="{% url 'articles:home' %}"><img src="{% static 'images/cenxiv-org-white.svg' %}" alt="CenXiv.org" /></a>
         </div>
 
+        <div class="column" style="text-align: center;">
+          <div style="display: inline-block; border: 2px solid red; padding: 10px; color: red;">
+            {% trans "This website is in trial operation, support us!" %}
+          </div>
+        </div>
+
         <div class="column" id="support-ack">
           <span id="support-ack-url">{% trans "We gratefully acknowledge support from all contributors." %} <br/> <a href="https://github.com/cenXiv/cenxiv" target="_blank" rel="noopener noreferrer">{% trans "Contribute" %}</a></span>
           <a href="#" class="btn-header-donate">{% trans "Donate" %}</a>
