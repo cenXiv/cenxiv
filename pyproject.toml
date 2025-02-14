@@ -26,6 +26,7 @@ pymemcache = "^4.0.0"
 celery = "^5.4.0"
 psycopg = {extras = ["binary"], version = "^3.2.4"}
 uwsgi = "^2.0.28"
+django-db-connection-pool = {extras = ["postgresql"], version = "^1.2.5"}
 
 [build-system]
 requires = ["poetry-core"]

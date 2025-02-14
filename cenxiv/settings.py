@@ -93,6 +93,11 @@ elif config('DB', default='sqlite3') in [ 'mysql', 'postgresql' ]:
             'USER': config('DB_USER'),
             'PASSWORD': config('DB_PASSWORD'),
             'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT'),
+            'POOL_OPTIONS': {
+                'POOL_SIZE': config('DB_POOL_SIZE', default=20, cast=int),
+                'MAX_OVERFLOW': config('DB_MAX_OVERFLOW', default=20, cast=int)
+            }
         }
     }
 

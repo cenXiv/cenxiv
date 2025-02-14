@@ -10,7 +10,7 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-LOCK_TIMEOUT = config('CENXIV_COMPILE_LOCK_TIMEOUT', default=20 * 60) # seconds
+LOCK_TIMEOUT = config('CENXIV_COMPILE_LOCK_TIMEOUT', default=20 * 60, cast=int) # seconds
 
 @shared_task
 def download_and_compile_arxiv(arxiv_idv):
