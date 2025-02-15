@@ -3,8 +3,9 @@ import json
 import logging
 from http import HTTPStatus
 import requests
-from decouple import config
 from requests.exceptions import HTTPError, RequestException
+from django.conf import settings
+from latextranslate import translate
 from .models import Article, Author, Category, Link
 from .translators import translator
 
@@ -14,7 +15,7 @@ from .translators import translator
 logger = logging.getLogger(__name__)
 
 
-tl = config('TRANSLATOR', default='google')
+tl = settings.TRANSLATOR
 
 chinese_week_days = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
 
@@ -90,6 +91,11 @@ def translate_and_save_article(result):
         return True
     except Article.DoesNotExist:
         try:
+            # text_translator = translate.TextTranslator(tl, 'en', 'zh-CN')
+            # latex_translator = translate.LatexTranslator(text_translator, debug=False, threads=0)
+
+            # title_cn = latex_translator.translate_full_latex(result.title, make_complete=False).strip()
+            # abstract_cn = latex_translator.translate_full_latex(result.summary, make_complete=False).strip()
             title_cn = translator(tl)(result.title)
             abstract_cn = translator(tl)(result.summary)
             comment_cn = None

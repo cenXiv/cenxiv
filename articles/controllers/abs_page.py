@@ -17,9 +17,10 @@ from dateutil import parser
 from dateutil.tz import tzutc
 from flask import request, url_for, current_app
 from werkzeug.exceptions import InternalServerError
-from decouple import config
+from latextranslate import translate
 
 from django.utils.translation import get_language
+from django.conf import settings
 
 import arxivapi  # The PyPI arxiv package
 
@@ -79,7 +80,7 @@ from ..translators import translator
 
 logger = logging.getLogger(__name__)
 
-tl = config('TRANSLATOR', default='google')
+tl = settings.TRANSLATOR
 
 Response = Tuple[Dict[str, Any], int, Dict[str, Any]]
 
@@ -155,6 +156,9 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         processing_group = group(download_and_compile_arxiv.s(f'{arxiv_id}v{v}') for v in range(1, latest_version+1))
         processing_group.apply_async()
 
+        # text_translator = translate.TextTranslator(tl, 'en', 'zh-CN')
+        # latex_translator = translate.LatexTranslator(text_translator, debug=False, threads=0)
+
         retries = 3
         retry = 0
         while True:
@@ -168,6 +172,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 break
             except Article.DoesNotExist:
                 try:
+                    # title_cn = latex_translator.translate_full_latex(result.title, make_complete=False).strip()
+                    # abstract_cn = latex_translator.translate_full_latex(result.summary, make_complete=False).strip()
                     title_cn = translator(tl)(result.title)
                     abstract_cn = translator(tl)(result.summary)
                     comment_cn = None
@@ -230,6 +236,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     result = list(client.results(search))[0]
 
                     try:
+                        # title_cn = latex_translator.translate_full_latex(result.title, make_complete=False).strip()
+                        # abstract_cn = latex_translator.translate_full_latex(result.summary, make_complete=False).strip()
                         title_cn = translator(tl)(result.title)
                         abstract_cn = translator(tl)(result.summary)
                         comment_cn = None

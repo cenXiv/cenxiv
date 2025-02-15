@@ -1,7 +1,6 @@
 import re
 import os
 import logging
-from decouple import config
 from celery import shared_task
 from latextranslate import translate_arxiv
 from django.core.cache import cache
@@ -9,8 +8,6 @@ from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
-
-LOCK_TIMEOUT = config('CENXIV_COMPILE_LOCK_TIMEOUT', default=20 * 60, cast=int) # seconds
 
 @shared_task
 def download_and_compile_arxiv(arxiv_idv):
@@ -29,7 +26,7 @@ def download_and_compile_arxiv(arxiv_idv):
     # 分布式锁机制
     lock_key = f'cenxiv:compile_lock:{arxiv_idv}'
     # 尝试获取锁（原子操作）
-    if not cache.add(lock_key, 'locked', timeout=LOCK_TIMEOUT):
+    if not cache.add(lock_key, 'locked', timeout=settings.CENXIV_COMPILE_LOCK_TIMEOUT):
         logger.info(f'Task for downloading and compiling arxiv:{arxiv_idv} is already being processed.')
         return
 

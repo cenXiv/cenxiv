@@ -152,7 +152,7 @@ cenXiv 是一个基于 Django 的电子预印本存档，旨在为用户提供�
 
 如有任何问题或建议，请通过 GitHub 的 Issues 页面提交，或联系项目维护者：
 
-- **邮箱**：sfzuo@bao.ac.com
+- **邮箱**：sfzuo@bao.ac.cn
 - **GitHub Discussions**：请访问 [cenXiv Discussions](https://github.com/cenXiv/cenxiv/discussions)
 
 感谢您的支持与贡献！
@@ -170,3 +170,8 @@ cenXiv 是一个基于 Django 的电子预印本存档，旨在为用户提供�
 ## 许可证
 
 本项目暂无许可证。
+
+## 赞赏与支持
+
+请用微信扫描下方的二维码进行赞赏，感谢你的支持！
+![赞赏码](https://github.com/cenXiv/cenxiv/blob/main/pictures/zanshang_code.png)

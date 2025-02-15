@@ -1,0 +1,11 @@
+{% extends 'articles/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Donate and Support" %}{% endblock %}
+
+{% block content %}
+  <h1>{% trans "Please use WeChat to scan the QR code below for donation. Thank you for your support!" %}</h1>
+
+  <img src="{% static 'images/zanshang_code.png' %}" alt={% trans "Donate" %} width="680" style="display: block; margin: 0 auto;" />
+{% endblock %}

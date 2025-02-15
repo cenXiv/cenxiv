@@ -1,7 +1,7 @@
 {% extends 'articles/base.html' %}
 {% load i18n %}
 
-{% block title %}No Chinese PDF{% endblock %}
+{% block title %}{% trans "No Chinese PDF" %}{% endblock %}
 
 {% block content %}
   <h1>{% blocktranslate %}Chinese full text PDF {{ arxiv_idv }}.pdf is unavailable.{% endblocktranslate %}</h1>

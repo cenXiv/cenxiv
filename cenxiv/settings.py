@@ -165,8 +165,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Path to save articles
 CENXIV_FILE_PATH = config('CENXIV_FILE_PATH')
+CENXIV_COMPILE_LOCK_TIMEOUT = config('CENXIV_COMPILE_LOCK_TIMEOUT', default=20 * 60, cast=int) # seconds
 
+# Translation
+TRANSLATOR = config('TRANSLATOR', default='google')
+
+
+# Cache
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
@@ -181,6 +188,13 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 5 * 60
 
 
+# RabbitMQ
+RABBITMQ_USER = config('RABBITMQ_USER', default='guest')
+RABBITMQ_PASSWORD = config('RABBITMQ_PASSWORD', default='guest')
+RABBITMQ_LOCATION = config('RABBITMQ_LOCATION', default='localhost:5672')
+
+
+# Logging
 LOG_LEVEL = config("LOG_LEVEL", default=logging.DEBUG)
 
 LOGGING = {

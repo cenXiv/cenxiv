@@ -51,4 +51,5 @@ urlpatterns = [
     path('bibtex/<path:arxiv_id>', views.bibtex, name='bibtex'),
     path('multi/', views.multi, name='multi'),
     path('multi/<path:path>', views.multi, name='multi_with_path'),
+    path('donate', views.donate, name='donate'),
 ]

@@ -713,3 +713,6 @@ def multi(request):
     # Construct the redirect URL
     redirect_url = f'https://arxiv.org/multi?group={group}&/form={form}'
     return HttpResponseRedirect(redirect_url)
+
+def donate(request):
+    return render(request, 'articles/donate.html', {})
