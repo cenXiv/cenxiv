@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-12 11:00+0800\n"
+"POT-Creation-Date: 2025-02-15 11:20+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,62 +66,62 @@ msgstr "日期"
 msgid "Validation"
 msgstr "验证"
 
-#: articles/controllers/archive_page/__init__.py:119
+#: articles/controllers/archive_page/__init__.py:120
 #: articles/controllers/archive_page/by_month_form.py:10
 msgid "01 (Jan)"
 msgstr "01 (1月)"
 
-#: articles/controllers/archive_page/__init__.py:120
+#: articles/controllers/archive_page/__init__.py:121
 #: articles/controllers/archive_page/by_month_form.py:11
 msgid "02 (Feb)"
 msgstr "02 (2月)"
 
-#: articles/controllers/archive_page/__init__.py:121
+#: articles/controllers/archive_page/__init__.py:122
 #: articles/controllers/archive_page/by_month_form.py:12
 msgid "03 (Mar)"
 msgstr "03 (3月)"
 
-#: articles/controllers/archive_page/__init__.py:122
+#: articles/controllers/archive_page/__init__.py:123
 #: articles/controllers/archive_page/by_month_form.py:13
 msgid "04 (Apr)"
 msgstr "04 (4月)"
 
-#: articles/controllers/archive_page/__init__.py:123
+#: articles/controllers/archive_page/__init__.py:124
 #: articles/controllers/archive_page/by_month_form.py:14
 msgid "05 (May)"
 msgstr "05 (5月)"
 
-#: articles/controllers/archive_page/__init__.py:124
+#: articles/controllers/archive_page/__init__.py:125
 #: articles/controllers/archive_page/by_month_form.py:15
 msgid "06 (Jun)"
 msgstr "06 (6月)"
 
-#: articles/controllers/archive_page/__init__.py:125
+#: articles/controllers/archive_page/__init__.py:126
 #: articles/controllers/archive_page/by_month_form.py:16
 msgid "07 (Jul)"
 msgstr "07 (7月)"
 
-#: articles/controllers/archive_page/__init__.py:126
+#: articles/controllers/archive_page/__init__.py:127
 #: articles/controllers/archive_page/by_month_form.py:17
 msgid "08 (Aug)"
 msgstr "08 (8月)"
 
-#: articles/controllers/archive_page/__init__.py:127
+#: articles/controllers/archive_page/__init__.py:128
 #: articles/controllers/archive_page/by_month_form.py:18
 msgid "09 (Sep)"
 msgstr "09 (9月)"
 
-#: articles/controllers/archive_page/__init__.py:128
+#: articles/controllers/archive_page/__init__.py:129
 #: articles/controllers/archive_page/by_month_form.py:19
 msgid "10 (Oct)"
 msgstr "10 (10月)"
 
-#: articles/controllers/archive_page/__init__.py:129
+#: articles/controllers/archive_page/__init__.py:130
 #: articles/controllers/archive_page/by_month_form.py:20
 msgid "11 (Nov)"
 msgstr "11 (11月)"
 
-#: articles/controllers/archive_page/__init__.py:130
+#: articles/controllers/archive_page/__init__.py:131
 #: articles/controllers/archive_page/by_month_form.py:21
 msgid "12 (Dec)"
 msgstr "12 (12月)"
@@ -1095,6 +1095,7 @@ msgid "Contribute"
 msgstr "贡献"
 
 #: articles/templates/articles/base.html:37
+#: articles/templates/articles/donate.html:10
 msgid "Donate"
 msgstr "赞助"
 
@@ -1339,6 +1340,16 @@ msgstr "自...以来的变化："
 msgid "Include abstracts: "
 msgstr "包括摘要："
 
+#: articles/templates/articles/donate.html:5
+msgid "Donate and Support"
+msgstr "赞助与支持"
+
+#: articles/templates/articles/donate.html:8
+msgid ""
+"Please use WeChat to scan the QR code below for donation. Thank you for your "
+"support!"
+msgstr "请用微信扫描下方的二维码进行赞赏，感谢你的支持！"
+
 #: articles/templates/articles/format.html:4
 #, python-format
 msgid "Format selector for %(arxiv_idv)s"
@@ -1577,6 +1588,10 @@ msgstr "会员与捐赠"
 #: articles/templates/articles/home.html:98
 msgid "Who We Are"
 msgstr "我们是谁"
+
+#: articles/templates/articles/no_cn_pdf.html:4
+msgid "No Chinese PDF"
+msgstr "无中文 PDF"
 
 #: articles/templates/articles/no_cn_pdf.html:7
 #, python-format
