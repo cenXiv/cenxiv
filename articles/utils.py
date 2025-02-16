@@ -5,7 +5,7 @@ from http import HTTPStatus
 import requests
 from requests.exceptions import HTTPError, RequestException
 from django.conf import settings
-from latextranslate import translate
+from latextranslate import process_latex, translate
 from .models import Article, Author, Category, Link
 from .translators import translator
 
@@ -84,6 +84,14 @@ def request_get(url, retries=3, retry_delay=1, max_retry_delay=60):
         logger.error(f"Failed to fetch URL: {url} after {retries} attempts.")
         return None # Return None to indicate failure
 
+def translate_latex_paragraph(text, tl):
+    tt, ro = process_latex.replace_latex_objects(text.replace('\n', ' '))
+    # ltt = translate.convert_to_latex(tt)
+    # ttt = translator(tl)(ltt)
+    # return translate.convert_from_latex(process_latex.recover_latex_objects(ttt, ro)[0])
+    ttt = translator(tl)(tt)
+    return process_latex.recover_latex_objects(ttt, ro)[0]
+
 def translate_and_save_article(result):
     arxiv_id, version = result.entry_id.split('/')[-1].split('v')
     try:
@@ -96,8 +104,8 @@ def translate_and_save_article(result):
 
             # title_cn = latex_translator.translate_full_latex(result.title, make_complete=False).strip()
             # abstract_cn = latex_translator.translate_full_latex(result.summary, make_complete=False).strip()
-            title_cn = translator(tl)(result.title)
-            abstract_cn = translator(tl)(result.summary)
+            title_cn = translate_latex_paragraph(result.title, tl)
+            abstract_cn = translate_latex_paragraph(result.summary, tl)
             comment_cn = None
             journal_ref_cn = None
             if result.comment:

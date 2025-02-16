@@ -17,7 +17,6 @@ from dateutil import parser
 from dateutil.tz import tzutc
 from flask import request, url_for, current_app
 from werkzeug.exceptions import InternalServerError
-from latextranslate import translate
 
 from django.utils.translation import get_language
 from django.conf import settings
@@ -74,7 +73,7 @@ from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
 from ..tasks import download_and_compile_arxiv
 from ..templatetags import article_filters
-from ..utils import get_translation_dict, request_get, chinese_week_days
+from ..utils import get_translation_dict, request_get, chinese_week_days, translate_latex_paragraph
 from ..translators import translator
 
 
@@ -174,8 +173,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                 try:
                     # title_cn = latex_translator.translate_full_latex(result.title, make_complete=False).strip()
                     # abstract_cn = latex_translator.translate_full_latex(result.summary, make_complete=False).strip()
-                    title_cn = translator(tl)(result.title)
-                    abstract_cn = translator(tl)(result.summary)
+                    title_cn = translate_latex_paragraph(result.title, tl)
+                    abstract_cn = translate_latex_paragraph(result.summary, tl)
                     comment_cn = None
                     journal_ref_cn = None
                     if result.comment:
@@ -238,8 +237,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     try:
                         # title_cn = latex_translator.translate_full_latex(result.title, make_complete=False).strip()
                         # abstract_cn = latex_translator.translate_full_latex(result.summary, make_complete=False).strip()
-                        title_cn = translator(tl)(result.title)
-                        abstract_cn = translator(tl)(result.summary)
+                        title_cn = translate_latex_paragraph(result.title, tl)
+                        abstract_cn = translate_latex_paragraph(result.summary, tl)
                         comment_cn = None
                         journal_ref_cn = None
                         if result.comment:
