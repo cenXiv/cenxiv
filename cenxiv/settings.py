@@ -194,6 +194,17 @@ RABBITMQ_PASSWORD = config('RABBITMQ_PASSWORD', default='guest')
 RABBITMQ_LOCATION = config('RABBITMQ_LOCATION', default='localhost:5672')
 
 
+# tencent
+TENCENT_SECRET_ID = config('TENCENT_SECRET_ID')
+TENCENT_SECRET_KEY = config('TENCENT_SECRET_KEY')
+
+
+# ollama
+OLLAMA_LOCATION = config('OLLAMA_LOCATION', default='http://localhost:11434')
+OLLAMA_MODEL = config('OLLAMA_MODEL')
+OLLAMA_MESSAGE_CONTENT_PREFIX = config('OLLAMA_MESSAGE_CONTENT_PREFIX')
+
+
 # Logging
 LOG_LEVEL = config("LOG_LEVEL", default=logging.DEBUG)
 

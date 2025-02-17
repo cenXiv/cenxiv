@@ -27,6 +27,8 @@ celery = "^5.4.0"
 psycopg = {extras = ["binary"], version = "^3.2.4"}
 uwsgi = "^2.0.28"
 django-db-connection-pool = {extras = ["postgresql"], version = "^1.2.5"}
+ollama = "^0.4.7"
+tencentcloud-sdk-python = "^3.0.1320"
 
 [build-system]
 requires = ["poetry-core"]

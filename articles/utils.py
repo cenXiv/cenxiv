@@ -109,9 +109,9 @@ def translate_and_save_article(result):
             comment_cn = None
             journal_ref_cn = None
             if result.comment:
-                comment_cn = translator(tl)(result.comment)
+                comment_cn = translator(tl)(result.comment.replace('\n', ' '))
             if result.journal_ref:
-                journal_ref_cn = translator(tl)(result.journal_ref)
+                journal_ref_cn = translator(tl)(result.journal_ref.replace('\n', ' '))
             # title_cn = '中文标题'
             # abstract_cn = '中文摘要'
             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
