@@ -16,6 +16,7 @@ from http import HTTPStatus
 from werkzeug.exceptions import BadRequest
 
 from django.urls import reverse
+from django.conf import settings
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
@@ -151,8 +152,9 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
         # get arxiv_idv for all paper_ids
         arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
         # use celery to download and compile pdfs asynchronously
-        processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
-        processing_group.apply_async()
+        if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
+            processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
+            processing_group.apply_async()
 
         retry = 0
         while results:

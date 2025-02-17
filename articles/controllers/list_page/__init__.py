@@ -69,6 +69,7 @@ from browse.services.listing import Listing, ListingNew, NotModifiedResponse, ge
 from browse.formatting.latexml import get_latexml_url, get_latexml_urls_for_articles
 
 from django.urls import reverse
+from django.conf import settings
 from django.http import HttpResponseBadRequest
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
@@ -734,8 +735,9 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
     # get arxiv_idv for all paper_ids
     arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
     # use celery to download and compile pdfs asynchronously
-    processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
-    processing_group.apply_async()
+    if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
+        processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
+        processing_group.apply_async()
 
     retry = 0
     while True:
@@ -996,8 +998,9 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
     # get arxiv_idv for all paper_ids
     arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
     # use celery to download and compile pdfs asynchronously
-    processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
-    processing_group.apply_async()
+    if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
+        processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
+        processing_group.apply_async()
 
     retry = 0
     while results:
@@ -1232,8 +1235,9 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
     # get arxiv_idv for all paper_ids
     arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
     # use celery to download and compile pdfs asynchronously
-    processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
-    processing_group.apply_async()
+    if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
+        processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
+        processing_group.apply_async()
 
     retry = 0
     while results:

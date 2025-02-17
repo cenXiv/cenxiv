@@ -152,8 +152,9 @@ def get_abs_page(request, arxiv_id: str) -> Response:
             request_version = latest_version
 
         # use celery to download and compile pdfs asynchronously
-        processing_group = group(download_and_compile_arxiv.s(f'{arxiv_id}v{v}') for v in range(1, latest_version+1))
-        processing_group.apply_async()
+        if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
+            processing_group = group(download_and_compile_arxiv.s(f'{arxiv_id}v{v}') for v in range(1, latest_version+1))
+            processing_group.apply_async()
 
         # text_translator = translate.TextTranslator(tl, 'en', 'zh-CN')
         # latex_translator = translate.LatexTranslator(text_translator, debug=False, threads=0)
