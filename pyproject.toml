@@ -29,6 +29,7 @@ uwsgi = "^2.0.28"
 django-db-connection-pool = {extras = ["postgresql"], version = "^1.2.5"}
 ollama = "^0.4.7"
 tencentcloud-sdk-python = "^3.0.1320"
+alibabacloud-alimt20181012 = "^1.4.0"
 
 [build-system]
 requires = ["poetry-core"]

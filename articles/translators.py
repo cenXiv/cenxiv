@@ -5,7 +5,7 @@ def translator(name):
     if name == 'google':
         import mtranslate as mt
         return lambda text: mt.translate(text, 'zh-CN', 'en')
-    elif name in ['baidu', 'alibaba']:
+    elif name == 'baidu':
         import translators as ts
         return lambda text: ts.translate_text(text, translator=name, from_language='en', to_language='zh')
     elif name == 'tencent':
@@ -15,6 +15,13 @@ def translator(name):
         secretKey = settings.TENCENT_SECRET_KEY
         tc_translator = tcTranslator.TencentCloudTranslator(secretId, secretKey)
         return lambda text: tc_translator.cloud_translate(text, "en", "zh")
+    elif name == 'alibaba':
+        from .alibabaCloudTranslator import AlibabaCloudTranslator
+
+        secretId = settings.ALIBABA_SECRET_ID
+        secretKey = settings.ALIBABA_SECRET_KEY
+        ali_translator = AlibabaCloudTranslator(secretId, secretKey)
+        return lambda text: ali_translator.translate(text, "en", "zh")
     elif name == 'ollama':
         from ollama import Client
 
