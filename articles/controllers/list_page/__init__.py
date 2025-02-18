@@ -38,6 +38,7 @@ C: show_abstracts only if listing_type='new'
 Differences from legacy arxiv:
 Doesn't handle the /view path.
 """
+import time
 import calendar
 import logging
 import math
@@ -753,6 +754,10 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
             break
 
         results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+
+        delay = 1.0 * (2**retry)
+        time.sleep(delay)
+
         retry += 1
 
 
@@ -1016,6 +1021,10 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
             break
 
         results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+
+        delay = 1.0 * (2**retry)
+        time.sleep(delay)
+
         retry += 1
 
 
@@ -1253,6 +1262,10 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
             break
 
         results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+
+        delay = 1.0 * (2**retry)
+        time.sleep(delay)
+
         retry += 1
 
 

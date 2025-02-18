@@ -2,6 +2,7 @@
 Allows users to access something equivalent to the /new page for up to 90 days back
 """
 import re
+import time
 import itertools
 import logging
 from typing import Tuple, Union, Dict, Any, List
@@ -170,6 +171,10 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
                 break
 
             results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+
+            delay = 1.0 * (2**retry)
+            time.sleep(delay)
+
             retry += 1
 
 
