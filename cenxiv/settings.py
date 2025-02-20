@@ -195,6 +195,10 @@ RABBITMQ_PASSWORD = config('RABBITMQ_PASSWORD', default='guest')
 RABBITMQ_LOCATION = config('RABBITMQ_LOCATION', default='localhost:5672')
 
 
+# deepl
+DEEPLX_API = config('DEEPLX_API', default="http://127.0.0.1:1188/translate")
+
+
 # tencent
 TENCENT_SECRET_ID = config('TENCENT_SECRET_ID', default='')
 TENCENT_SECRET_KEY = config('TENCENT_SECRET_KEY', default='')
