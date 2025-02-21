@@ -16,6 +16,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.http.response import HttpResponsePermanentRedirect
 from django.views.decorators.http import require_http_methods
 
+import arxivapi  # The PyPI arxiv package
+
 from arxiv.identifier import Identifier, IdentifierException#, IdentifierIsArchiveException
 from arxiv.taxonomy.definitions import GROUPS, CATEGORIES
 from arxiv.integration.fastly.headers import add_surrogate_key
@@ -432,8 +434,12 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
     version = 1
     if 'v' in arxiv_id:
         arxiv_id, version = arxiv_id.split('v')
-    if version:
-        arxiv_idv = f'{arxiv_id}v{version}'
+    else:
+        client = arxivapi.Client()
+        search = arxivapi.Search(id_list=[arxiv_id])
+        result = list(client.results(search))[0]
+        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+    arxiv_idv = f'{arxiv_id}v{version}'
     cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/arxiv{arxiv_id}/v{version}/cn_pdf/{arxiv_idv}.pdf'
 
     if os.path.isfile(cn_pdf_file):
