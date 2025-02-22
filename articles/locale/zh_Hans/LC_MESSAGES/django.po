@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-15 11:20+0800\n"
+"POT-Creation-Date: 2025-02-22 08:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -131,37 +131,37 @@ msgid "all months"
 msgstr "所有月份"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:531
-#: articles/controllers/catchup_page.py:535
-#: articles/controllers/list_page/__init__.py:505
-#: articles/controllers/list_page/__init__.py:511
+#: articles/controllers/catchup_page.py:538
+#: articles/controllers/catchup_page.py:542
+#: articles/controllers/list_page/__init__.py:507
+#: articles/controllers/list_page/__init__.py:513
 msgid "New submissions"
 msgstr "新提交"
 
-#: articles/controllers/catchup_page.py:543
-#: articles/controllers/catchup_page.py:545
-#: articles/controllers/list_page/__init__.py:518
-#: articles/controllers/list_page/__init__.py:524
+#: articles/controllers/catchup_page.py:550
+#: articles/controllers/catchup_page.py:552
+#: articles/controllers/list_page/__init__.py:520
+#: articles/controllers/list_page/__init__.py:526
 msgid "Cross-lists"
 msgstr "交叉列表"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:555
-#: articles/controllers/catchup_page.py:557
-#: articles/controllers/list_page/__init__.py:530
-#: articles/controllers/list_page/__init__.py:536
+#: articles/controllers/catchup_page.py:562
+#: articles/controllers/catchup_page.py:564
+#: articles/controllers/list_page/__init__.py:532
+#: articles/controllers/list_page/__init__.py:538
 msgid "Replacements"
 msgstr "替换"
 
-#: articles/controllers/list_page/__init__.py:629
+#: articles/controllers/list_page/__init__.py:631
 msgid "New submissions "
 msgstr "新提交 "
 
-#: articles/controllers/list_page/__init__.py:639
+#: articles/controllers/list_page/__init__.py:641
 msgid "Cross submissions "
 msgstr "交叉提交 "
 
-#: articles/controllers/list_page/__init__.py:649
+#: articles/controllers/list_page/__init__.py:651
 msgid "Replacement submissions "
 msgstr "替换提交 "
 
@@ -1572,6 +1572,10 @@ msgstr "见"
 #: articles/templates/articles/home.html:77
 msgid "detailed description"
 msgstr "详细描述"
+
+#: articles/templates/articles/home.html:93
+msgid "About arXiv"
+msgstr "关于 arXiv"
 
 #: articles/templates/articles/home.html:95
 msgid "General information"
