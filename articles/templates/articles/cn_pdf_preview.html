@@ -1,0 +1,35 @@
+{% extends "articles/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Chinese PDF Preview" %} - {{ arxiv_idv }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h2>{% trans "Chinese PDF is available!" %}</h2>
+            <p class="lead">{% trans "Paper ID:" %} {{ arxiv_idv }}</p>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <p>{% trans "If you find our translation helpful, please consider supporting our work:" %}</p>
+                    <img src="{% static image_path %}" alt="{% trans 'Support Code' %}" class="img-fluid mb-3" width="680" style="display: block; margin: 0 auto;">
+                    <p class="text-muted">{% trans "Your support helps us continue providing high-quality Chinese translations of arXiv papers." %}</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <a href="?show_pdf=true" class="btn btn-primary btn-lg">
+                    {% trans "View Chinese PDF" %}
+                </a>
+                {% trans "or" %}
+                <a href="{% url 'articles:abstract' arxiv_idv %}" class="btn btn-outline-secondary">
+                    {% trans "Back to Abstract" %}
+                </a>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

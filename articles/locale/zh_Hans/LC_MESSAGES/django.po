@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-01 14:49+0800\n"
+"POT-Creation-Date: 2025-03-01 16:33+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -380,6 +380,7 @@ msgstr "引用方式："
 
 #: articles/templates/abs/abs.html:196
 #: articles/templates/articles/base.html:162
+#: articles/templates/articles/cn_pdf_preview.html:26
 #: articles/templates/articles/format.html:109
 msgid "or"
 msgstr "或者"
@@ -465,6 +466,7 @@ msgid "Unavailable"
 msgstr "不可用"
 
 #: articles/templates/abs/abs.html:334
+#: articles/templates/articles/cn_pdf_preview.html:24
 msgid "View Chinese PDF"
 msgstr "查看中文 PDF"
 
@@ -1353,6 +1355,37 @@ msgstr "自...以来的变化："
 #: articles/templates/articles/catchup_form.html:105
 msgid "Include abstracts: "
 msgstr "包括摘要："
+
+#: articles/templates/articles/cn_pdf_preview.html:5
+msgid "Chinese PDF Preview"
+msgstr "查看中文 PDF"
+
+#: articles/templates/articles/cn_pdf_preview.html:11
+msgid "Chinese PDF is available!"
+msgstr "有中文全文 PDF。"
+
+#: articles/templates/articles/cn_pdf_preview.html:12
+msgid "Paper ID:"
+msgstr "文章 ID："
+
+#: articles/templates/articles/cn_pdf_preview.html:16
+msgid ""
+"If you find our translation helpful, please consider supporting our work:"
+msgstr "如果您发现我们的翻译有帮助，请考虑支持我们的工作："
+
+#: articles/templates/articles/cn_pdf_preview.html:17
+msgid "Support Code"
+msgstr "赞赏码"
+
+#: articles/templates/articles/cn_pdf_preview.html:18
+msgid ""
+"Your support helps us continue providing high-quality Chinese translations "
+"of arXiv papers."
+msgstr "您的支持帮助我们继续提供高质量的 arXiv 论文中文翻译。"
+
+#: articles/templates/articles/cn_pdf_preview.html:28
+msgid "Back to Abstract"
+msgstr "返回摘要页"
 
 #: articles/templates/articles/donate.html:5
 msgid "Donate and Support"

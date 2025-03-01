@@ -422,12 +422,19 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
         HttpResponse with a message indicating the availability of the Chinese PDF.
     """
     # Strip any query parameters by redirecting
-    if request.GET:
-        url_name = 'articles:pdf_with_archive' if archive else 'articles:pdf'
+    # 如果有查询参数，但不是只有show_pdf
+    if request.GET and not (len(request.GET) == 1 and 'show_pdf' in request.GET):
+        url_name = 'articles:cn_pdf_with_archive' if archive else 'articles:cn_pdf'
         kwargs = {'arxiv_id': arxiv_id}
         if archive:
             kwargs['archive'] = archive
-        return redirect(reverse(url_name, kwargs=kwargs), permanent=True)
+
+        # 如果有show_pdf参数，保留它
+        if 'show_pdf' in request.GET:
+            redirect_url = reverse(url_name, kwargs=kwargs) + '?show_pdf=' + request.GET['show_pdf']
+            return redirect(redirect_url, permanent=True)
+        else:
+            return redirect(reverse(url_name, kwargs=kwargs), permanent=True)
 
     arxiv_id = request.path.split('/')[-1]
     arxiv_idv = arxiv_id
@@ -443,8 +450,19 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
     cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/arxiv{arxiv_id}/v{version}/cn_pdf/{arxiv_idv}.pdf'
 
     if os.path.isfile(cn_pdf_file):
-        # open and display the pdf file
-        return HttpResponse(open(cn_pdf_file, 'rb'), content_type='application/pdf')
+        # 显示赞赏码图片和可点击文本，点击后显示PDF文件
+        context = {
+            'arxiv_idv': arxiv_idv,
+            'image_path': 'images/zanshang_code.png'
+        }
+
+        # 检查是否有请求参数show_pdf=true
+        if request.GET.get('show_pdf') == 'true':
+            # 如果请求参数存在，则显示PDF文件
+            return HttpResponse(open(cn_pdf_file, 'rb'), content_type='application/pdf')
+        else:
+            # 否则显示带有图片和链接的页面
+            return render(request, "articles/cn_pdf_preview.html", context)
 
     # return HttpResponse(_('Chinese PDF is coming soon...'))
     return render(request, "articles/no_cn_pdf.html", {'arxiv_idv': arxiv_idv})
