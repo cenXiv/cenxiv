@@ -8,7 +8,20 @@ from django.utils.html import escape
 from django.contrib.admin import DateFieldListFilter
 from django.contrib.admin.models import LogEntry, CHANGE
 from django.contrib.contenttypes.models import ContentType
+from django.forms.widgets import TextInput, Textarea
 
+
+class TitleCnWidget(TextInput):
+    template_name = 'admin/articles/title_cn_widget.html'
+
+    class Media:
+        js = ('admin/js/title_cn_preview.js',)
+
+class AbstractCnWidget(Textarea):
+    template_name = 'admin/articles/abstract_cn_widget.html'
+
+    class Media:
+        js = ('admin/js/abstract_cn_preview.js',)
 
 # class AuthorInline(admin.StackedInline):
 #     model = Author
@@ -34,7 +47,8 @@ class ArticleAdmin(admin.ModelAdmin):
         'authors__name',  # 支持作者搜索
         'primary_category'
     ]
-    search_help_text = "支持按文章ID、标题、摘要、作者和分类搜索"
+    # search_help_text = "支持按文章ID、标题、摘要、作者和分类搜索"
+    search_help_text = _("Supports searching by article ID, title, abstract, author and category")
     show_facets = admin.ShowFacets.ALWAYS
     # inlines = [AuthorInline, CategoryInline, LinkInline]
 
@@ -88,7 +102,8 @@ class ArticleAdmin(admin.ModelAdmin):
                 object_id=obj.pk,
                 object_repr=str(obj),
                 action_flag=CHANGE,
-                change_message=f"修改了文章 {obj.entry_id} 的翻译"
+                # change_message=f"修改了文章 {obj.entry_id} 的翻译"
+                change_message=_(f"Modified the translation of article {obj.entry_id}")
             )
 
     # Define the fieldsets for the admin form
@@ -141,3 +156,17 @@ class ArticleAdmin(admin.ModelAdmin):
             })
         }
     }
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'title_cn':
+            kwargs['widget'] = TitleCnWidget(attrs={
+                'style': 'width: 1000px;',
+                'class': 'vLargeTextField'
+            })
+        elif db_field.name == 'abstract_cn':
+            kwargs['widget'] = AbstractCnWidget(attrs={
+                'rows': 10,
+                'cols': 100,
+                'class': 'vLargeTextField'
+            })
+        return super().formfield_for_dbfield(db_field, **kwargs)
