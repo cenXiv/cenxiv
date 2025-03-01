@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-22 08:33+0800\n"
+"POT-Creation-Date: 2025-03-01 14:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: articles/admin.py:67 articles/admin.py:102 articles/models.py:49
+#: articles/admin.py:51
+msgid "Supports searching by article ID, title, abstract, author and category"
+msgstr "支持按文章ID、标题、摘要、作者和分类搜索"
+
+#: articles/admin.py:81 articles/admin.py:117 articles/models.py:49
 msgid "Authors"
 msgstr "作者"
 
-#: articles/admin.py:72 articles/models.py:61
+#: articles/admin.py:86 articles/models.py:61
 msgid "Categories"
 msgstr "类别"
 
-#: articles/admin.py:79 articles/models.py:73
+#: articles/admin.py:93 articles/models.py:73
 msgid "Links"
 msgstr "链接"
 
-#: articles/admin.py:99 articles/templates/articles/base.html:81
+#: articles/admin.py:106
+#, python-brace-format
+msgid "Modified the translation of article {obj.entry_id}"
+msgstr "修改了文章 {obj.entry_id} 的翻译"
+
+#: articles/admin.py:114 articles/templates/articles/base.html:81
 msgid "Title"
 msgstr "标题"
 
-#: articles/admin.py:105 articles/templates/abs/labs_tabs.html:9
+#: articles/admin.py:120 articles/templates/abs/labs_tabs.html:9
 #: articles/templates/articles/base.html:83
 #: articles/templates/articles/catchup.html:77
 #: articles/templates/list/month.html:19 articles/templates/list/new.html:38
@@ -42,27 +51,27 @@ msgstr "标题"
 msgid "Abstract"
 msgstr "摘要"
 
-#: articles/admin.py:108
+#: articles/admin.py:123
 msgid "Comment"
 msgstr "评论"
 
-#: articles/admin.py:111
+#: articles/admin.py:126
 msgid "Journal Ref"
 msgstr "期刊参考"
 
-#: articles/admin.py:114 articles/models.py:60
+#: articles/admin.py:129 articles/models.py:60
 msgid "Category"
 msgstr "类别"
 
-#: articles/admin.py:117 articles/models.py:72
+#: articles/admin.py:132 articles/models.py:72
 msgid "Link"
 msgstr "链接"
 
-#: articles/admin.py:120
+#: articles/admin.py:135
 msgid "Dates"
 msgstr "日期"
 
-#: articles/admin.py:123
+#: articles/admin.py:138
 msgid "Validation"
 msgstr "验证"
 
@@ -930,6 +939,11 @@ msgstr "有一个为 arXiv 社区增加价值的项目想法吗？"
 #: articles/templates/abs/labs_tabs.html:363
 msgid "Learn more about arXivLabs"
 msgstr "了解更多关于 arXivLabs 的信息"
+
+#: articles/templates/admin/articles/abstract_cn_widget.html:5
+#: articles/templates/admin/articles/title_cn_widget.html:5
+msgid "View math"
+msgstr "查看数学"
 
 #: articles/templates/archive/archive_list_all.html:5
 #: articles/templates/archive/archive_list_all.html:8
