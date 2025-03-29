@@ -449,12 +449,13 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
     arxiv_idv = f'{arxiv_id}v{version}'
     cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/arxiv{arxiv_id}/v{version}/cn_pdf/{arxiv_idv}.pdf'
 
+    context = {
+        'arxiv_idv': arxiv_idv,
+        'image_path': 'images/zanshang_code.png'
+    }
+
     if os.path.isfile(cn_pdf_file):
         # 显示赞赏码图片和可点击文本，点击后显示PDF文件
-        context = {
-            'arxiv_idv': arxiv_idv,
-            'image_path': 'images/zanshang_code.png'
-        }
 
         # 检查是否有请求参数show_pdf=true
         if request.GET.get('show_pdf') == 'true':
@@ -465,7 +466,7 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
             return render(request, "articles/cn_pdf_preview.html", context)
 
     # return HttpResponse(_('Chinese PDF is coming soon...'))
-    return render(request, "articles/no_cn_pdf.html", {'arxiv_idv': arxiv_idv})
+    return render(request, "articles/no_cn_pdf.html", context)
 
 def html(request, arxiv_id: str, archive: str = None):
     """Get HTML for article.

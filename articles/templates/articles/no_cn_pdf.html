@@ -1,4 +1,5 @@
 {% extends 'articles/base.html' %}
+{% load static %}
 {% load i18n %}
 
 {% block title %}{% trans "No Chinese PDF" %}{% endblock %}
@@ -10,5 +11,19 @@
       {% url 'articles:pdf' arxiv_idv as pdf_url %}
       {% blocktranslate %}The requested Chinese full text PDF {{ arxiv_idv }}.pdf is currently unavailable. You can either wait for some time and try accessing it again, or you can access the <a href="{{ pdf_url }}">English full text PDF</a> instead.{% endblocktranslate %}
   </p>
+  <p>{% trans "To make our translations more helpful to you, please consider supporting our work. You can use WeChat to scan the QR code below to sponsor or" %}<a href="https://github.com/cenXiv/cenxiv" target="_blank" rel="noopener noreferrer">{% trans "help us do better." %}</a></p>
+  <img src="{% static image_path %}" alt="{% trans 'Support Code' %}" class="img-fluid mb-3" width="680" style="display: block; margin: 0 auto;">
+  <p class="text-muted">{% trans "Your support helps us providing more high-quality Chinese translations of arXiv papers." %}</p>
+
+  <div class="mt-4">
+      <a href="{{ pdf_url }}" class="btn btn-primary btn-lg">
+          {% trans "View English PDF" %}
+      </a>
+      {% trans "or" %}
+      <a href="{% url 'articles:abstract' arxiv_idv %}" class="btn btn-outline-secondary">
+          {% trans "Back to Abstract" %}
+      </a>
+  </div>
+
 
 {% endblock %}

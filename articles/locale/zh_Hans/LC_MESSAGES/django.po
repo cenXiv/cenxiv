@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-01 16:33+0800\n"
+"POT-Creation-Date: 2025-03-29 15:47+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -380,8 +380,9 @@ msgstr "引用方式："
 
 #: articles/templates/abs/abs.html:196
 #: articles/templates/articles/base.html:162
-#: articles/templates/articles/cn_pdf_preview.html:26
+#: articles/templates/articles/cn_pdf_preview.html:27
 #: articles/templates/articles/format.html:109
+#: articles/templates/articles/no_cn_pdf.html:22
 msgid "or"
 msgstr "或者"
 
@@ -466,7 +467,7 @@ msgid "Unavailable"
 msgstr "不可用"
 
 #: articles/templates/abs/abs.html:334
-#: articles/templates/articles/cn_pdf_preview.html:24
+#: articles/templates/articles/cn_pdf_preview.html:25
 msgid "View Chinese PDF"
 msgstr "查看中文 PDF"
 
@@ -1370,20 +1371,36 @@ msgstr "文章 ID："
 
 #: articles/templates/articles/cn_pdf_preview.html:16
 msgid ""
-"If you find our translation helpful, please consider supporting our work:"
-msgstr "如果您发现我们的翻译有帮助，请考虑支持我们的工作："
+"The website is currently in the trial operation stage, and all full-text "
+"PDFs in Chinese are available free of charge."
+msgstr "当前网站处在试运行阶段，所有中文全文 PDF 皆可免费获取。"
 
 #: articles/templates/articles/cn_pdf_preview.html:17
+msgid ""
+"If our translations are helpful to you, please consider supporting our work. "
+"You can use WeChat to scan the QR code below to sponsor or"
+msgstr ""
+"如果我们的翻译对您有帮助，请考虑支持我们的工作。您可以使用微信扫描下方的二维"
+"码进行赞助或者"
+
+#: articles/templates/articles/cn_pdf_preview.html:17
+#: articles/templates/articles/no_cn_pdf.html:14
+msgid "help us do better."
+msgstr "帮助我们做的更好。"
+
+#: articles/templates/articles/cn_pdf_preview.html:18
+#: articles/templates/articles/no_cn_pdf.html:15
 msgid "Support Code"
 msgstr "赞赏码"
 
-#: articles/templates/articles/cn_pdf_preview.html:18
+#: articles/templates/articles/cn_pdf_preview.html:19
 msgid ""
 "Your support helps us continue providing high-quality Chinese translations "
 "of arXiv papers."
 msgstr "您的支持帮助我们继续提供高质量的 arXiv 论文中文翻译。"
 
-#: articles/templates/articles/cn_pdf_preview.html:28
+#: articles/templates/articles/cn_pdf_preview.html:29
+#: articles/templates/articles/no_cn_pdf.html:24
 msgid "Back to Abstract"
 msgstr "返回摘要页"
 
@@ -1395,7 +1412,7 @@ msgstr "赞助与支持"
 msgid ""
 "Please use WeChat to scan the QR code below for donation. Thank you for your "
 "support!"
-msgstr "请用微信扫描下方的二维码进行赞赏，感谢你的支持！"
+msgstr "请用微信扫描下方的二维码进行赞赏，感谢您的支持！"
 
 #: articles/templates/articles/format.html:4
 #, python-format
@@ -1640,16 +1657,16 @@ msgstr "会员与捐赠"
 msgid "Who We Are"
 msgstr "我们是谁"
 
-#: articles/templates/articles/no_cn_pdf.html:4
+#: articles/templates/articles/no_cn_pdf.html:5
 msgid "No Chinese PDF"
 msgstr "无中文 PDF"
 
-#: articles/templates/articles/no_cn_pdf.html:7
+#: articles/templates/articles/no_cn_pdf.html:8
 #, python-format
 msgid "Chinese full text PDF %(arxiv_idv)s.pdf is unavailable."
 msgstr "暂无中文全文 PDF %(arxiv_idv)s.pdf。"
 
-#: articles/templates/articles/no_cn_pdf.html:11
+#: articles/templates/articles/no_cn_pdf.html:12
 #, python-format
 msgid ""
 "The requested Chinese full text PDF %(arxiv_idv)s.pdf is currently "
@@ -1659,6 +1676,24 @@ msgid ""
 msgstr ""
 "暂无请求的中文全文 PDF %(arxiv_idv)s.pdf。您可以稍等一段时间再试，或者您可以"
 "访问<a href=\"%(pdf_url)s\">英文全文 PDF</a>。"
+
+#: articles/templates/articles/no_cn_pdf.html:14
+msgid ""
+"To make our translations more helpful to you, please consider supporting our "
+"work. You can use WeChat to scan the QR code below to sponsor or"
+msgstr ""
+"为了让我们的翻译更好地帮助到您，请考虑支持我们的工作。您可以使用微信扫描下方的二维"
+"码进行赞助或者"
+
+#: articles/templates/articles/no_cn_pdf.html:16
+msgid ""
+"Your support helps us providing more high-quality Chinese translations of "
+"arXiv papers."
+msgstr "您的支持帮助我们提供更多高质量的 arXiv 论文中文翻译。"
+
+#: articles/templates/articles/no_cn_pdf.html:20
+msgid "View English PDF"
+msgstr "查看英文 PDF"
 
 #: articles/templates/articles/year.html:18
 #, python-format

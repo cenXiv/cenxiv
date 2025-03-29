@@ -85,12 +85,16 @@ def request_get(url, retries=3, retry_delay=1, max_retry_delay=60):
         return None # Return None to indicate failure
 
 def translate_latex_paragraph(text, tl):
-    tt, ro = process_latex.replace_latex_objects(text.replace('\n', ' '))
-    # ltt = translate.convert_to_latex(tt)
-    # ttt = translator(tl)(ltt)
-    # return translate.convert_from_latex(process_latex.recover_latex_objects(ttt, ro)[0])
-    ttt = translator(tl)(tt)
-    return process_latex.recover_latex_objects(ttt, ro)[0]
+    # tt, ro = process_latex.replace_latex_objects(text.replace('\n', ' '))
+    # # ltt = translate.convert_to_latex(tt)
+    # # ttt = translator(tl)(ltt)
+    # # return translate.convert_from_latex(process_latex.recover_latex_objects(ttt, ro)[0])
+    # ttt = translator(tl)(tt)
+    # return process_latex.recover_latex_objects(ttt, ro)[0]
+
+    text_translator = translate.TextTranslator('google', 'zh', 'en')
+    latex_translator = translate.LatexTranslator(text_translator)
+    return latex_translator.translate_full_latex(text, make_complete=False).strip()
 
 def translate_and_save_article(result):
     arxiv_id, version = result.entry_id.split('/')[-1].split('v')
