@@ -21,7 +21,9 @@
 {% block content %}
 <div id='content-inner'>
 <div id='dlpage'>
-  <h1>{{ translation_dict|dict_get_key:list_ctx_name }}</h1>
+  {% block list_ctx %}
+    <h1>{{ translation_dict|dict_get_key:list_ctx_name }}</h1>
+  {% endblock %}
 
   {% block list_index %}
     {# empty by default and intended to be overridden in your templates #}

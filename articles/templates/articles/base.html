@@ -27,9 +27,11 @@
         </div>
 
         <div class="column" style="text-align: center;">
-          <div style="display: inline-block; border: 2px solid red; padding: 10px; color: red;">
-            {% trans "This website is in trial operation, support us!" %}
-          </div>
+          <a href="{% url 'articles:donate' %}" style="text-decoration: none;">
+            <div style="display: inline-block; border: 2px solid red; padding: 10px; color: red;">
+              {% trans "This website is in trial operation, support us!" %}
+            </div>
+          </a>
         </div>
 
         <div class="column" id="support-ack">

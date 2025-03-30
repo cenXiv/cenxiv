@@ -1,0 +1,95 @@
+{% extends "list/base.html" %}
+{% load i18n %}
+
+
+{% block list_ctx %}
+{% endblock %}
+
+{% block list_index %}
+<h2>{% blocktranslate %}All available Chinese PDFs{% endblocktranslate %}</h2>
+{% endblock %}
+
+{% block items %}
+    <dl id='articles'>
+
+    {% if listings|length == 0 %}
+        <p>{% trans "No Chinese PDFs yet." %}</p>
+    {% endif %}
+
+    {% for item in listings %}
+        {% with item.article as article %}
+        <dt>
+          <a name='item{{ item.list_index }}'>[{{ item.list_index }}]</a>
+          <a href="{% url 'articles:abstract' article.arxiv_id %}" title="{% trans 'Abstract' %}" id="{{ article.arxiv_id }}">
+            arXiv:{{ article.arxiv_id }}
+          </a>
+            {% if item.listingType == 'cross' %}
+              ({% trans "cross-list from" %} {{ item.primary }})
+            {% endif %}
+            {% if item.listingType == 'rep' %}
+              ({% trans "replaced" %})
+            {% endif %}
+
+          [<a href="{% url 'articles:cn_pdf' article.arxiv_id_v %}" title="{% trans 'Download Chinese PDF' %}" id="cn-pdf-{{ article.arxiv_id }}" aria-labelledby="cn-pdf-{{ article.arxiv_id }}">{% trans 'cn-pdf' %}</a>,
+          <a href="{% url 'articles:pdf' article.arxiv_id_v %}" title="{% trans 'Download PDF' %}" id="pdf-{{ article.arxiv_id }}" aria-labelledby="pdf-{{ article.arxiv_id }}">pdf</a>]
+        </dt>
+        <dd>
+          <div class='meta'>
+            <div class='list-title mathjax'><span class='descriptor'>{% trans "Title:" %}</span>
+              {{ article.title }}
+              <button id="toggle-title-{{ article.arxiv_id }}" type="button">{{ article.show_title_text }}</button>
+            </div>
+            <div class='list-title mathjax' id="title-other-language-{{ article.arxiv_id }}" style="display: none;"><span class='descriptor'>{% trans "Title:" %}</span>
+              {{ article.title_other_language }}
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const toggleButton = document.getElementById('toggle-title-{{ article.arxiv_id }}');
+                    const titleOtherLanguage = document.getElementById('title-other-language-{{ article.arxiv_id }}');
+
+                    toggleButton.addEventListener('click', function() {
+                        if (titleOtherLanguage.style.display === 'none') {
+                            titleOtherLanguage.style.display = 'block'; // Show the title
+                            toggleButton.textContent = '{{ article.hide_title_text }}';
+                        } else {
+                            titleOtherLanguage.style.display = 'none'; // Hide the title
+                            toggleButton.textContent = '{{ article.show_title_text }}';
+                        }
+                    });
+                });
+            </script>
+            {{ article.authors_list|safe }}
+
+            {% if article.comments %}
+            <div class='list-comments mathjax'><span class='descriptor'>{% trans "Comments:" %}</span>
+              {{ article.comments }}
+            </div>
+            {% endif %}
+
+            {% if article.journal_ref %}
+            <div class='list-journal-ref'><span class='descriptor'>{% trans "Journal-ref:" %}</span>
+              {{ article.journal_ref }}
+            </div>
+            {% endif %}
+
+            <div class='list-subjects'><span class='descriptor'>{% trans "Subjects:" %}</span>
+              <span class="primary-subject">{{ article.primary_display }}</span>
+              {% if article.secondary_categories %}
+                {% for category in article.secondaries_display %}
+                    ; {{ category }}
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            {% if list_type == 'new' %}
+            <p class='mathjax'>
+              {{ article.abstract }}
+            </p>
+            {% endif %}
+          </div>
+        </dd>
+        {% endwith %}
+
+    {% endfor %}
+    </dl>
+{% endblock %}

@@ -39,6 +39,7 @@ Differences from legacy arxiv:
 Doesn't handle the /view path.
 """
 import time
+import glob
 import calendar
 import logging
 import math
@@ -104,7 +105,8 @@ type_to_template = {
     'recent': 'list/recent.html',
     'current': 'list/month.html',
     'month': 'list/month.html',
-    'year': 'list/year.html'
+    'year': 'list/year.html',
+    'all': 'list/all.html'
 }
 
 class ListingSection:
@@ -163,7 +165,7 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         not (
             time_period and
              (time_period.isdigit()
-              or time_period in ['new', 'current', 'pastweek', 'recent']
+              or time_period in ['new', 'current', 'pastweek', 'recent', 'all']
               or year_month_pattern.match(time_period)
               )
         )
@@ -259,6 +261,21 @@ def get_listing(request, subject_or_category: str, time_period: str, skip: str =
         response_data['pubdates'] = pubdates
         # response_data.update(sub_sections_for_recent((rec_resp, dts, dds), skipn, shown))
         response_data.update(sub_sections_for_recent(rec_resp, skipn, shown))
+
+    elif time_period == 'all':
+        list_type = 'all'
+
+        items = get_all_cn_pdfs(request, skipn, shown)
+        count = items.count
+        if _check_modified(items.listings, if_mod_since):
+            all_resp = NotModifiedResponse(True, gen_expires())
+        else:
+            all_resp = items
+
+        response_headers.update(_expires_headers(all_resp))
+        if isinstance(all_resp, NotModifiedResponse):
+            return {}, status.NOT_MODIFIED, response_headers
+        listings = all_resp.listings
 
     else:  # current or YYMM or YYYYMM or YY
 
@@ -1446,3 +1463,143 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         count=total,
         expires=gen_expires(),
     )#, dts, dds
+
+
+
+
+
+
+def get_all_cn_pdfs(request, skip: int, show: int) -> Listing:
+    language = get_language()
+
+    cn_pdf_base_dir = f'{settings.CENXIV_FILE_PATH}'
+    arxiv_ids = [ arxiv_dir.split('/')[-1][5:15] for arxiv_dir in glob.glob(cn_pdf_base_dir + '/*') if re.match(r'arxiv\d{4}\.\d{5}', arxiv_dir.split('/')[-1]) ]
+    arxiv_ids = sorted(arxiv_ids)[::-1]
+    # arxiv_ids = arxiv_ids[:2] # for test
+    total = len(arxiv_ids)
+
+    paper_ids = arxiv_ids[skip:skip+show]
+    arxiv_idvs = []
+    for arxiv_id in paper_ids:
+        arxiv_idvs.extend([ f'{arxiv_id}v{version.split('/')[-1][1:]}' for version in glob.glob(f'{cn_pdf_base_dir}/arxiv{arxiv_id}/*') if re.match(r'v\d+', version.split('/')[-1]) ])
+
+
+    # Create the search client
+    client = arxivapi.Client()
+
+    # Create the search query
+    results = []
+    for pids in itertools.batched(arxiv_idvs, 200):
+        search = arxivapi.Search(id_list=pids)
+        results.extend(list(client.results(search)))
+
+    retries = 3
+    retry = 0
+    while results:
+        if retry >= retries:
+            msg = f'Failed to translate some of the articles after {retries} retries'
+            logger.error(msg)
+            raise Exception(msg)
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            oks = list(executor.map(translate_and_save_article, results))
+
+        if all(oks):
+            break
+
+        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+
+        delay = 1.0 * (2**retry)
+        time.sleep(delay)
+
+        retry += 1
+
+
+    # organize results into expected listing
+    items = []
+    for i, paper_id in enumerate(paper_ids):
+        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+
+        listing_type = 'new' # need to get the correct 'new' or 'cross'
+        arxiv_id, version = article.entry_id, article.entry_version
+        primary_cat = CATEGORIES[article.primary_category]
+        secondary_cats = [ CATEGORIES[sc.name] for sc in article.categories.all() if sc.name in CATEGORIES ]
+        modified = max(article.updated_date, article.published_date)
+        doc = DocMetadata(
+            arxiv_id=arxiv_id,
+            arxiv_id_v=f'{arxiv_id}v{version}',
+            title=article.title_cn if language == 'zh-hans' else article.title_en,
+            authors=AuList(', '.join([ author.name for author in article.authors.all() ])),
+            abstract=article.abstract_cn if language == 'zh-hans' else article.abstract_en,
+            categories=[ cat.name for cat in article.categories.all() ],
+            primary_category=primary_cat,
+            secondary_categories=secondary_cats,
+            comments=article.comment_cn if language == 'zh-hans' else article.comment_en,
+            journal_ref=article.journal_ref_cn if language == 'zh-hans' else article.journal_ref_en,
+            version=version,
+            version_history=[
+                VersionEntry(
+                    version=version,
+                    raw="",
+                    submitted_date=None, # type: ignore
+                    size_kilobytes=0,
+                    source_flag=''
+                )
+            ],
+            raw_safe="",
+            submitter=None, # type: ignore
+            arxiv_identifier=None, # type: ignore
+            primary_archive=primary_cat.get_archive(),
+            primary_group=primary_cat.get_archive().get_group(),
+            modified=modified
+        )
+
+        doc.authors_list = ', '.join([ author.name for author in article.authors.all() ])
+        doc.primary_display = doc.primary_category.display()
+        doc.secondaries_display = doc.display_secondaries()
+
+        doc.title_other_language = article.title_en if language == 'zh-hans' else article.title_cn
+        doc.abstract_other_language = article.abstract_en if language == 'zh-hans' else article.abstract_cn
+        doc.show_title_text = '显示英文标题' if language == 'zh-hans' else 'Show Chinese title'
+        doc.hide_title_text = '隐藏英文标题' if language == 'zh-hans' else 'Hide Chinese title'
+        doc.show_abstract_text = '显示英文摘要' if language == 'zh-hans' else 'Show Chinese abstract'
+        doc.hide_abstract_text = '隐藏英文摘要' if language == 'zh-hans' else 'Hide Chinese abstract'
+
+        if language == 'zh-hans':
+            translation_dict = get_translation_dict()
+            # Define the regex pattern
+            pattern = r'^(.*?) \((.*?)\)$'
+
+            # Use re.search to find matches
+            match = re.search(pattern, doc.primary_display)
+            if match:
+                # Extract the two groups
+                cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                category = match.group(2)  # e.g. 'astro-ph.HE'
+                cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                doc.primary_display = f'{cat_full_name_cn} ({category})'
+
+            for i, secondary_display in enumerate(doc.secondaries_display):
+                match = re.search(pattern, secondary_display)
+                if match:
+                    # Extract the two groups
+                    cat_full_name = match.group(1)  # e.g. 'High Energy Astrophysical Phenomena'
+                    category = match.group(2)  # e.g. 'astro-ph.HE'
+                    cat_full_name_cn = article_filters.dict_get_key(translation_dict, cat_full_name)
+                    doc.secondaries_display[i] = f'{cat_full_name_cn} ({category})'
+
+        item = ListingItem(
+            id=arxiv_id,
+            listingType=listing_type,
+            primary=primary_cat.id,
+            article=doc,
+        )
+        items.append(item)
+
+
+    return Listing(
+        listings=items,
+        pubdates=[(datetime.today(), 1)],  # only used for display month
+        count=total,
+        expires=gen_expires(),
+    )

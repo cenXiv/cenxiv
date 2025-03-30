@@ -9,7 +9,8 @@
 
   <p>
       {% url 'articles:pdf' arxiv_idv as pdf_url %}
-      {% blocktranslate %}The requested Chinese full text PDF {{ arxiv_idv }}.pdf is currently unavailable. You can either wait for some time and try accessing it again, or you can access the <a href="{{ pdf_url }}">English full text PDF</a> instead.{% endblocktranslate %}
+      {% url 'articles:list_all' as list_all_url %}
+      {% blocktranslate %}The requested Chinese full text PDF {{ arxiv_idv }}.pdf is currently unavailable. You can either wait for some time and try accessing it again, or you can access the <a href="{{ pdf_url }}">English full text PDF</a> instead. <a href="{{ list_all_url }}">Click here to check all currently available Chines PDFs.</a>{% endblocktranslate %}
   </p>
   <p>{% trans "To make our translations more helpful to you, please consider supporting our work. You can use WeChat to scan the QR code below to sponsor or" %}<a href="https://github.com/cenXiv/cenxiv" target="_blank" rel="noopener noreferrer">{% trans "help us do better." %}</a></p>
   <img src="{% static image_path %}" alt="{% trans 'Support Code' %}" class="img-fluid mb-3" width="680" style="display: block; margin: 0 auto;">

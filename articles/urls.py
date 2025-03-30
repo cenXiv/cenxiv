@@ -17,6 +17,7 @@ urlpatterns = [
     path('year/<str:archive>/', cache_page(60 * 5)(views.year_default), name='year_default'),
     path('year/<str:archive>/<int:year>/', cache_page(60 * 5)(views.year_view), name='year'),
     path('list/', cache_page(60 * 5)(views.list_articles), {'context': '', 'subcontext': ''}, name='list_default'),
+    path('list/all', cache_page(60 * 5)(views.list_articles), {'context': 'math', 'subcontext': 'all'}, name='list_all'),
     path('list/<str:context>/<str:subcontext>', cache_page(60 * 5)(views.list_articles), name='list_articles'),
     path('catchup/', views.catchup_form, name='catchup_form'),
     path('catchup/<str:subject>/<str:date>', cache_page(60 * 5)(views.catchup), name='catchup'),

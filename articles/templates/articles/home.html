@@ -52,6 +52,16 @@
          document.getElementById('adv-search-btn').onclick=doAdvSearchBtn;
      },false);
     </script>
+
+  </div>
+
+  <div class="column" style="text-align: center;">
+      <h2>{% trans "Click here to check all currently available Chinese PDFs" %}</h2>
+      <a href="{% url 'articles:list_all' %}" style="text-decoration: none;">
+        <div style="display: inline-block; border: 2px solid red; padding: 10px; color: red;">
+        {% trans "All available Chinese PDFs" %}
+        </div>
+      </a>
   </div>
   <!-- special message column -->
 </div><!-- /end columns -->

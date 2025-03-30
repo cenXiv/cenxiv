@@ -13,7 +13,10 @@
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <p>{% trans "The website is currently in the trial operation stage, and all full-text PDFs in Chinese are available free of charge." %}</p>
+                    <p>
+                        {% url 'articles:list_all' as list_all_url %}
+                        {% blocktranslate %}The website is currently in the trial operation stage, and <a href="{{ list_all_url }}">all full-text PDFs in Chinese</a> are available free of charge.{% endblocktranslate %}
+                    </p>
                     <p>{% trans "If our translations are helpful to you, please consider supporting our work. You can use WeChat to scan the QR code below to sponsor or" %}<a href="https://github.com/cenXiv/cenxiv" target="_blank" rel="noopener noreferrer">{% trans "help us do better." %}</a></p>
                     <img src="{% static image_path %}" alt="{% trans 'Support Code' %}" class="img-fluid mb-3" width="680" style="display: block; margin: 0 auto;">
                     <p class="text-muted">{% trans "Your support helps us continue providing high-quality Chinese translations of arXiv papers." %}</p>
