@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-30 16:52+0800\n"
+"POT-Creation-Date: 2025-04-12 21:27+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgstr "标题"
 #: articles/admin.py:120 articles/templates/abs/labs_tabs.html:9
 #: articles/templates/articles/base.html:85
 #: articles/templates/articles/catchup.html:77
-#: articles/templates/list/all.html:23 articles/templates/list/month.html:19
+#: articles/templates/list/all.html:26 articles/templates/list/month.html:19
 #: articles/templates/list/new.html:38 articles/templates/list/recent.html:35
 #: articles/templates/list/year.html:19
 msgid "Abstract"
@@ -332,7 +332,7 @@ msgstr "，最后修订"
 #: articles/templates/abs/abs.html:91 articles/templates/abs/abs.html:95
 #: articles/templates/articles/catchup.html:92
 #: articles/templates/articles/catchup.html:96
-#: articles/templates/list/all.html:38 articles/templates/list/all.html:42
+#: articles/templates/list/all.html:41 articles/templates/list/all.html:45
 #: articles/templates/list/month.html:34 articles/templates/list/month.html:38
 #: articles/templates/list/new.html:53 articles/templates/list/new.html:57
 #: articles/templates/list/recent.html:50
@@ -348,7 +348,7 @@ msgstr "摘要："
 
 #: articles/templates/abs/abs.html:152
 #: articles/templates/articles/catchup.html:118
-#: articles/templates/list/all.html:64 articles/templates/list/month.html:60
+#: articles/templates/list/all.html:67 articles/templates/list/month.html:60
 #: articles/templates/list/new.html:79 articles/templates/list/recent.html:76
 #: articles/templates/list/year.html:60
 msgid "Comments:"
@@ -356,7 +356,7 @@ msgstr "评论："
 
 #: articles/templates/abs/abs.html:157
 #: articles/templates/articles/catchup.html:129
-#: articles/templates/list/all.html:75 articles/templates/list/month.html:71
+#: articles/templates/list/all.html:78 articles/templates/list/month.html:71
 #: articles/templates/list/new.html:90 articles/templates/list/recent.html:87
 #: articles/templates/list/year.html:71
 msgid "Subjects:"
@@ -384,7 +384,7 @@ msgstr "引用方式："
 
 #: articles/templates/abs/abs.html:196
 #: articles/templates/articles/base.html:164
-#: articles/templates/articles/cn_pdf_preview.html:30
+#: articles/templates/articles/cn_pdf_preview.html:33
 #: articles/templates/articles/format.html:109
 #: articles/templates/articles/no_cn_pdf.html:23
 msgid "or"
@@ -471,7 +471,7 @@ msgid "Unavailable"
 msgstr "不可用"
 
 #: articles/templates/abs/abs.html:334
-#: articles/templates/articles/cn_pdf_preview.html:28
+#: articles/templates/articles/cn_pdf_preview.html:31
 msgid "View Chinese PDF"
 msgstr "查看中文 PDF"
 
@@ -1244,7 +1244,7 @@ msgid "No updates for this time period."
 msgstr "此时间段没有更新。"
 
 #: articles/templates/articles/catchup.html:81
-#: articles/templates/list/all.html:27 articles/templates/list/month.html:23
+#: articles/templates/list/all.html:30 articles/templates/list/month.html:23
 #: articles/templates/list/new.html:42 articles/templates/list/recent.html:39
 #: articles/templates/list/year.html:23
 msgid "cross-list from"
@@ -1252,21 +1252,21 @@ msgstr "交叉列表自"
 
 # Start of Selection
 #: articles/templates/articles/catchup.html:84
-#: articles/templates/list/all.html:30 articles/templates/list/month.html:26
+#: articles/templates/list/all.html:33 articles/templates/list/month.html:26
 #: articles/templates/list/new.html:45 articles/templates/list/recent.html:42
 #: articles/templates/list/year.html:26
 msgid "replaced"
 msgstr "替换"
 
 #: articles/templates/articles/catchup.html:87
-#: articles/templates/list/all.html:33 articles/templates/list/month.html:29
+#: articles/templates/list/all.html:36 articles/templates/list/month.html:29
 #: articles/templates/list/new.html:48 articles/templates/list/recent.html:45
 #: articles/templates/list/year.html:29
 msgid "Download Chinese PDF"
 msgstr "下载中文 PDF"
 
 #: articles/templates/articles/catchup.html:87
-#: articles/templates/list/all.html:33 articles/templates/list/month.html:29
+#: articles/templates/list/all.html:36 articles/templates/list/month.html:29
 #: articles/templates/list/new.html:48 articles/templates/list/recent.html:45
 #: articles/templates/list/year.html:29
 msgid "cn-pdf"
@@ -1274,7 +1274,7 @@ msgstr "中文pdf"
 
 #: articles/templates/articles/catchup.html:88
 #: articles/templates/articles/format.html:23
-#: articles/templates/list/all.html:34 articles/templates/list/month.html:30
+#: articles/templates/list/all.html:37 articles/templates/list/month.html:30
 #: articles/templates/list/new.html:49 articles/templates/list/recent.html:46
 #: articles/templates/list/year.html:30
 msgid "Download PDF"
@@ -1299,7 +1299,7 @@ msgid "other"
 msgstr "其他"
 
 #: articles/templates/articles/catchup.html:124
-#: articles/templates/list/all.html:70 articles/templates/list/month.html:66
+#: articles/templates/list/all.html:73 articles/templates/list/month.html:66
 #: articles/templates/list/new.html:85 articles/templates/list/recent.html:82
 #: articles/templates/list/year.html:66
 msgid "Journal-ref:"
@@ -1389,7 +1389,18 @@ msgstr ""
 "当前网站处在试运行阶段，<a href=\"%(list_all_url)s\">所有中文全文 PDF</a> 皆"
 "可免费获取。"
 
-#: articles/templates/articles/cn_pdf_preview.html:20
+#: articles/templates/articles/cn_pdf_preview.html:21
+#: articles/templates/list/all.html:11
+msgid ""
+"<strong>Note</strong>: All Chinese full-text PDFs on this website are "
+"translated by AI. Please forgive me if there are any translation issues. "
+"Please <a href=\"https://github.com/cenXiv/cenxiv/issues\" target=\"_blank\" "
+"rel=\"noopener noreferrer\">go here<a> to report issues and make suggestions "
+"for improvements."
+msgstr ""
+"<strong>注意</strong>：本网站的所有中文全文 PDF 皆由 AI 翻译完成，若有翻译问题，敬请谅解。报告问题和改进建议请移步<a href=\"https://github.com/cenXiv/cenxiv/issues\" target=\"_blank\" rel=\"noopener noreferrer\">这里<a>。"
+
+#: articles/templates/articles/cn_pdf_preview.html:23
 msgid ""
 "If our translations are helpful to you, please consider supporting our work. "
 "You can use WeChat to scan the QR code below to sponsor or"
@@ -1397,23 +1408,23 @@ msgstr ""
 "如果我们的翻译对您有帮助，请考虑支持我们的工作。您可以使用微信扫描下方的二维"
 "码进行赞助或者"
 
-#: articles/templates/articles/cn_pdf_preview.html:20
+#: articles/templates/articles/cn_pdf_preview.html:23
 #: articles/templates/articles/no_cn_pdf.html:15
 msgid "help us do better."
 msgstr "帮助我们做的更好。"
 
-#: articles/templates/articles/cn_pdf_preview.html:21
+#: articles/templates/articles/cn_pdf_preview.html:24
 #: articles/templates/articles/no_cn_pdf.html:16
 msgid "Support Code"
 msgstr "赞赏码"
 
-#: articles/templates/articles/cn_pdf_preview.html:22
+#: articles/templates/articles/cn_pdf_preview.html:25
 msgid ""
 "Your support helps us continue providing high-quality Chinese translations "
 "of arXiv papers."
 msgstr "您的支持帮助我们继续提供高质量的 arXiv 论文中文翻译。"
 
-#: articles/templates/articles/cn_pdf_preview.html:32
+#: articles/templates/articles/cn_pdf_preview.html:35
 #: articles/templates/articles/no_cn_pdf.html:25
 msgid "Back to Abstract"
 msgstr "返回摘要页"
@@ -1757,7 +1768,7 @@ msgstr "交叉列表"
 msgid "Other years:"
 msgstr "其他年份："
 
-#: articles/templates/list/all.html:16
+#: articles/templates/list/all.html:19
 msgid "No Chinese PDFs yet."
 msgstr "尚无中文 PDF。"
 
