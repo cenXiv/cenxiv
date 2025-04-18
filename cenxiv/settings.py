@@ -209,6 +209,13 @@ ALIBABA_SECRET_ID = config('ALIBABA_SECRET_ID', default='')
 ALIBABA_SECRET_KEY = config('ALIBABA_SECRET_KEY', default='')
 
 
+# aliyun Bailian
+ALIYUNBAILIAN_MODEL = config('ALIYUNBAILIAN_MODEL', default='')
+ALIYUNBAILIAN_API_KEY = config('ALIYUNBAILIAN_API_KEY', default='')
+ALIYUNBAILIAN_BASE_URL = config('ALIYUNBAILIAN_BASE_URL', default='')
+ALIYUNBAILIAN_SYSTEM_CONTENT = config('ALIYUNBAILIAN_SYSTEM_CONTENT', default='')
+
+
 # ollama
 OLLAMA_LOCATION = config('OLLAMA_LOCATION', default='http://localhost:11434')
 OLLAMA_MODEL = config('OLLAMA_MODEL', default='')

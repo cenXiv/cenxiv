@@ -40,6 +40,27 @@ def translator(name):
         secretKey = settings.ALIBABA_SECRET_KEY
         ali_translator = AlibabaCloudTranslator(secretId, secretKey)
         return lambda text: ali_translator.translate(text, "en", "zh")
+    elif name == 'aliyun':
+        from openai import OpenAI
+
+        model = settings.ALIYUNBAILIAN_MODEL
+        api_key = settings.ALIYUNBAILIAN_API_KEY
+        base_url = settings.ALIYUNBAILIAN_BASE_URL
+        system_content = settings.ALIYUNBAILIAN_SYSTEM_CONTENT
+
+        client = OpenAI(
+            # 若没有配置环境变量，请用百炼API Key将下行替换为：api_key="sk-xxx",
+            api_key=api_key,
+            base_url=base_url,
+        )
+        return lambda text: client.chat.completions.create(
+            model=model, # 此处以qwen-plus为例，可按需更换模型名称。模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
+            messages=[
+                {'role': 'system', 'content': system_content},
+                {'role': 'user', 'content': text}
+                ],
+            ).choices[0].message.content
+
     elif name == 'ollama':
         from ollama import Client
 

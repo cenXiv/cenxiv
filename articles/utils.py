@@ -94,7 +94,7 @@ def translate_latex_paragraph(text, tl):
 
     text_translator = translate.TextTranslator('google', 'zh', 'en')
     latex_translator = translate.LatexTranslator(text_translator)
-    return latex_translator.translate_full_latex(text, make_complete=False).strip()
+    return latex_translator.translate_full_latex(text, make_complete=False, nocache=True).strip()
 
 def translate_and_save_article(result):
     arxiv_id, version = result.entry_id.split('/')[-1].split('v')
