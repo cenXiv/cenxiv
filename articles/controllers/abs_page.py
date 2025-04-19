@@ -185,8 +185,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     # title_cn = '中文标题'
                     # abstract_cn = '中文摘要'
                     logger.info(f'Successfully translated arxiv:{arxiv_id}v{latest_version}.')
-                except Exception:
-                    logger.warning(f'Failed to translate arxiv:{arxiv_id}v{latest_version}, will retry latter.')
+                except Exception as e:
+                    logger.warning(f'Failed to translate arxiv:{arxiv_id}v{latest_version} due to {e}, will retry latter.')
                     retry += 1
                     continue
 
@@ -249,8 +249,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                         # title_cn = '中文标题'
                         # abstract_cn = '中文摘要'
                         logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
-                    except Exception:
-                        logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+                    except Exception as e:
+                        logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version} due to {e}, will retry latter.')
                         continue
 
                     article = Article(

@@ -119,8 +119,8 @@ def translate_and_save_article(result):
             # title_cn = '中文标题'
             # abstract_cn = '中文摘要'
             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
-        except Exception:
-            logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
+        except Exception as e:
+            logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version} due to {e}, will retry latter.')
             return False
 
         article = Article(
