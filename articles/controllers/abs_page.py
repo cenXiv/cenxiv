@@ -437,7 +437,7 @@ def get_abs_page(request, arxiv_id: str) -> Response:
             response_data['journal_ref'] = journal_ref_td.string
         # doi
         doi_td = div_content_inner.find('td', {'class': "tablecell doi"})
-        if journal_ref_td:
+        if doi_td:
             response_data['doi'] = str(doi_td.contents[0])
 
         # for a in div_content_inner.find_all('a'):

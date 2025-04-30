@@ -29,6 +29,13 @@ class Article(models.Model):
             models.Index(fields=['-updated_date']),
             models.Index(fields=['source_archive', 'entry_id', 'entry_version']),
         ]
+        # 添加唯一约束
+        constraints = [
+            models.UniqueConstraint(
+                fields=['source_archive', 'entry_id', 'entry_version'],
+                name='unique_article_version'
+            )
+        ]
 
     def __str__(self):
         return f"{self.source_archive}:{self.entry_id}v{self.entry_version}"
