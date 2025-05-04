@@ -86,9 +86,13 @@ class ArticleAdmin(admin.ModelAdmin):
     display_categories.short_description = _('Categories')  # Set the column name in the admin
 
     def display_links(self, obj):
+        links1 = [lk.url for lk in obj.links.all()]
+        links2 = [lk.replace('arxiv.org', 'cenxiv.cn') for lk in links1]
+        links = links1 + links2
         return mark_safe('<br>'.join(
-            f'<a href="{escape(link.url)}" target="_blank" rel="noopener noreferrer nofollow">{escape(link.url)}</a>'
-            for link in obj.links.all()
+            # f'<a href="{escape(link.url)}" target="_blank" rel="noopener noreferrer nofollow">{escape(link.url)}</a>'
+            f'<a href="{escape(link)}" target="_blank" rel="noopener noreferrer nofollow">{escape(link)}</a>'
+            for link in links
         ))
     display_links.short_description = _('Links')  # Set the column name in the admin
 
