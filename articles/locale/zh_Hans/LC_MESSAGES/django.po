@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-12 22:19+0800\n"
+"POT-Creation-Date: 2025-05-04 16:54+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,28 +22,28 @@ msgstr ""
 msgid "Supports searching by article ID, title, abstract, author and category"
 msgstr "支持按文章ID、标题、摘要、作者和分类搜索"
 
-#: articles/admin.py:81 articles/admin.py:117 articles/models.py:49
+#: articles/admin.py:81 articles/admin.py:121 articles/models.py:56
 msgid "Authors"
 msgstr "作者"
 
-#: articles/admin.py:86 articles/models.py:61
+#: articles/admin.py:86 articles/models.py:68
 msgid "Categories"
 msgstr "类别"
 
-#: articles/admin.py:93 articles/models.py:73
+#: articles/admin.py:97 articles/models.py:80
 msgid "Links"
 msgstr "链接"
 
-#: articles/admin.py:106
+#: articles/admin.py:110
 #, python-brace-format
 msgid "Modified the translation of article {obj.entry_id}"
 msgstr "修改了文章 {obj.entry_id} 的翻译"
 
-#: articles/admin.py:114 articles/templates/articles/base.html:83
+#: articles/admin.py:118 articles/templates/articles/base.html:83
 msgid "Title"
 msgstr "标题"
 
-#: articles/admin.py:120 articles/templates/abs/labs_tabs.html:9
+#: articles/admin.py:124 articles/templates/abs/labs_tabs.html:9
 #: articles/templates/articles/base.html:85
 #: articles/templates/articles/catchup.html:77
 #: articles/templates/list/all.html:26 articles/templates/list/month.html:19
@@ -52,27 +52,27 @@ msgstr "标题"
 msgid "Abstract"
 msgstr "摘要"
 
-#: articles/admin.py:123
+#: articles/admin.py:127
 msgid "Comment"
 msgstr "评论"
 
-#: articles/admin.py:126
+#: articles/admin.py:130
 msgid "Journal Ref"
 msgstr "期刊参考"
 
-#: articles/admin.py:129 articles/models.py:60
+#: articles/admin.py:133 articles/models.py:67
 msgid "Category"
 msgstr "类别"
 
-#: articles/admin.py:132 articles/models.py:72
+#: articles/admin.py:136 articles/models.py:79
 msgid "Link"
 msgstr "链接"
 
-#: articles/admin.py:135
+#: articles/admin.py:139
 msgid "Dates"
 msgstr "日期"
 
-#: articles/admin.py:138
+#: articles/admin.py:142
 msgid "Validation"
 msgstr "验证"
 
@@ -255,16 +255,16 @@ msgstr "文章"
 msgid "Articles"
 msgstr "文章"
 
-#: articles/models.py:44 articles/models.py:56
+#: articles/models.py:51 articles/models.py:63
 msgid "Name"
 msgstr "名称"
 
-#: articles/models.py:48 articles/templates/abs/labs_tabs.html:337
+#: articles/models.py:55 articles/templates/abs/labs_tabs.html:337
 #: articles/templates/articles/base.html:84
 msgid "Author"
 msgstr "作者"
 
-#: articles/models.py:68
+#: articles/models.py:75
 msgid "URL"
 msgstr "URL"
 
@@ -1394,13 +1394,15 @@ msgstr ""
 msgid ""
 "<strong>Note</strong>: All Chinese full-text PDFs on this website are "
 "translated by AI. Please forgive me if there are any translation issues. We "
-"are continuously improving. Please <a href=\"https://github.com/cenXiv/"
-"cenxiv/issues\" target=\"_blank\" rel=\"noopener noreferrer\">go here<a> to "
-"report issues and make suggestions for improvements."
+"are continuously improving. If there is any doubt, please refer to the "
+"original document. Please <a href=\"https://github.com/cenXiv/cenxiv/issues"
+"\" target=\"_blank\" rel=\"noopener noreferrer\">go here<a> to report issues "
+"and make suggestions for improvements."
 msgstr ""
 "<strong>注意</strong>：本网站的所有中文全文 PDF 皆由 AI 翻译完成，若有翻译问"
-"题，敬请谅解，我们正在持续改进中。报告问题和改进建议请移步<a href=\"https://github.com/cenXiv/"
-"cenxiv/issues\" target=\"_blank\" rel=\"noopener noreferrer\">这里<a>。"
+"题，敬请谅解，我们正在持续改进中。如有疑义，请以原文档为准。报告问题和改进建议请移步<a href=\"https://"
+"github.com/cenXiv/cenxiv/issues\" target=\"_blank\" rel=\"noopener noreferrer"
+"\">这里<a>。"
 
 #: articles/templates/articles/cn_pdf_preview.html:23
 msgid ""
