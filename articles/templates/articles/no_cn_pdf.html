@@ -8,7 +8,11 @@
   <h1>{% blocktranslate %}Chinese full text PDF {{ arxiv_idv }}.pdf is unavailable.{% endblocktranslate %}</h1>
 
   <p>
-      {% url 'articles:pdf' arxiv_idv as pdf_url %}
+      {% if archive %}
+        {% url 'articles:pdf_with_archive' arxiv_id=arxiv_idv archive=archive as pdf_url %}
+      {% else %}
+        {% url 'articles:pdf' arxiv_id=arxiv_idv as pdf_url %}
+      {% endif %}
       {% url 'articles:list_all' as list_all_url %}
       {% blocktranslate %}The requested Chinese full text PDF {{ arxiv_idv }}.pdf is currently unavailable. You can either wait for some time and try accessing it again, or you can access the <a href="{{ pdf_url }}">English full text PDF</a> instead. <a href="{{ list_all_url }}">Click here to check all currently available Chines PDFs.</a>{% endblocktranslate %}
   </p>
@@ -21,7 +25,7 @@
           {% trans "View English PDF" %}
       </a>
       {% trans "or" %}
-      <a href="{% url 'articles:abstract' arxiv_idv %}" class="btn btn-outline-secondary">
+      <a href="{% url 'articles:abstract' arxiv_idv_with_archive %}" class="btn btn-outline-secondary">
           {% trans "Back to Abstract" %}
       </a>
   </div>

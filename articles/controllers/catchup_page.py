@@ -151,7 +151,8 @@ def get_catchup_page(request, subject_str:str, date:str)-> Response:
             results.extend(list(client.results(search)))
 
         # get arxiv_idv for all paper_ids
-        arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+        # arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+        arxiv_idvs = [ result.entry_id.split(r'/abs/')[-1] for result in results ]
         # use celery to download and compile pdfs asynchronously
         if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
             processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)

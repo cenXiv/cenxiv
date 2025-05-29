@@ -144,10 +144,11 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         search = arxivapi.Search(id_list=[arxiv_identifier.id])
         result = list(client.results(search))[0]
 
-        arxiv_id, latest_version = result.entry_id.split('/')[-1].split('v')
+        # arxiv_id, latest_version = result.entry_id.split('/')[-1].split('v')
+        arxiv_id, latest_version = result.entry_id.split(r'/abs/')[-1].rsplit('v', 1)
         latest_version = int(latest_version)
-        if 'v' in request_id:
-            request_version = int(request_id.split('v')[-1])
+        if 'v' in request_id.split('/')[-1]:
+            request_version = int(request_id.rsplit('v', 1)[-1])
         else:
             request_version = latest_version
 
@@ -592,6 +593,16 @@ def get_abs_page(request, arxiv_id: str) -> Response:
         response_data["show_refs_cites"] = _show_refs_cites(arxiv_identifier)
         response_data["show_labs"] = _show_labs(arxiv_identifier)
         response_data["rd_int"] = int(datetime.today().strftime("%Y%m%d%H%M"))
+
+        # fix for old style arxiv_id, for example math-ph/0110015
+        archive = None
+        if '/' in arxiv_id:
+            archive, arxiv_id = arxiv_id.split('/')
+        response_data['archive'] = archive
+        response_data['arxiv_id'] = arxiv_id
+        response_data['arxiv_idv'] = f'{arxiv_id}v{request_version}'
+        response_data['arxiv_id_v1'] = f'{arxiv_id}v1'
+        response_data["arxiv_id_v_1"] = f'{arxiv_id}v{latest_version}'
 
         # _non_critical_abs_data(abs_meta, arxiv_identifier, response_data)
 

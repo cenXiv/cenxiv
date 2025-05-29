@@ -436,21 +436,41 @@ def cn_pdf(request, arxiv_id: str, archive: str = None):
         else:
             return redirect(reverse(url_name, kwargs=kwargs), permanent=True)
 
-    arxiv_id = request.path.split('/')[-1]
+    if not archive:
+        if '/' in arxiv_id:
+            archive, arxiv_id = arxiv_id.rsplit('/', 1)
+
     arxiv_idv = arxiv_id
     version = 1
     if 'v' in arxiv_id:
-        arxiv_id, version = arxiv_id.split('v')
+        arxiv_id, version = arxiv_id.rsplit('v', 1)
+        if archive:
+            arxiv_id_with_archive = f'{archive}/{arxiv_id}'
+        else:
+            arxiv_id_with_archive = arxiv_id
     else:
         client = arxivapi.Client()
-        search = arxivapi.Search(id_list=[arxiv_id])
+        if archive:
+            search = arxivapi.Search(id_list=[f'{archive}/{arxiv_id}'])
+        else:
+            search = arxivapi.Search(id_list=[arxiv_id])
         result = list(client.results(search))[0]
-        arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        # arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+        arxiv_id_with_archive, version = result.entry_id.split('/abs/')[-1].rsplit('v', 1)
+        if '/' in arxiv_id_with_archive:
+            archive, arxiv_id = arxiv_id_with_archive.rsplit('/', 1)
+        else:
+            archive = None
+            arxiv_id = arxiv_id_with_archive
     arxiv_idv = f'{arxiv_id}v{version}'
-    cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/arxiv{arxiv_id}/v{version}/cn_pdf/{arxiv_idv}.pdf'
+    arxiv_idv_with_archive = f'{arxiv_id_with_archive}v{version}'
+    cn_pdf_file = f'{settings.CENXIV_FILE_PATH}/arxiv{arxiv_id_with_archive}/v{version}/cn_pdf/{arxiv_idv}.pdf'
 
     context = {
+        'archive': archive,
+        'arxiv_id': arxiv_id,
         'arxiv_idv': arxiv_idv,
+        'arxiv_idv_with_archive': arxiv_idv_with_archive,
         'image_path': 'images/zanshang_code.png'
     }
 

@@ -329,22 +329,36 @@
             {% elif format_list|length == 0 %}
             <li>{% trans "Unavailable" %}</li>
             {% else %}
+              {% if archive %}
+                {% url 'articles:cn_pdf_with_archive' arxiv_id=arxiv_idv archive=archive as cn_pdf_url %}
+                {% url 'articles:pdf_with_archive' arxiv_id=arxiv_idv archive=archive as pdf_url %}
+                {% url 'articles:html_with_archive' arxiv_id=arxiv_idv archive=archive as html_url %}
+                {% url 'articles:src_with_archive' arxiv_id_str=arxiv_idv archive=archive as src_url %}
+                {% url 'articles:format_with_archive' arxiv_id=arxiv_idv archive=archive as format_url %}
+              {% else %}
+                {% url 'articles:cn_pdf' arxiv_id=arxiv_idv as cn_pdf_url %}
+                {% url 'articles:pdf' arxiv_id=arxiv_idv as pdf_url %}
+                {% url 'articles:html' arxiv_id=arxiv_idv as html_url %}
+                {% url 'articles:src' arxiv_id_str=arxiv_idv as src_url %}
+                {% url 'articles:format' arxiv_id=arxiv_idv as format_url %}
+              {% endif %}
+
               {% for format in format_list %}
                 {% if format == 'cn-pdf' %}
-            <li><a href="{% url 'articles:cn_pdf' abs_meta.arxiv_id %}" aria-describedby="download-button-info" accesskey="f" class="abs-button download-cn-pdf">{% trans "View Chinese PDF" %}</a></li>
+            <li><a href="{{ cn_pdf_url }}" aria-describedby="download-button-info" accesskey="f" class="abs-button download-cn-pdf">{% trans "View Chinese PDF" %}</a></li>
                 {% endif %}
                 {% if format == 'pdf' %}
-            <li><a href="{% url 'articles:pdf' abs_meta.arxiv_id %}" aria-describedby="download-button-info" accesskey="f" class="abs-button download-pdf">{% trans "View PDF" %}</a></li>
+            <li><a href="{{ pdf_url }}" aria-describedby="download-button-info" accesskey="f" class="abs-button download-pdf">{% trans "View PDF" %}</a></li>
                 {% endif %}
                 {% if format == 'latexml' %}
-            <li><a href="{% url 'articles:html' abs_meta.arxiv_id %}" class="abs-button" id="latexml-download-link">{% trans "HTML (experimental)" %}</a></li>
+            <li><a href="{{ html_url }}" class="abs-button" id="latexml-download-link">{% trans "HTML (experimental)" %}</a></li>
                 {% endif %}
                 {% if format == 'src' %}
-            <li><a href="{% url 'articles:src' abs_meta.arxiv_id %}" class="abs-button download-eprint">{% trans "TeX Source" %}</a></li>
+            <li><a href="{{ format_url }}" class="abs-button download-eprint">{% trans "TeX Source" %}</a></li>
                 {% elif format == 'html' %}
-            <li><a href="{% url 'articles:html' abs_meta.arxiv_id %}" accesskey="f" class="abs-button download-html">{{ format.upper }}</a></li>
+            <li><a href="{{ html_url }}" accesskey="f" class="abs-button download-html">{{ format.upper }}</a></li>
                 {% elif format == 'other' %}
-            <li><a href="{% url 'articles:format' abs_meta.arxiv_id %}" class="abs-button download-format">{% trans "Other Formats" %}</a></li>
+            <li><a href="{{ format_url }}" class="abs-button download-format">{% trans "Other Formats" %}</a></li>
                 {% endif %}
               {% endfor %}
             {% endif %}

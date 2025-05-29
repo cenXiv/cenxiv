@@ -97,7 +97,8 @@ def translate_latex_paragraph(text, tl):
     return latex_translator.translate_full_latex(text, make_complete=False, nocache=True).strip()
 
 def translate_and_save_article(result):
-    arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+    # arxiv_id, version = result.entry_id.split('/')[-1].split('v')
+    arxiv_id, version = result.entry_id.split(r'/abs/')[-1].rsplit('v', 1)
     try:
         article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
         return True

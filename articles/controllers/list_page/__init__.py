@@ -751,7 +751,8 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         results.extend(list(client.results(search)))
 
     # get arxiv_idv for all paper_ids
-    arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+    # arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+    arxiv_idvs = [ result.entry_id.split(r'/abs/')[-1] for result in results ]
     # use celery to download and compile pdfs asynchronously
     if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
         processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
@@ -1018,7 +1019,8 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         results.extend(list(client.results(search)))
 
     # get arxiv_idv for all paper_ids
-    arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+    # arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+    arxiv_idvs = [ result.entry_id.split(r'/abs/')[-1] for result in results ]
     # use celery to download and compile pdfs asynchronously
     if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
         processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
@@ -1259,7 +1261,8 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         results.extend(list(client.results(search)))
 
     # get arxiv_idv for all paper_ids
-    arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+    # arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
+    arxiv_idvs = [ result.entry_id.split(r'/abs/')[-1] for result in results ]
     # use celery to download and compile pdfs asynchronously
     if settings.CELERY_DOWNLOAD_AND_COMPILE_ARXIV:
         processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
