@@ -732,9 +732,39 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
     date_text = match.group(1)
     announced = datetime.strptime(date_text, '%A, %d %B %Y')
     # print('announced:', announced)
-    new_start = int(soup.find('a', text="New submissions")['href'].replace('#item', ''))
-    cross_start = int(soup.find('a', text="Cross-lists")['href'].replace('#item', ''))
-    rep_start = int(soup.find('a', text="Replacements")['href'].replace('#item', ''))
+
+    # get the number of total entries
+    paging_div = soup.find('div', class_='paging')
+    total = 0
+    if paging_div:
+        match = re.search(r'Total of (\d+) entries', paging_div.text)
+        if match:
+            total = int(match.group(1))
+
+
+    new_start = 1
+    cross_start = 1
+    rep_start = 1
+
+    ### new_start always start from 1
+    # a_new = soup.find('a', text="New submissions")
+    # if a_new:
+    #     new_start = int(a_new['href'].replace('#item', ''))
+    a_cross = soup.find('a', text="Cross-lists")
+    if a_cross:
+        cross_start = int(a_cross['href'].replace('#item', ''))
+    else:
+        cross_start = new_start
+    a_rep = soup.find('a', text="Replacements")
+    if a_rep:
+        rep_start = int(a_rep['href'].replace('#item', ''))
+    else:
+        rep_start = cross_start
+
+    new_count = cross_start - new_start
+    cross_count = rep_start - cross_start
+    rep_count = total - new_count - cross_count
+
 
     paper_ids = []
     atags = soup.find_all('a', {'title': 'Abstract'})
@@ -778,62 +808,6 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
 
         retry += 1
 
-
-        # for result in list(results):  # Copy the results list so we can alter it.
-        #     arxiv_id, version = result.entry_id.split('/')[-1].split('v')
-        #     try:
-        #         article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
-        #     except Article.DoesNotExist:
-        #         try:
-        #             title_cn = translator('google')(result.title)
-        #             abstract_cn = translator('google')(result.summary)
-        #             comment_cn = None
-        #             journal_ref_cn = None
-        #             if result.comment:
-        #                 comment_cn = translator('google')(result.comment)
-        #             if result.journal_ref:
-        #                 journal_ref_cn = translator('google')(result.journal_ref)
-        #             # title_cn = '中文标题'
-        #             # abstract_cn = '中文摘要'
-        #             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
-        #         except Exception:
-        #             logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version}, will retry latter.')
-        #             continue
-
-        #         article = Article(
-        #             entry_id=arxiv_id,
-        #             entry_version=version,
-        #             title_en=result.title,
-        #             title_cn=title_cn,
-        #             abstract_en=result.summary,
-        #             abstract_cn=abstract_cn,
-        #             published_date=result.published,
-        #             updated_date=result.updated,
-        #             comment_en=result.comment,
-        #             comment_cn=comment_cn,
-        #             journal_ref_en=result.journal_ref,
-        #             journal_ref_cn=journal_ref_cn,
-        #             doi=result.doi,
-        #             primary_category=result.primary_category,
-        #         )
-        #         article.save()
-        #         for author in result.authors:
-        #             author_ = Author(name=author.name, article=article)
-        #             author_.save()
-        #         for category in result.categories:
-        #             category_ = Category(name=category, article=article)
-        #             category_.save()
-        #         for link in result.links:
-        #             link_ = Link(url=link.href, article=article)
-        #             link_.save()
-
-        #     results.remove(result)
-
-        # retry += 1
-
-    new_count = cross_start - new_start - 1
-    cross_count = rep_start - cross_start
-    rep_count = len(paper_ids) - new_count - cross_count
 
     dts = soup.find_all('dt')
     # dds = soup.find_all('dd')

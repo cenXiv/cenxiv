@@ -75,7 +75,7 @@
                     <li>
                         <a href="{% if archive.id != 'cs' %}{% url 'articles:archive' archive.id %}{% else %}https://info.arxiv.org/help/cs/index.html{% endif %}" id="main-{{ archive.id }}" aria-labelledby="main-{{ archive.id }}">{% if archive.id != 'cs' %}{{ translation_dict|dict_get_key:archive.full_name }}{% else %}{% trans "Computing Research Repository" %}{% endif %}</a>
                         (<strong id="{{ archive.id }}">{% if archive.id != 'cs' %}{{ archive.id }}{% else %}CoRR{% endif %}</strong>
-                        <a href="{% url 'articles:list_articles' context=archive.id subcontext='new' %}?skip=0&show=1000" id="new-{{ archive.id }}" aria-labelledby="new-{{ archive.id }} {{ archive.id }}">{% trans "new" %}</a>,
+                        <a href="{% url 'articles:list_articles' context=archive.id subcontext='new' %}" id="new-{{ archive.id }}" aria-labelledby="new-{{ archive.id }} {{ archive.id }}">{% trans "new" %}</a>,
                         <a id="recent-{{ archive.id }}" aria-labelledby="recent-{{ archive.id }} {{ archive.id }}" href="/list/{{ archive.id }}/recent">{% trans "recent" %}</a>,
                         <a id="search-{{ archive.id }}" aria-labelledby="search-{{ archive.id }} {{ archive.id }}" href="{% url 'articles:search_archive' archive.id %}">{% trans "search" %}</a>)
                         {% if group.id == 'grp_physics' and archive.id not in categories %}
