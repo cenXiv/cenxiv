@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-04 16:54+0800\n"
+"POT-Creation-Date: 2025-06-04 17:12+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,37 +141,37 @@ msgid "all months"
 msgstr "所有月份"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:538
-#: articles/controllers/catchup_page.py:542
-#: articles/controllers/list_page/__init__.py:524
+#: articles/controllers/catchup_page.py:539
+#: articles/controllers/catchup_page.py:543
+#: articles/controllers/list_page/__init__.py:526
 #: articles/controllers/list_page/__init__.py:530
 msgid "New submissions"
 msgstr "新提交"
 
-#: articles/controllers/catchup_page.py:550
-#: articles/controllers/catchup_page.py:552
+#: articles/controllers/catchup_page.py:551
+#: articles/controllers/catchup_page.py:553
 #: articles/controllers/list_page/__init__.py:537
-#: articles/controllers/list_page/__init__.py:543
+#: articles/controllers/list_page/__init__.py:541
 msgid "Cross-lists"
 msgstr "交叉列表"
 
 # Start of Selection
-#: articles/controllers/catchup_page.py:562
-#: articles/controllers/catchup_page.py:564
-#: articles/controllers/list_page/__init__.py:549
-#: articles/controllers/list_page/__init__.py:555
+#: articles/controllers/catchup_page.py:563
+#: articles/controllers/catchup_page.py:565
+#: articles/controllers/list_page/__init__.py:547
+#: articles/controllers/list_page/__init__.py:551
 msgid "Replacements"
 msgstr "替换"
 
-#: articles/controllers/list_page/__init__.py:648
+#: articles/controllers/list_page/__init__.py:644
 msgid "New submissions "
 msgstr "新提交 "
 
-#: articles/controllers/list_page/__init__.py:658
+#: articles/controllers/list_page/__init__.py:654
 msgid "Cross submissions "
 msgstr "交叉提交 "
 
-#: articles/controllers/list_page/__init__.py:668
+#: articles/controllers/list_page/__init__.py:664
 msgid "Replacement submissions "
 msgstr "替换提交 "
 
@@ -386,7 +386,7 @@ msgstr "引用方式："
 #: articles/templates/articles/base.html:164
 #: articles/templates/articles/cn_pdf_preview.html:33
 #: articles/templates/articles/format.html:109
-#: articles/templates/articles/no_cn_pdf.html:23
+#: articles/templates/articles/no_cn_pdf.html:27
 msgid "or"
 msgstr "或者"
 
@@ -470,100 +470,100 @@ msgstr "已撤回"
 msgid "Unavailable"
 msgstr "不可用"
 
-#: articles/templates/abs/abs.html:334
+#: articles/templates/abs/abs.html:348
 #: articles/templates/articles/cn_pdf_preview.html:31
 msgid "View Chinese PDF"
 msgstr "查看中文 PDF"
 
-#: articles/templates/abs/abs.html:337
+#: articles/templates/abs/abs.html:351
 msgid "View PDF"
 msgstr "查看 PDF"
 
-#: articles/templates/abs/abs.html:340
+#: articles/templates/abs/abs.html:354
 msgid "HTML (experimental)"
 msgstr "HTML（实验性）"
 
-#: articles/templates/abs/abs.html:343
+#: articles/templates/abs/abs.html:357
 msgid "TeX Source"
 msgstr "TeX 源代码"
 
-#: articles/templates/abs/abs.html:347
+#: articles/templates/abs/abs.html:361
 msgid "Other Formats"
 msgstr "其他格式"
 
-#: articles/templates/abs/abs.html:354
+#: articles/templates/abs/abs.html:368
 msgid "No license for this version due to withdrawn"
 msgstr "由于已撤回，无此版本的许可"
 
-#: articles/templates/abs/abs.html:356 articles/templates/abs/abs.html:361
+#: articles/templates/abs/abs.html:370 articles/templates/abs/abs.html:375
 msgid "Rights to this article"
 msgstr "此文章的权利"
 
-#: articles/templates/abs/abs.html:357
+#: articles/templates/abs/abs.html:371
 msgid "license icon"
 msgstr "许可图标"
 
-#: articles/templates/abs/abs.html:358 articles/templates/abs/abs.html:361
+#: articles/templates/abs/abs.html:372 articles/templates/abs/abs.html:375
 msgid "view license"
 msgstr "查看许可"
 
-#: articles/templates/abs/abs.html:369
+#: articles/templates/abs/abs.html:383
 msgid "Ancillary-file links"
 msgstr "附属文件链接"
 
-#: articles/templates/abs/abs.html:370
+#: articles/templates/abs/abs.html:384
 msgid "Ancillary files"
 msgstr "附属文件"
 
-#: articles/templates/abs/abs.html:370
+#: articles/templates/abs/abs.html:384
 msgid "details"
 msgstr "详细信息"
 
-#: articles/templates/abs/abs.html:379
+#: articles/templates/abs/abs.html:393
 msgid "Show entire file list."
 msgstr "显示完整的文件列表。"
 
-#: articles/templates/abs/abs.html:379
+#: articles/templates/abs/abs.html:393
 msgid "You must enabled JavaScript to view entire file list."
 msgstr "您必须启用 JavaScript 才能查看完整的文件列表。"
 
-#: articles/templates/abs/abs.html:387
+#: articles/templates/abs/abs.html:401
 msgid "Current browse context"
 msgstr "当前浏览上下文"
 
-#: articles/templates/abs/abs.html:393
+#: articles/templates/abs/abs.html:407
 msgid "previous in"
 msgstr "上一篇在"
 
-#: articles/templates/abs/abs.html:393
+#: articles/templates/abs/abs.html:407
 msgid "accesskey p"
 msgstr "访问键 p"
 
-#: articles/templates/abs/abs.html:393
+#: articles/templates/abs/abs.html:407
 msgid "prev"
 msgstr "上一篇"
 
-#: articles/templates/abs/abs.html:397
+#: articles/templates/abs/abs.html:411
 msgid "previous article"
 msgstr "上一篇文章"
 
-#: articles/templates/abs/abs.html:404
+#: articles/templates/abs/abs.html:418
 msgid "next in"
 msgstr "下一篇在"
 
-#: articles/templates/abs/abs.html:404
+#: articles/templates/abs/abs.html:418
 msgid "accesskey n"
 msgstr "访问键 n"
 
-#: articles/templates/abs/abs.html:404
+#: articles/templates/abs/abs.html:418
 msgid "next"
 msgstr "下一篇"
 
-#: articles/templates/abs/abs.html:407
+#: articles/templates/abs/abs.html:421
 msgid "next article"
 msgstr "下一篇文章"
 
-#: articles/templates/abs/abs.html:415
+#: articles/templates/abs/abs.html:429
 #: articles/templates/archive/single_archive.html:23
 #: articles/templates/archive/single_archive.html:105
 #: articles/templates/articles/home.html:78
@@ -571,70 +571,70 @@ msgstr "下一篇文章"
 msgid "new"
 msgstr "新的"
 
-#: articles/templates/abs/abs.html:417
+#: articles/templates/abs/abs.html:431
 #: articles/templates/archive/single_archive.html:27
 #: articles/templates/archive/single_archive.html:106
 #: articles/templates/articles/home.html:79 articles/templates/list/new.html:17
 msgid "recent"
 msgstr "最近的"
 
-#: articles/templates/abs/abs.html:427
+#: articles/templates/abs/abs.html:441
 msgid "Change to browse by"
 msgstr "切换浏览方式为"
 
-#: articles/templates/abs/abs.html:447
+#: articles/templates/abs/abs.html:461
 msgid "References &amp; Citations"
 msgstr "参考文献与引用"
 
-#: articles/templates/abs/abs.html:457
+#: articles/templates/abs/abs.html:471
 msgid "Google Scholar"
 msgstr "谷歌学术搜索"
 
-#: articles/templates/abs/abs.html:459
+#: articles/templates/abs/abs.html:473
 msgid "Semantic Scholar"
 msgstr "语义学者"
 
-#: articles/templates/abs/abs.html:468
+#: articles/templates/abs/abs.html:482
 msgid "blog link"
 msgstr "博客链接"
 
-#: articles/templates/abs/abs.html:468
+#: articles/templates/abs/abs.html:482
 msgid "what is this?"
 msgstr "这是什么？"
 
-#: articles/templates/abs/abs.html:476
+#: articles/templates/abs/abs.html:490
 msgid "CS Bibliography"
 msgstr "计算机科学参考书目"
 
-#: articles/templates/abs/abs.html:478
+#: articles/templates/abs/abs.html:492
 msgid "listing on DBLP"
 msgstr "DBLP 上的列表"
 
-#: articles/templates/abs/abs.html:478
+#: articles/templates/abs/abs.html:492
 msgid "listing"
 msgstr "列表"
 
-#: articles/templates/abs/abs.html:478
+#: articles/templates/abs/abs.html:492
 msgid "DBLP bibtex record"
 msgstr "DBLP bibteX 记录"
 
-#: articles/templates/abs/abs.html:478
+#: articles/templates/abs/abs.html:492
 msgid "bibtex"
 msgstr "bibteX"
 
-#: articles/templates/abs/abs.html:484
+#: articles/templates/abs/abs.html:498
 msgid "DBLP author search"
 msgstr "DBLP 作者搜索"
 
-#: articles/templates/abs/abs.html:504
+#: articles/templates/abs/abs.html:518
 msgid "Which authors of this paper are endorsers?"
 msgstr "这篇论文的哪些作者是支持者？"
 
-#: articles/templates/abs/abs.html:505
+#: articles/templates/abs/abs.html:519
 msgid "Disable MathJax"
 msgstr "禁用 MathJax"
 
-#: articles/templates/abs/abs.html:505
+#: articles/templates/abs/abs.html:519
 msgid "What is MathJax?"
 msgstr "什么是 MathJax？"
 
@@ -1400,9 +1400,9 @@ msgid ""
 "and make suggestions for improvements."
 msgstr ""
 "<strong>注意</strong>：本网站的所有中文全文 PDF 皆由 AI 翻译完成，若有翻译问"
-"题，敬请谅解，我们正在持续改进中。如有疑义，请以原文档为准。报告问题和改进建议请移步<a href=\"https://"
-"github.com/cenXiv/cenxiv/issues\" target=\"_blank\" rel=\"noopener noreferrer"
-"\">这里<a>。"
+"题，敬请谅解，我们正在持续改进中。如有疑义，请以原文档为准。报告问题和改进建"
+"议请移步<a href=\"https://github.com/cenXiv/cenxiv/issues\" target=\"_blank"
+"\" rel=\"noopener noreferrer\">这里<a>。"
 
 #: articles/templates/articles/cn_pdf_preview.html:23
 msgid ""
@@ -1413,12 +1413,12 @@ msgstr ""
 "码进行赞助或者"
 
 #: articles/templates/articles/cn_pdf_preview.html:23
-#: articles/templates/articles/no_cn_pdf.html:15
+#: articles/templates/articles/no_cn_pdf.html:19
 msgid "help us do better."
 msgstr "帮助我们做的更好。"
 
 #: articles/templates/articles/cn_pdf_preview.html:24
-#: articles/templates/articles/no_cn_pdf.html:16
+#: articles/templates/articles/no_cn_pdf.html:20
 msgid "Support Code"
 msgstr "赞赏码"
 
@@ -1429,7 +1429,7 @@ msgid ""
 msgstr "您的支持帮助我们继续提供高质量的 arXiv 论文中文翻译。"
 
 #: articles/templates/articles/cn_pdf_preview.html:35
-#: articles/templates/articles/no_cn_pdf.html:25
+#: articles/templates/articles/no_cn_pdf.html:29
 msgid "Back to Abstract"
 msgstr "返回摘要页"
 
@@ -1620,7 +1620,7 @@ msgstr "并包括论文标识符"
 
 #: articles/templates/articles/home.html:5
 msgid "cenXiv.org e-Print archive"
-msgstr "cenXiv.org 电子印刷档案馆"
+msgstr "cenXiv.org 电子预印本存档"
 
 #: articles/templates/articles/home.html:12
 msgid "Welcome to cenXiv"
@@ -1703,7 +1703,7 @@ msgstr "无中文 PDF"
 msgid "Chinese full text PDF %(arxiv_idv)s.pdf is unavailable."
 msgstr "暂无中文全文 PDF %(arxiv_idv)s.pdf。"
 
-#: articles/templates/articles/no_cn_pdf.html:13
+#: articles/templates/articles/no_cn_pdf.html:17
 #, python-format
 msgid ""
 "The requested Chinese full text PDF %(arxiv_idv)s.pdf is currently "
@@ -1716,7 +1716,7 @@ msgstr ""
 "访问<a href=\"%(pdf_url)s\">英文全文 PDF</a>。 <a href=\"%(list_all_url)s\">"
 "点击这里查看当前所有的中文 PDF。</a>"
 
-#: articles/templates/articles/no_cn_pdf.html:15
+#: articles/templates/articles/no_cn_pdf.html:19
 msgid ""
 "To make our translations more helpful to you, please consider supporting our "
 "work. You can use WeChat to scan the QR code below to sponsor or"
@@ -1724,13 +1724,13 @@ msgstr ""
 "为了让我们的翻译更好地帮助到您，请考虑支持我们的工作。您可以使用微信扫描下方"
 "的二维码进行赞助或者"
 
-#: articles/templates/articles/no_cn_pdf.html:17
+#: articles/templates/articles/no_cn_pdf.html:21
 msgid ""
 "Your support helps us providing more high-quality Chinese translations of "
 "arXiv papers."
 msgstr "您的支持帮助我们提供更多高质量的 arXiv 论文中文翻译。"
 
-#: articles/templates/articles/no_cn_pdf.html:21
+#: articles/templates/articles/no_cn_pdf.html:25
 msgid "View English PDF"
 msgstr "查看英文 PDF"
 
