@@ -519,12 +519,12 @@ def index_for_types(resp: ListingNew,
     cross_count = resp.cross_count
     rep_count = resp.rep_count
 
+    base_url = reverse('articles:list_articles', kwargs={'context': context, 'subcontext': subcontext})
+
     if new_count > 0:
         if skipn != 0:
             ift.append((_('New submissions'),
-                        url_for('.list_articles',
-                                context=context, subcontext=subcontext,
-                                skip=0, show=shown),
+                        f'{base_url}?skip=0&show={shown}',
                         0))
         else:
             ift.append((_('New submissions'), '', 0))
@@ -535,9 +535,7 @@ def index_for_types(resp: ListingNew,
 
         if new_count > shown:
             ift.append((_('Cross-lists'),
-                        url_for('.list_articles',
-                                context=context, subcontext=subcontext,
-                                skip=c_skip, show=shown),
+                        f'{base_url}?skip={c_skip}&show={shown}',
                         cross_index))
         else:
             ift.append((_('Cross-lists'), '', cross_index))
@@ -547,9 +545,7 @@ def index_for_types(resp: ListingNew,
         rep_skip = math.floor((new_count + cross_count)/shown) * shown
         if new_count + cross_count > shown:
             ift.append((_('Replacements'),
-                        url_for('.list_articles',
-                                context=context, subcontext=subcontext,
-                                skip=rep_skip, show=shown),
+                        f'{base_url}?skip={rep_skip}&show={shown}',
                         rep_index))
         else:
             ift.append((_('Replacements'), '', rep_index))
@@ -816,9 +812,9 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
     # organize results into expected listing
     items = []
     for i, paper_id in enumerate(paper_ids):
-        if i < new_count:
+        if skip + i < new_count:
             listing_type = 'new'
-        elif i < new_count + cross_count:
+        elif skip + i < new_count + cross_count:
             listing_type = 'cross'
         else:
             listing_type = 'rep'
