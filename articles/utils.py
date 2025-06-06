@@ -5,6 +5,7 @@ from http import HTTPStatus
 import requests
 from requests.exceptions import HTTPError, RequestException
 import openai
+import django
 from django.conf import settings
 from latextranslate import process_latex, translate
 from .models import Article, Author, Category, Link
@@ -165,15 +166,32 @@ def translate_and_save_article(result):
             doi=result.doi,
             primary_category=result.primary_category,
         )
-        article.save()
+        try:
+            article.save()
+        except django.db.utils.IntegrityError:
+            # already exist in db
+            pass
+
         for author in result.authors:
             author_ = Author(name=author.name, article=article)
-            author_.save()
+            try:
+                author_.save()
+            except django.db.utils.IntegrityError:
+                # already exist in db
+                pass
         for category in result.categories:
             category_ = Category(name=category, article=article)
-            category_.save()
+            try:
+                category_.save()
+            except django.db.utils.IntegrityError:
+                # already exist in db
+                pass
         for link in result.links:
             link_ = Link(url=link.href, article=article)
-            link_.save()
+            try:
+                link_.save()
+            except django.db.utils.IntegrityError:
+                # already exist in db
+                pass
 
         return True

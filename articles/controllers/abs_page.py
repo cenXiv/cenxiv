@@ -19,6 +19,7 @@ from dateutil.tz import tzutc
 from flask import request, url_for, current_app
 from werkzeug.exceptions import InternalServerError
 
+import django
 from django.utils.translation import get_language
 from django.conf import settings
 
@@ -232,16 +233,33 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     doi=result.doi,
                     primary_category=result.primary_category,
                 )
-                article.save()
+                try:
+                    article.save()
+                except django.db.utils.IntegrityError:
+                    # already exist in db
+                    pass
+
                 for author in result.authors:
                     author_ = Author(name=author.name, article=article)
-                    author_.save()
+                    try:
+                        author_.save()
+                    except django.db.utils.IntegrityError:
+                        # already exist in db
+                        pass
                 for category in result.categories:
                     category_ = Category(name=category, article=article)
-                    category_.save()
+                    try:
+                        category_.save()
+                    except django.db.utils.IntegrityError:
+                        # already exist in db
+                        pass
                 for link in result.links:
                     link_ = Link(url=link.href, article=article)
-                    link_.save()
+                    try:
+                        link_.save()
+                    except django.db.utils.IntegrityError:
+                        # already exist in db
+                        pass
 
                 break
 
@@ -319,16 +337,33 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                         doi=result.doi,
                         primary_category=result.primary_category,
                     )
-                    article.save()
+                    try:
+                        article.save()
+                    except django.db.utils.IntegrityError:
+                        # already exist in db
+                        pass
+
                     for author in result.authors:
                         author_ = Author(name=author.name, article=article)
-                        author_.save()
+                        try:
+                            author_.save()
+                        except django.db.utils.IntegrityError:
+                            # already exist in db
+                            pass
                     for category in result.categories:
                         category_ = Category(name=category, article=article)
-                        category_.save()
+                        try:
+                            category_.save()
+                        except django.db.utils.IntegrityError:
+                            # already exist in db
+                            pass
                     for link in result.links:
                         link_ = Link(url=link.href, article=article)
-                        link_.save()
+                        try:
+                            link_.save()
+                        except django.db.utils.IntegrityError:
+                            # already exist in db
+                            pass
 
                 versions.remove(version)
 
