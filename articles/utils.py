@@ -4,6 +4,7 @@ import logging
 from http import HTTPStatus
 import requests
 from requests.exceptions import HTTPError, RequestException
+import openai
 from django.conf import settings
 from latextranslate import process_latex, translate
 from .models import Article, Author, Category, Link
@@ -109,14 +110,38 @@ def translate_and_save_article(result):
 
             # title_cn = latex_translator.translate_full_latex(result.title, make_complete=False).strip()
             # abstract_cn = latex_translator.translate_full_latex(result.summary, make_complete=False).strip()
-            title_cn = translate_latex_paragraph(result.title, tl)
-            abstract_cn = translate_latex_paragraph(result.summary, tl)
+            try:
+                title_cn = translate_latex_paragraph(result.title, tl)
+            except openai.BadRequestError as e:
+                if e.status_code == 400: # data may contain inappropriate content
+                    title_cn = 'TO_BE_TRANSLATED: ' + result.title
+                else:
+                    raise
+            try:
+                abstract_cn = translate_latex_paragraph(result.summary, tl)
+            except openai.BadRequestError as e:
+                if e.status_code == 400: # data may contain inappropriate content
+                    abstract_cn = 'TO_BE_TRANSLATED: ' + result.summary
+                else:
+                    raise
             comment_cn = None
             journal_ref_cn = None
             if result.comment:
-                comment_cn = translator(tl)(result.comment.replace('\n', ' '))
+                try:
+                    comment_cn = translator(tl)(result.comment.replace('\n', ' '))
+                except openai.BadRequestError as e:
+                    if e.status_code == 400: # data may contain inappropriate content
+                        comment_cn = 'TO_BE_TRANSLATED: ' + result.comment
+                    else:
+                        raise
             if result.journal_ref:
-                journal_ref_cn = translator(tl)(result.journal_ref.replace('\n', ' '))
+                try:
+                    journal_ref_cn = translator(tl)(result.journal_ref.replace('\n', ' '))
+                except openai.BadRequestError as e:
+                    if e.status_code == 400: # data may contain inappropriate content
+                        journal_ref_cn = 'TO_BE_TRANSLATED: ' + result.journal_ref
+                    else:
+                        raise
             # title_cn = '中文标题'
             # abstract_cn = '中文摘要'
             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
