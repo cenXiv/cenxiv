@@ -73,6 +73,7 @@ from browse.formatting.latexml import get_latexml_url, get_latexml_urls_for_arti
 from django.urls import reverse
 from django.conf import settings
 from django.http import HttpResponseBadRequest
+from django.core.cache import cache
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
@@ -767,14 +768,42 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
     for atag in atags:
         paper_ids.append(atag['id'])
 
-    # Create the search client
-    client = arxivapi.Client()
+    uncached_pids = []
+    for pid in paper_ids:
+        cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
+        if not cache.get(cache_key):
+            uncached_pids.append(pid)
 
-    # Create the search query
+    if len(uncached_pids) > 0:
+        # Create the search client
+        client = arxivapi.Client()
+
+        # build cache
+        for pids in itertools.batched(uncached_pids, 200):
+            search = arxivapi.Search(id_list=pids)
+            for pid, result in zip(pids, client.results(search)):
+                cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
+                cache.set(cache_key, result, 3*24*3600) # cache for 3 days
+
+    # get results from cache
     results = []
-    for pids in itertools.batched(paper_ids, 200):
-        search = arxivapi.Search(id_list=pids)
-        results.extend(list(client.results(search)))
+    for pid in paper_ids:
+        cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
+        results.append(cache.get(cache_key))
+
+    # # Create the search query
+    # results = []
+    # # for pids in itertools.batched(paper_ids, 200):
+    # #     search = arxivapi.Search(id_list=pids)
+    # #     results.extend(list(client.results(search)))
+    # for pid in paper_ids:
+    #     cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
+    #     result = cache.get(cache_key)
+    #     if not result:
+    #         search = arxivapi.Search(id_list=[pid])
+    #         result = list(client.results(search))[0]
+    #         cache.set(cache_key, result, 3*24*3600) # cache for 3 days
+    #     results.append(result)
 
     # get arxiv_idv for all paper_ids
     # arxiv_idvs = [ result.entry_id.split('/')[-1] for result in results ]
