@@ -768,10 +768,17 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
     for atag in atags:
         paper_ids.append(atag['id'])
 
+    results = []
+    uncached_inds = []
     uncached_pids = []
-    for pid in paper_ids:
+    for i, pid in enumerate(paper_ids):
         cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
-        if not cache.get(cache_key):
+        result = cache.get(cache_key)
+        if result:
+            results.append(result)
+        else:
+            results.append(None)
+            uncached_inds.append(i)
             uncached_pids.append(pid)
 
     if len(uncached_pids) > 0:
@@ -785,11 +792,10 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
                 cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
                 cache.set(cache_key, result, 3*24*3600) # cache for 3 days
 
-    # get results from cache
-    results = []
-    for pid in paper_ids:
-        cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
-        results.append(cache.get(cache_key))
+        # get results from cache
+        for ui, pid in zip(uncached_inds, uncached_pids):
+            cache_key = f"{announced.strftime('%Y%m%d')}_{pid}"
+            results[ui] = cache.get(cache_key)
 
     # # Create the search query
     # results = []
