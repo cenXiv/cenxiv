@@ -98,12 +98,15 @@ def translate_latex_paragraph(text, tl):
     latex_translator = translate.LatexTranslator(text_translator)
     return latex_translator.translate_full_latex(text, make_complete=False, nocache=True).strip()
 
-def translate_and_save_article(result):
+def translate_and_save_article(result, ok=False):
+    if ok:
+        return result, True
+
     # arxiv_id, version = result.entry_id.split('/')[-1].split('v')
     arxiv_id, version = result.entry_id.split(r'/abs/')[-1].rsplit('v', 1)
     try:
         article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
-        return True
+        return article, True
     except Article.DoesNotExist:
         try:
             # text_translator = translate.TextTranslator(tl, 'en', 'zh-CN')
@@ -148,7 +151,7 @@ def translate_and_save_article(result):
             logger.info(f'Successfully translated arxiv:{arxiv_id}v{version}.')
         except Exception as e:
             logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version} due to {e}, will retry latter.')
-            return False
+            return result, False
 
         article = Article(
             entry_id=arxiv_id,
@@ -194,4 +197,4 @@ def translate_and_save_article(result):
                 # already exist in db
                 pass
 
-        return True
+        return article, True

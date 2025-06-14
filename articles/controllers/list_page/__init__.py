@@ -819,6 +819,9 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
         processing_group.apply_async()
 
+
+    oks = [False] * len(results)
+
     retry = 0
     while True:
         if retry >= retries:
@@ -827,12 +830,12 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
             raise Exception(msg)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            oks = list(executor.map(translate_and_save_article, results))
+            results, oks = list(zip(*executor.map(translate_and_save_article, results, oks)))
 
         if all(oks):
             break
 
-        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+        # results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
 
         delay = 1.0 * (2**retry)
         time.sleep(delay)
@@ -854,7 +857,8 @@ def get_new_listing(request, archive_or_cat: str, skip: int, show: int) -> Listi
         else:
             listing_type = 'rep'
 
-        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        # article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        article = results[i]
 
         # dt = dts[i]
         # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
@@ -1031,20 +1035,23 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
         processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
         processing_group.apply_async()
 
+
+    oks = [False] * len(results)
+
     retry = 0
-    while results:
+    while True:
         if retry >= retries:
             msg = f'Failed to translate some of the articles after {retries} retries'
             logger.error(msg)
             raise Exception(msg)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            oks = list(executor.map(translate_and_save_article, results))
+            results, oks = list(zip(*executor.map(translate_and_save_article, results, oks)))
 
         if all(oks):
             break
 
-        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+        # results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
 
         delay = 1.0 * (2**retry)
         time.sleep(delay)
@@ -1111,7 +1118,8 @@ def get_recent_listing(request, archive_or_cat: str, skip: int, show: int) -> Li
     # organize results into expected listing
     items = []
     for i, paper_id in enumerate(paper_ids):
-        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        # article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        article = results[i]
 
         # dt = dts[i]
         # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
@@ -1273,20 +1281,23 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
         processing_group = group(download_and_compile_arxiv.s(arxiv_idv) for arxiv_idv in arxiv_idvs)
         processing_group.apply_async()
 
+
+    oks = [False] * len(results)
+
     retry = 0
-    while results:
+    while True:
         if retry >= retries:
             msg = f'Failed to translate some of the articles after {retries} retries'
             logger.error(msg)
             raise Exception(msg)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            oks = list(executor.map(translate_and_save_article, results))
+            results, oks = list(zip(*executor.map(translate_and_save_article, results, oks)))
 
         if all(oks):
             break
 
-        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+        # results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
 
         delay = 1.0 * (2**retry)
         time.sleep(delay)
@@ -1353,7 +1364,8 @@ def get_articles_for_month(request, archive_or_cat: str, time_period: str, year:
     # organize results into expected listing
     items = []
     for i, paper_id in enumerate(paper_ids):
-        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        # article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        article = results[i]
 
         # dt = dts[i]
         # new_a = soup.new_tag('a', attrs={'href': f"/cn-pdf/{paper_id}", 'title': "Download Chinese PDF", 'id': f"cn-pdf-{paper_id}", 'aria-labelledby': f"cn-pdf-{paper_id}"})
@@ -1501,21 +1513,24 @@ def get_all_cn_pdfs(request, skip: int, show: int) -> Listing:
         search = arxivapi.Search(id_list=pids)
         results.extend(list(client.results(search)))
 
+
+    oks = [False] * len(results)
+
     retries = 3
     retry = 0
-    while results:
+    while True:
         if retry >= retries:
             msg = f'Failed to translate some of the articles after {retries} retries'
             logger.error(msg)
             raise Exception(msg)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            oks = list(executor.map(translate_and_save_article, results))
+            results, oks = list(zip(*executor.map(translate_and_save_article, results, oks)))
 
         if all(oks):
             break
 
-        results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
+        # results = [ results[i] for i in range(len(oks)) if oks[i] == False ]
 
         delay = 1.0 * (2**retry)
         time.sleep(delay)
@@ -1526,7 +1541,8 @@ def get_all_cn_pdfs(request, skip: int, show: int) -> Listing:
     # organize results into expected listing
     items = []
     for i, paper_id in enumerate(paper_ids):
-        article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        # article = Article.objects.filter(source_archive='arxiv', entry_id=paper_id).order_by('entry_version').last()
+        article = results[i]
 
         listing_type = 'new' # need to get the correct 'new' or 'cross'
         arxiv_id, version = article.entry_id, article.entry_version

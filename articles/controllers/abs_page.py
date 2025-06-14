@@ -172,6 +172,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
 
             try:
                 article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=latest_version)
+                if request_version == latest_version:
+                    request_article = article
                 break
             except Article.DoesNotExist:
                 try:
@@ -261,6 +263,9 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                         # already exist in db
                         pass
 
+                if request_version == latest_version:
+                    request_article = article
+
                 break
 
         # then search for all other latest versions
@@ -275,6 +280,8 @@ def get_abs_page(request, arxiv_id: str) -> Response:
             for version in list(versions):  # Copy the versions list so we can alter it.
                 try:
                     article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=version)
+                    if request_version == version:
+                        request_article = article
                 except Article.DoesNotExist:
                     search = arxivapi.Search(id_list=[f'{arxiv_id}v{version}'])
                     result = list(client.results(search))[0]
@@ -365,13 +372,17 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                             # already exist in db
                             pass
 
+                    if request_version == version:
+                        request_article = article
+
                 versions.remove(version)
 
             retry += 1
 
 
         # get article of the request_version
-        article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=request_version)
+        # article = Article.objects.get(source_archive='arxiv', entry_id=arxiv_id, entry_version=request_version)
+        article = request_article
 
         language = get_language()
 
