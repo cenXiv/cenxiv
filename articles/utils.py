@@ -98,6 +98,21 @@ def translate_latex_paragraph(text, tl):
     latex_translator = translate.LatexTranslator(text_translator)
     return latex_translator.translate_full_latex(text, make_complete=False, nocache=True).strip()
 
+# 获取模型字段的 max_length 信息
+def truncate_for_model(model, data_dict):
+    truncated_data = {}
+    for field_name, value in data_dict.items():
+        # 获取模型字段对象
+        field = model._meta.get_field(field_name)
+
+        # 只处理字符串类型且有 max_length 的字段
+        if isinstance(value, str) and hasattr(field, 'max_length'):
+            max_len = field.max_length
+            truncated_data[field_name] = value[:max_len]
+        else:
+            truncated_data[field_name] = value
+    return truncated_data
+
 def translate_and_save_article(result, ok=False):
     if ok:
         return result, True
@@ -153,7 +168,7 @@ def translate_and_save_article(result, ok=False):
             logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version} due to {e}, will retry latter.')
             return result, False
 
-        article = Article(
+        data = dict(
             entry_id=arxiv_id,
             entry_version=version,
             title_en=result.title,
@@ -169,6 +184,9 @@ def translate_and_save_article(result, ok=False):
             doi=result.doi,
             primary_category=result.primary_category,
         )
+        # 截断超长字符串
+        truncated_data = truncate_for_model(Article, data)
+        article = Article(**truncated_data)
         try:
             article.save()
         except django.db.utils.IntegrityError:

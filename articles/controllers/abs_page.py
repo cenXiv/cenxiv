@@ -75,7 +75,7 @@ from . import check_supplied_identifier
 from ..models import Article, Author, Category, Link
 from ..tasks import download_and_compile_arxiv
 from ..templatetags import article_filters
-from ..utils import get_translation_dict, request_get, chinese_week_days, translate_latex_paragraph
+from ..utils import get_translation_dict, request_get, chinese_week_days, truncate_for_model, translate_latex_paragraph
 from ..translators import translator
 
 
@@ -219,7 +219,7 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     retry += 1
                     continue
 
-                article = Article(
+                data = dict(
                     entry_id=arxiv_id,
                     entry_version=latest_version,
                     title_en=result.title,
@@ -235,6 +235,9 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                     doi=result.doi,
                     primary_category=result.primary_category,
                 )
+                # 截断超长字符串
+                truncated_data = truncate_for_model(Article, data)
+                article = Article(**truncated_data)
                 try:
                     article.save()
                 except django.db.utils.IntegrityError:
@@ -328,7 +331,7 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                         logger.warning(f'Failed to translate arxiv:{arxiv_id}v{version} due to {e}, will retry latter.')
                         continue
 
-                    article = Article(
+                    data = dict(
                         entry_id=arxiv_id,
                         entry_version=version,
                         title_en=result.title,
@@ -344,6 +347,9 @@ def get_abs_page(request, arxiv_id: str) -> Response:
                         doi=result.doi,
                         primary_category=result.primary_category,
                     )
+                    # 截断超长字符串
+                    truncated_data = truncate_for_model(Article, data)
+                    article = Article(**truncated_data)
                     try:
                         article.save()
                     except django.db.utils.IntegrityError:
